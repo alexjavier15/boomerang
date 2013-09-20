@@ -7,7 +7,11 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
+/**
+ * 
+ * @author JavierRivas
+ *
+ */
 public class MainActivity extends Activity {
 
 	@Override
