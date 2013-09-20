@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 /**
  * @author LorenzoLeon, JavierRivas
- *
+ * 
  */
 public class ShowMessageActivity extends Activity {
 
@@ -22,10 +22,10 @@ public class ShowMessageActivity extends Activity {
 		// get the value of the user string
 		String userText = startingIntent.getStringExtra(MainActivity.class
 				.getName());
-		 // get the TextView on which we are going to show the string, and update
-	    // its contents
-	    TextView textView = (TextView) findViewById(R.id.displayed_text);
-	    textView.setText(userText);
+		// get the TextView on which we are going to show the string, and update
+		// its contents
+		TextView textView = (TextView) findViewById(R.id.displayed_text);
+		textView.setText(userText);
 	}
 
 	@Override
