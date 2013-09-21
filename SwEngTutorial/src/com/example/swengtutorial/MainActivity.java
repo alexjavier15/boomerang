@@ -9,7 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 /**
- * @author LorenzoLeon, JavierRivas
+ * @author LorenzoLeon, JavierRivas, AlbanMarguet
  * 
  */
 public class MainActivity extends Activity {
