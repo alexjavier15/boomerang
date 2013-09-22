@@ -7,27 +7,25 @@ import android.view.Menu;
 import android.widget.TextView;
 
 /**
+ * @author AlbanMarguet, CanGuzelhan, JavierRivas, LorenzoLeon, NoortjeVerstegen
  * 
- * @author Noortch
- *
  */
 public class ShowMessageActivity extends Activity {
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-	    super.onCreate(savedInstanceState);
-	    setContentView(R.layout.activity_show_message);
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_show_message);
+		// get Intent that started this Activity
+		Intent startingIntent = getIntent();
 
-	    // get Intent that started this Activity
-	    Intent startingIntent = getIntent();
-
-	    // get the value of the user string
-	    String userText = startingIntent.getStringExtra(MainActivity.class.getName());
-
-	    // get the TextView on which we are going to show the string, and update
-	    // its contents
-	    TextView textView = (TextView) findViewById(R.id.displayed_text);
-	    textView.setText(userText);
+		// get the value of the user string
+		String userText = startingIntent.getStringExtra(MainActivity.class
+				.getName());
+		// get the TextView on which we are going to show the string, and update
+		// its contents
+		TextView textView = (TextView) findViewById(R.id.displayed_text);
+		textView.setText(userText);
 	}
 
 	@Override
