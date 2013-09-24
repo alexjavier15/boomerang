@@ -7,6 +7,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="random_question">Show a random question.</string>
     <string name="submit_question">Submit a quiz question.</string>
-    
+    <string name="title_activity_show_questions">ShowQuestionsActivity</string>
 
 </resources>
