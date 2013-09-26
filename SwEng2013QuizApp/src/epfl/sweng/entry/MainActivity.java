@@ -1,16 +1,20 @@
 package epfl.sweng.entry;
 
 import epfl.sweng.R;
+import epfl.sweng.editquestions.EditQuestionActivity;
 import epfl.sweng.testing.TestingTransactions;
 import epfl.sweng.testing.TestingTransactions.TTChecks;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.widget.Toast;
 
 /**
  * 
  * @author AlbanMarguet
- *
+ * 
  */
 public class MainActivity extends Activity {
 
@@ -28,4 +32,15 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
+	public void askQuestion(View view) {
+
+	}
+
+	public void submitQuestion(View view) {
+		Toast.makeText(this, "You are on the page to submit a question!",
+				Toast.LENGTH_LONG).show();
+		Intent submitActivityIntent = new Intent(this,
+				EditQuestionActivity.class);
+		startActivity(submitActivityIntent);
+	}
 }
