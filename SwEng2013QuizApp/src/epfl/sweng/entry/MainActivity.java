@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 /**
  * 
- * @author AlbanMarguet
+ * @author AlbanMarguet, CanGuzelhan
  * 
  */
 public class MainActivity extends Activity {

@@ -4,7 +4,14 @@ import epfl.sweng.R;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
+import android.view.View;
+import android.widget.Toast;
 
+/**
+ * 
+ * @author CanGuzelhan
+ * 
+ */
 public class EditQuestionActivity extends Activity {
 
 	@Override
@@ -20,4 +27,8 @@ public class EditQuestionActivity extends Activity {
 		return true;
 	}
 
+	public void initialState(View view) {
+		Toast.makeText(this, "You submitted successfully a question!",
+				Toast.LENGTH_SHORT).show();
+	}
 }
