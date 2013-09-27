@@ -1,10 +1,18 @@
 package epfl.sweng.showquestions;
 
+import java.io.IOException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+
 import epfl.sweng.R;
+import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.testing.TestingTransactions;
 import epfl.sweng.testing.TestingTransactions.TTChecks;
 import android.os.Bundle;
+import android.provider.Settings.System;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
 
 public class ShowQuestionsActivity extends Activity {
@@ -12,7 +20,30 @@ public class ShowQuestionsActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_show_questions);
+		Intent startingIntent = getIntent();
+
+		String quizzQuestion = null;
+
+		HttpResponse reponse = null;
+		try {
+			reponse = HttpCommunications
+					.getHttpResponse(HttpCommunications.URL);
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+		if (reponse == null) {
+
+			quizzQuestion = "No question to show";
+
+		} else {
+			
+	
+
+		}
+
 		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 	}
 

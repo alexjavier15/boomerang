@@ -32,6 +32,7 @@ public class HttpCommunications {
 
 		HttpGet request = new HttpGet(urlString);
 		return client.execute(request);
+
 	}
 
 	public QuizQuestion parseJsonToQuiz(HttpResponse response)
