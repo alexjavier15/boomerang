@@ -40,9 +40,14 @@ public class JSONParser {
 	}
 	
 	public static JSONObject parseQuiztoJSON(QuizQuestion question){
+		JSONObject jsonQuestion = new JSONObject();
+		jsonQuestion.put("id", question.getID());
+		jsonQuestion.put("question", question.getQuestion());
+		jsonQuestion.put("answers" , new JSONArray(question.getAnswers()) );
+		jsonQuestion.put("solutionIndex" , question.getIndex() );
+		jsonQuestion.put("tags", new JSONArray(question.getvalue()));
 		
-		
-		return null;
+		return jsonQuestion;
 	}
 	
 	
