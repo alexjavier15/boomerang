@@ -3,7 +3,10 @@
 .settings
 bin/
 gen/
+.idea
 local.properties
 *~
 .checkstyle
 .DS_Store
+.gitignore
+SwEng2013QuizApp/SwEng2013QuizApp.iml
