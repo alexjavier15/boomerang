@@ -31,12 +31,12 @@ public class QuizQuestion implements QuestionProvider {
 	}
 
 	@Override
-	public String getAnswer() {
+	public String getCorrectAnswer() {
 		return answers.get(solutionIndex);
 	}
 
 	@Override
-	public List<String> getAnswerList() {
+	public List<String> getAnswers() {
 		return answers;
 	}
 

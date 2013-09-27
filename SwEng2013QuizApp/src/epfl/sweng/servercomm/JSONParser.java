@@ -14,8 +14,22 @@ import org.json.JSONObject;
 
 import epfl.sweng.questions.QuizQuestion;
 
+/**
+ * 
+ * @author LorenzoLeon
+ *
+ */
 public class JSONParser {
 
+	/**
+	 * Parses a JSONObject from an HttpResponse to a QuizQuestion
+	 * 
+	 * @param response
+	 * @return
+	 * @throws HttpResponseException
+	 * @throws JSONException
+	 * @throws IOException
+	 */
 	public static QuizQuestion parseJsonToQuiz(HttpResponse response)
 			throws HttpResponseException, JSONException, IOException {
 
@@ -38,18 +52,32 @@ public class JSONParser {
 
 	}
 
+	/**
+	 * Parses a QuizQuestion to a JSONObject
+	 * 
+	 * @param question
+     * @return
+	 * @throws JSONException
+	 */
 	public static JSONObject parseQuiztoJSON(QuizQuestion question)
 			throws JSONException {
 		JSONObject jsonQuestion = new JSONObject();
 		jsonQuestion.put("id", question.getID());
 		jsonQuestion.put("question", question.getQuestion());
-		jsonQuestion.put("answers", new JSONArray(question.getAnswerList()));
+		jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
 		jsonQuestion.put("solutionIndex", question.getIndex());
 		jsonQuestion.put("tags", new JSONArray(question.getSetOfTags()));
 
 		return jsonQuestion;
 	}
 
+	/**
+	 * Parses a JSONArray to a StringArray
+	 * 
+	 * @param array
+	 * @return
+	 * @throws JSONException
+	 */
 	private static String[] jsonArrayToStringArray(JSONArray array)
 			throws JSONException {
 		int numAnswers = array.length();

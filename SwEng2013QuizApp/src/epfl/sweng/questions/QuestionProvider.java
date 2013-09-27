@@ -14,11 +14,11 @@ public interface QuestionProvider {
 
 	public String getQuestion();
 
-	public String getAnswer();
+	public String getCorrectAnswer();
 
 	public int getIndex();
 
-	public List<String> getAnswerList();
+	public List<String> getAnswers();
 
 	public boolean checkAnswer(int sol);
 
