@@ -33,6 +33,10 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
+	/**
+	 * Launches the new Activity ShowQuestionsActivity to display a random question
+	 * @param view
+	 */
 	public void askQuestion(View view) {
 		Toast.makeText(this, "You are on the page to show a random question!",
 				Toast.LENGTH_SHORT).show();
@@ -40,6 +44,11 @@ public class MainActivity extends Activity {
 		startActivity(showQuestionActivityIntent);
 	}
 
+	/**
+	 * Launches the new Activity EditQuestionActivity to permit the user to submit a new
+	 * question to the server
+	 * @param view
+	 */
 	public void submitQuestion(View view) {
 		Toast.makeText(this, "You are on the page to submit a question!",
 				Toast.LENGTH_LONG).show();
