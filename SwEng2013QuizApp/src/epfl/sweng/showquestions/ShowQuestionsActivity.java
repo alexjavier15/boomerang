@@ -24,7 +24,13 @@ public class ShowQuestionsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_show_questions);
-		Intent startingIntent = getIntent();
+		
+		fetchNewQuestion();
+
+		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
+	}
+ public void fetchNewQuestion() {
+	 Intent startingIntent = getIntent();
 
 		String quizzQuestion = null;
 
@@ -45,10 +51,9 @@ public class ShowQuestionsActivity extends Activity {
 	
 
 		}
-
-		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
-	}
-
+	 
+	 
+ }
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -57,8 +62,7 @@ public class ShowQuestionsActivity extends Activity {
 	}
 	
 	public void askNextQuestion(View view) {
-		Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
-		startActivity(showQuestionActivityIntent);
+		fetchNewQuestion();
 	}
 
 }
