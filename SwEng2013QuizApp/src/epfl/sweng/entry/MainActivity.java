@@ -2,6 +2,7 @@ package epfl.sweng.entry;
 
 import epfl.sweng.R;
 import epfl.sweng.editquestions.EditQuestionActivity;
+import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestingTransactions;
 import epfl.sweng.testing.TestingTransactions.TTChecks;
 import android.app.Activity;
@@ -33,7 +34,10 @@ public class MainActivity extends Activity {
 	}
 
 	public void askQuestion(View view) {
-
+		Toast.makeText(this, "You are on the page to show a random question!",
+				Toast.LENGTH_SHORT).show();
+		Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
+		startActivity(showQuestionActivityIntent);
 	}
 
 	public void submitQuestion(View view) {

@@ -1,6 +1,8 @@
 package epfl.sweng.showquestions;
 
 import epfl.sweng.R;
+import epfl.sweng.testing.TestingTransactions;
+import epfl.sweng.testing.TestingTransactions.TTChecks;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -11,6 +13,7 @@ public class ShowQuestionsActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show_questions);
+		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 	}
 
 	@Override
