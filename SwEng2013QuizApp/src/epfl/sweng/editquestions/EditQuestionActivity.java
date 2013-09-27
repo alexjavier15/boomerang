@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import epfl.sweng.R;
 import android.os.Bundle;
 import android.app.Activity;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;

@@ -1,18 +1,25 @@
 package epfl.sweng.showquestions;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
+import org.json.JSONException;
 
-import epfl.sweng.R;
-import epfl.sweng.servercomm.HttpCommunications;
-import epfl.sweng.testing.TestingTransactions;
-import epfl.sweng.testing.TestingTransactions.TTChecks;
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import epfl.sweng.R;
+import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.JSONParser;
+import epfl.sweng.testing.TestingTransactions;
+import epfl.sweng.testing.TestingTransactions.TTChecks;
 
 /**
  * 
@@ -38,10 +45,20 @@ public class ShowQuestionsActivity extends Activity {
 	public void fetchNewQuestion() {
 		Intent startingIntent = getIntent();
 
-		String quizzQuestion = null;
+		String quizQuestion = null;
 
-		HttpResponse response = new HttpCommsBackgroundTask().execute(
-				HttpCommunications.URL).get();
+		HttpResponse response = null;
+
+		try {
+			response = new HttpCommsBackgroundTask().execute(
+					HttpCommunications.URL).get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		if (response == null) {
 
@@ -49,8 +66,20 @@ public class ShowQuestionsActivity extends Activity {
 
 		} else {
 
-			QuizQuestion randomNewQuestion = JSONParser
-					.parseJsonToQuiz(response);
+			QuizQuestion randomNewQuestion = null;
+
+			try {
+				randomNewQuestion = JSONParser.parseJsonToQuiz(response);
+			} catch (HttpResponseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		}
 
@@ -64,7 +93,9 @@ public class ShowQuestionsActivity extends Activity {
 	}
 
 	/**
-	 * Launches fetchNewQuestion() when clikcing on the button labeled "Next Question"
+	 * Launches fetchNewQuestion() when clicking on the button labeled
+	 * "Next Question"
+	 * 
 	 * @param view
 	 */
 	public void askNextQuestion(View view) {
@@ -76,8 +107,16 @@ public class ShowQuestionsActivity extends Activity {
 
 		@Override
 		protected HttpResponse doInBackground(String... params) {
-			HttpResponse response = HttpCommunications
-					.getHttpResponse(params[0]);
+			try {
+				HttpResponse response = HttpCommunications
+						.getHttpResponse(params[0]);
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return null;
 		}
 	}
