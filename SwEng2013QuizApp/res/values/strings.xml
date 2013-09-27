@@ -12,5 +12,6 @@
     <string name="submit_button">Submit.</string>
     <string name="edit_tags">Type in the question’s tags.</string>
     <string name="edit_answer">Type in the answer.</string>
+    <string name="next_question">Next Question</string>
 
 </resources>
