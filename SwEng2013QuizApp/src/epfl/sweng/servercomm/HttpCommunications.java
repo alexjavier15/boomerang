@@ -11,13 +11,16 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import epfl.sweng.questions.QuizQuestion;
+
 /**
  * @author LorenzoLeon
- *
+ * 
  */
 public class HttpCommunications {
 
@@ -44,7 +47,7 @@ public class HttpCommunications {
 		int solutionIndex = parser.getInt("solutionIndex");
 		String[] tags = jsonArrayToStringArray(parser.getJSONArray("tags"));
 		Set<String> set = new HashSet<String>(Arrays.asList(tags));
-		return new QuizQuestions(id, question, Arrays.asList(answers),
+		return new QuizQuestion(id, question, Arrays.asList(answers),
 				solutionIndex, set);
 
 	}
