@@ -15,14 +15,13 @@ import org.json.JSONObject;
 import epfl.sweng.questions.QuizQuestion;
 
 public class JSONParser {
-	
+
 	public static QuizQuestion parseJsonToQuiz(HttpResponse response)
 			throws HttpResponseException, JSONException, IOException {
-		
-		if (response == null){
-			throw new HttpResponseException(404,"Empty response");
+
+		if (response == null) {
+			throw new HttpResponseException(404, "Empty response");
 		}
-		
 
 		BasicResponseHandler responseHandler = new BasicResponseHandler();
 		JSONObject parser = new JSONObject(
@@ -38,19 +37,18 @@ public class JSONParser {
 				solutionIndex, set);
 
 	}
-	
-	public static JSONObject parseQuiztoJSON(QuizQuestion question){
+
+	public static JSONObject parseQuiztoJSON(QuizQuestion question)
+			throws JSONException {
 		JSONObject jsonQuestion = new JSONObject();
 		jsonQuestion.put("id", question.getID());
 		jsonQuestion.put("question", question.getQuestion());
-		jsonQuestion.put("answers" , new JSONArray(question.getAnswers()) );
-		jsonQuestion.put("solutionIndex" , question.getIndex() );
-		jsonQuestion.put("tags", new JSONArray(question.getvalue()));
-		
+		jsonQuestion.put("answers", new JSONArray(question.getAnswerList()));
+		jsonQuestion.put("solutionIndex", question.getIndex());
+		jsonQuestion.put("tags", new JSONArray(question.getSetOfTags()));
+
 		return jsonQuestion;
 	}
-	
-	
 
 	private static String[] jsonArrayToStringArray(JSONArray array)
 			throws JSONException {

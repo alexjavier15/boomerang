@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * 
  * @author Noortch
- *
+ * 
  */
 public class QuizQuestion implements QuestionProvider {
 
@@ -16,7 +16,8 @@ public class QuizQuestion implements QuestionProvider {
 	private int solutionIndex;
 	private Set<String> tags;
 
-	public QuizQuestion(int id, String question, List<String> answers, int solIndex, Set<String> tags) {
+	public QuizQuestion(int id, String question, List<String> answers,
+			int solIndex, Set<String> tags) {
 		this.id = id;
 		this.question = question;
 		this.answers = answers;
@@ -42,6 +43,21 @@ public class QuizQuestion implements QuestionProvider {
 	@Override
 	public boolean checkAnswer(int sol) {
 		return sol == solutionIndex;
+	}
+
+	@Override
+	public int getID() {
+		return id;
+	}
+
+	@Override
+	public int getIndex() {
+		return solutionIndex;
+	}
+
+	@Override
+	public Set<String> getSetOfTags() {
+		return tags;
 	}
 
 }
