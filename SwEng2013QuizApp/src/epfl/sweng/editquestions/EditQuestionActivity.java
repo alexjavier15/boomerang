@@ -7,6 +7,11 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+/**
+ * 
+ * @author CanGuzelhan
+ * 
+ */
 public class EditQuestionActivity extends Activity {
 
 	@Override
