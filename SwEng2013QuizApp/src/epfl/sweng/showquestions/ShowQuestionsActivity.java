@@ -1,19 +1,20 @@
 package epfl.sweng.showquestions;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpResponseException;
 import org.json.JSONException;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.TextView;
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommunications;
@@ -27,12 +28,14 @@ import epfl.sweng.testing.TestingTransactions.TTChecks;
  * 
  */
 public class ShowQuestionsActivity extends Activity {
+	private TextView text;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_show_questions);
+		text = (TextView) findViewById(R.id.show_question);
 
 		fetchNewQuestion();
 
@@ -43,46 +46,14 @@ public class ShowQuestionsActivity extends Activity {
 	 * Launches the HTTPGET operation to display a new random question
 	 */
 	public void fetchNewQuestion() {
-		Intent startingIntent = getIntent();
+		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-		String quizQuestion = null;
-
-		HttpResponse response = null;
-
-		try {
-			response = new HttpCommsBackgroundTask().execute(
-					HttpCommunications.URL).get();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		if (response == null) {
-
-			quizQuestion = "No question to show";
-
+		if (networkInfo == null || !networkInfo.isConnected()) {
+			text.setText("You are currently not connected to a network.");
 		} else {
-
-			QuizQuestion randomNewQuestion = null;
-
-			try {
-				randomNewQuestion = JSONParser.parseJsonToQuiz(response);
-			} catch (HttpResponseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			new HttpCommsBackgroundTask().execute(HttpCommunications.URL);
 		}
-
 	}
 
 	@Override
@@ -103,21 +74,47 @@ public class ShowQuestionsActivity extends Activity {
 	}
 
 	private class HttpCommsBackgroundTask extends
-			AsyncTask<String, Void, HttpResponse> {
+			AsyncTask<String, Void, String> {
 
 		@Override
-		protected HttpResponse doInBackground(String... params) {
+		protected String doInBackground(String... params) {
+			String randomQuestion = null;
+			HttpResponse response = null;
+			QuizQuestion quizQuestion = null;
+
 			try {
-				HttpResponse response = HttpCommunications
-						.getHttpResponse(params[0]);
+				response = HttpCommunications.getHttpResponse(params[0]);
+
+				if (response != null) {
+					quizQuestion = JSONParser.parseJsonToQuiz(response);
+				}
+
+				if (quizQuestion != null) {
+					randomQuestion = quizQuestion.getQuestion();
+				}
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			return null;
+			return randomQuestion;
+		}
+
+		/**
+		 * Set the text on the screen with the fetched random question
+		 */
+		@Override
+		protected void onPostExecute(String result) {
+			if (result == null) {
+				text.setText("Aucune question n'a pu etre obtenue.");
+			} else {
+				text.setText(result);
+			}
 		}
 	}
 
