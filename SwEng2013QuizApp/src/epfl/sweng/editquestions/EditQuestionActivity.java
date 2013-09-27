@@ -27,6 +27,10 @@ public class EditQuestionActivity extends Activity {
 		return true;
 	}
 
+	/**
+	 * Called when the user clicks on the button labeled "Submit."
+	 * @param view
+	 */
 	public void initialState(View view) {
 		Toast.makeText(this, "You submitted successfully a question!",
 				Toast.LENGTH_SHORT).show();
