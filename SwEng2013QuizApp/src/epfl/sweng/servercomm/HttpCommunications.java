@@ -26,7 +26,7 @@ public class HttpCommunications {
 
 	public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
 
-	public HttpResponse getHttpResponse(String urlString)
+	public static HttpResponse getHttpResponse(String urlString)
 			throws ClientProtocolException, IOException {
 		HttpClient client = SwengHttpClientFactory.getInstance();
 
