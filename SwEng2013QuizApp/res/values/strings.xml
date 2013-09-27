@@ -8,5 +8,9 @@
     <string name="submit_question">Submit a quiz question.</string>
     <string name="title_activity_show_questions">ShowQuestionsActivity</string>
     <string name="title_activity_edit_question">EditQuestionActivity</string>
+    <string name="edit_question">Type in the question’s text body.</string>
+    <string name="submit_button">Submit.</string>
+    <string name="edit_tags">Type in the question’s tags.</string>
+    <string name="edit_answer">Type in the answer.</string>
 
 </resources>
