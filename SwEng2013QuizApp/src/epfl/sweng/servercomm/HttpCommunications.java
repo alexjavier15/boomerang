@@ -1,6 +1,7 @@
 package epfl.sweng.servercomm;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,6 +11,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 
 import org.json.JSONArray;
@@ -25,6 +28,7 @@ import epfl.sweng.questions.QuizQuestion;
 public class HttpCommunications {
 
 	public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
+	public final static String URLPUSH = " https://sweng-quiz.appspot.com/quizquestions";
 
 	public static HttpResponse getHttpResponse(String urlString)
 			throws ClientProtocolException, IOException {
@@ -32,6 +36,23 @@ public class HttpCommunications {
 
 		HttpGet request = new HttpGet(urlString);
 		return client.execute(request);
+	}
+
+	public static boolean postQuestion(String url, JSONObject question)
+			throws JSONException, IOException {
+		if (question == null) {
+			throw new JSONException("This is not a valid question");
+		}
+
+		HttpPost post = new HttpPost(url);
+		post.setEntity(new StringEntity(question.toString(4)));
+		post.setHeader("Content-type", "application/json");
+
+		BasicResponseHandler handler = new BasicResponseHandler();
+		String response = SwengHttpClientFactory.getInstance().execute(post,
+				handler);
+
+		return response.equals(201);
 	}
 
 	public QuizQuestion parseJsonToQuiz(HttpResponse response)

@@ -35,6 +35,11 @@ public class QuizQuestion implements QuestionProvider {
 	}
 
 	@Override
+	public List<String> getAnswerList() {
+		return answers;
+	}
+
+	@Override
 	public boolean checkAnswer(int sol) {
 		return sol == solutionIndex;
 	}
