@@ -10,13 +10,13 @@ import java.util.Set;
  */
 public class QuizQuestion implements QuestionProvider {
 
-	private int id;
+	private long id;
 	private String question;
 	private List<String> answers;
 	private int solutionIndex;
 	private Set<String> tags;
 
-	public QuizQuestion(int id, String question, List<String> answers,
+	public QuizQuestion(long id, String question, List<String> answers,
 			int solIndex, Set<String> tags) {
 		this.id = id;
 		this.question = question;
@@ -46,7 +46,7 @@ public class QuizQuestion implements QuestionProvider {
 	}
 
 	@Override
-	public int getID() {
+	public long getID() {
 		return id;
 	}
 

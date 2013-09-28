@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public interface QuestionProvider {
 
-	public int getID();
+	public long getID();
 
 	public String getQuestion();
 
