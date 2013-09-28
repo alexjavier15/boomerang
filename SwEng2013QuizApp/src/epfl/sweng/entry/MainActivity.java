@@ -2,6 +2,7 @@ package epfl.sweng.entry;
 
 import epfl.sweng.R;
 import epfl.sweng.editquestions.EditQuestionActivity;
+import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestingTransactions;
 import epfl.sweng.testing.TestingTransactions.TTChecks;
 import android.app.Activity;
@@ -32,10 +33,22 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
+	/**
+	 * Launches the new Activity ShowQuestionsActivity to display a random question
+	 * @param view
+	 */
 	public void askQuestion(View view) {
-
+		Toast.makeText(this, "You are on the page to show a random question!",
+				Toast.LENGTH_SHORT).show();
+		Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
+		startActivity(showQuestionActivityIntent);
 	}
 
+	/**
+	 * Launches the new Activity EditQuestionActivity to permit the user to submit a new
+	 * question to the server
+	 * @param view
+	 */
 	public void submitQuestion(View view) {
 		Toast.makeText(this, "You are on the page to submit a question!",
 				Toast.LENGTH_LONG).show();

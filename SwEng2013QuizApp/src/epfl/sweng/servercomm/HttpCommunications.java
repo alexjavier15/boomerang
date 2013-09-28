@@ -1,29 +1,36 @@
 package epfl.sweng.servercomm;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.json.JSONArray;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * @author LorenzoLeon
- *
+ * @author LorenzoLeon & Noortch
+ * 
  */
 public class HttpCommunications {
 
 	public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
+	public final static String URLPUSH = " https://sweng-quiz.appspot.com/quizquestions";
 
-	public HttpResponse getHttpResponse(String urlString)
+	/**
+	 * Gets an HttpResponse from the server in parameter
+	 * 
+	 * @param urlString
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public static HttpResponse getHttpResponse(String urlString)
 			throws ClientProtocolException, IOException {
 		HttpClient client = SwengHttpClientFactory.getInstance();
 
@@ -31,31 +38,31 @@ public class HttpCommunications {
 		return client.execute(request);
 	}
 
-	public QuizQuestion parseJsonToQuiz(HttpResponse response)
-			throws HttpResponseException, JSONException, IOException {
-
-		BasicResponseHandler responseHandler = new BasicResponseHandler();
-		JSONObject parser = new JSONObject(
-				responseHandler.handleResponse(response));
-		int id = parser.getInt("id");
-		String question = parser.getString("question");
-		String[] answers = jsonArrayToStringArray(parser
-				.getJSONArray("answers"));
-		int solutionIndex = parser.getInt("solutionIndex");
-		String[] tags = jsonArrayToStringArray(parser.getJSONArray("tags"));
-		Set<String> set = new HashSet<String>(Arrays.asList(tags));
-		return new QuizQuestions(id, question, Arrays.asList(answers),
-				solutionIndex, set);
-
-	}
-
-	private String[] jsonArrayToStringArray(JSONArray array)
-			throws JSONException {
-		int numAnswers = array.length();
-		String[] newStringArray = new String[numAnswers];
-		for (int i = 0; i <= numAnswers; i++) {
-			newStringArray[i] = array.getString(i);
+	/**
+	 * Posts a JSONObject question on the server in parameter
+	 * Returns true if the question is valid, false if not
+	 * 
+	 * @param url
+	 * @param question
+	 * @return
+	 * @throws JSONException
+	 * @throws IOException
+	 */
+	public static boolean postQuestion(String url, JSONObject question)
+			throws JSONException, IOException {
+		if (question == null) {
+			throw new JSONException("This is not a valid question");
 		}
-		return newStringArray;
+
+		HttpPost post = new HttpPost(url);
+		post.setEntity(new StringEntity(question.toString(4)));
+		post.setHeader("Content-type", "application/json");
+
+		BasicResponseHandler handler = new BasicResponseHandler();
+		String response = SwengHttpClientFactory.getInstance().execute(post,
+				handler);
+
+		return response.equals(201);
 	}
+
 }
