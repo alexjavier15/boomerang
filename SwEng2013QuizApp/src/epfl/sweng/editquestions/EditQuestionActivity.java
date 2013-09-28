@@ -3,8 +3,12 @@ package epfl.sweng.editquestions;
 import epfl.sweng.R;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 /**
@@ -18,6 +22,7 @@ public class EditQuestionActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_question);
+		this.newAnswer(null);
 	}
 
 	@Override
@@ -25,6 +30,24 @@ public class EditQuestionActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.edit_question, menu);
 		return true;
+	}
+
+	public void newAnswer(View view) {
+		LayoutInflater inflater = (LayoutInflater) this
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View newAnswerBlock = inflater.inflate(R.layout.activity_new_answer,
+				null);
+		LinearLayout linearLayout = (LinearLayout) findViewById(R.id.answersBlock);
+		linearLayout.addView(newAnswerBlock);
+	}
+
+	public void checkAnswer(View view) {
+		Button button = (Button) findViewById(R.id.edit_buttonProperty);
+		button.setText(R.string.heavy_check_mark);
+	}
+
+	public void removeAnswer(View view) {
+
 	}
 
 	public void initialState(View view) {
