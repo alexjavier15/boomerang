@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <Button
+        android:id="@+id/edit_buttonProperty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/heavy_ballot_x" >
+    </Button>
+
+    <EditText
+        android:id="@+id/edit_answerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/edit_answer" />
+
+    <Button
+        android:id="@+id/edit_cancelAnswer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hyphen_minus" >
+    </Button>
+
+</LinearLayout>
