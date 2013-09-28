@@ -16,7 +16,7 @@ import android.view.View;
 
 /**
  * 
- * @author AlbanMarguet
+ * @author AlbanMarguet & LorenzoLeon
  * 
  */
 public class ShowQuestionsActivity extends Activity {
@@ -40,19 +40,17 @@ public class ShowQuestionsActivity extends Activity {
 
 		String quizzQuestion = null;
 
-		HttpResponse reponse = null;
-		try {
-			reponse = HttpCommunications
-					.getHttpResponse(HttpCommunications.URL);
-		} catch (IOException e) {
+		HttpResponse response = new HttpCommsBackgroundTask().execute(
+				HttpCommunications.URL).get();
 
-			e.printStackTrace();
-		}
-		if (reponse == null) {
+		if (response == null) {
 
-			quizzQuestion = "No question to show";
+			quizQuestion = "No question to show";
 
 		} else {
+
+			QuizQuestion randomNewQuestion = JSONParser
+					.parseJsonToQuiz(response);
 
 		}
 
@@ -71,6 +69,17 @@ public class ShowQuestionsActivity extends Activity {
 	 */
 	public void askNextQuestion(View view) {
 		fetchNewQuestion();
+	}
+
+	private class HttpCommsBackgroundTask extends
+			AsyncTask<String, Void, HttpResponse> {
+
+		@Override
+		protected HttpResponse doInBackground(String... params) {
+			HttpResponse response = HttpCommunications
+					.getHttpResponse(params[0]);
+			return null;
+		}
 	}
 
 }
