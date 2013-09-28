@@ -37,7 +37,6 @@ public class EditQuestionActivity extends Activity {
 				null);
 		LinearLayout linearLayout = (LinearLayout) findViewById(R.id.answersBlock);
 		linearLayout.addView(newAnswerBlock);
-
 	}
 
 	public void checkAnswer(View view) {
