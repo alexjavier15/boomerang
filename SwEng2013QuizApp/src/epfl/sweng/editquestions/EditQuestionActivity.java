@@ -1,11 +1,8 @@
 package epfl.sweng.editquestions;
 
-import java.util.ArrayList;
-
 import epfl.sweng.R;
 import android.os.Bundle;
 import android.app.Activity;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -19,8 +16,6 @@ import android.widget.Toast;
  * 
  */
 public class EditQuestionActivity extends Activity {
-
-	private ArrayList<Button> buttons = new ArrayList<Button>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +38,6 @@ public class EditQuestionActivity extends Activity {
 		LinearLayout linearLayout = (LinearLayout) findViewById(R.id.answersBlock);
 		linearLayout.addView(newAnswerBlock);
 
-		buttons.add((Button) newAnswerBlock.findViewById(R.id.answersBlock));
 	}
 
 	public void checkAnswer(View view) {
