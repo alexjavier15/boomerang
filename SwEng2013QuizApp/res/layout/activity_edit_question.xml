@@ -23,7 +23,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:text="@string/plus_sign" />
+        android:text="@string/plus_sign"
+        android:onClick="addNewSlot" />
 
     <EditText
         android:id="@+id/edit_tagsText"

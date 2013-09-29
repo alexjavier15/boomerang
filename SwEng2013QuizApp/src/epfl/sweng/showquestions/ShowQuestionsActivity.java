@@ -65,6 +65,11 @@ public class ShowQuestionsActivity extends Activity {
 							lastAnswer.length() - 1);
 					lastChild.setText(lastAnswer);
 				}
+			
+				
+				
+				
+				
 
 				String result = getResources().getString(
 						R.string.heavy_ballot_x);
@@ -181,6 +186,7 @@ public class ShowQuestionsActivity extends Activity {
 							result.getAnswers());
 
 					answerChoices.setAdapter(adapter);
+
 					adapter.setNotifyOnChange(true);
 
 				}

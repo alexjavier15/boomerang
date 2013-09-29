@@ -88,7 +88,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 		Answer answer = entries.get(position);
 		if (answer != null) {
 			holder.checkButton.setText(answer.getChecked());
-			holder.answerText.setText(answer.getAnswer());
+			holder.answerText.setText(holder.answerText.getText());
 			holder.removeButton.setText(answer.getRemoved());
 		}
 		return view;

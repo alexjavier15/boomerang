@@ -32,7 +32,9 @@ public class EditQuestionActivity extends Activity {
 		fetch = new ArrayList<Answer>();
 		fetch.add(firstAnswer);
 		adapter = new AnswerAdapter(this, R.id.listview, fetch);
+		adapter.notifyDataSetChanged();
 		listView.setAdapter(adapter);
+	
 
 		findViewById(R.id.newAnswer).setOnClickListener(new OnClickListener() {
 
@@ -42,7 +44,10 @@ public class EditQuestionActivity extends Activity {
 						R.string.heavy_ballot_x), null, getResources()
 						.getString(R.string.hyphen_minus));
 				fetch.add(temp);
+				
+				
 				adapter.notifyDataSetChanged();
+			
 			}
 		});
 	}
