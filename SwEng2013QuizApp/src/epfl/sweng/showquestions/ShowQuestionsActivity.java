@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import epfl.sweng.R;
@@ -74,6 +75,8 @@ public class ShowQuestionsActivity extends Activity {
 				if (currrentQuestion.checkAnswer(selectedAnswer)) {
 					result = getResources()
 							.getString(R.string.heavy_check_mark);
+					((Button)findViewById(R.id.next_question)).setClickable(true);
+					
 				}
 
 				String newText = text.getText().toString() + " " + result;
