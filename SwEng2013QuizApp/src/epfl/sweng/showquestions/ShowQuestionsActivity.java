@@ -19,6 +19,7 @@ import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.JSONParser;
+import epfl.sweng.testing.Debug;
 import epfl.sweng.testing.TestingTransactions;
 import epfl.sweng.testing.TestingTransactions.TTChecks;
 
@@ -33,12 +34,12 @@ public class ShowQuestionsActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.activity_show_questions);
+
 		text = (TextView) findViewById(R.id.show_question);
+		Debug.out(text);
 
 		fetchNewQuestion();
-
 		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 	}
 
@@ -52,6 +53,7 @@ public class ShowQuestionsActivity extends Activity {
 		if (networkInfo == null || !networkInfo.isConnected()) {
 			text.setText("You are currently not connected to a network.");
 		} else {
+			Debug.out("starting fetching");
 			new HttpCommsBackgroundTask().execute(HttpCommunications.URL);
 		}
 	}
@@ -110,10 +112,18 @@ public class ShowQuestionsActivity extends Activity {
 		 */
 		@Override
 		protected void onPostExecute(String result) {
+			Debug.out(result);
+
 			if (result == null) {
 				text.setText("Aucune question n'a pu etre obtenue.");
 			} else {
-				text.setText(result);
+				if (text == null) {
+					Debug.out("null textview");
+				}
+
+				else {
+					text.setText(result);
+				}
 			}
 		}
 	}
