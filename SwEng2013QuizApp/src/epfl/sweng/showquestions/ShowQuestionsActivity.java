@@ -6,7 +6,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
-import android.R.string;
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -36,9 +35,7 @@ import epfl.sweng.testing.TestingTransactions.TTChecks;
  */
 public class ShowQuestionsActivity extends Activity {
 	private TextView text;
-
 	private ListView answerChoices;
-
 	private ArrayAdapter<String> adapter;
 	private QuizQuestion currrentQuestion;
 	private int lastChoice = -1;
@@ -75,8 +72,9 @@ public class ShowQuestionsActivity extends Activity {
 				if (currrentQuestion.checkAnswer(selectedAnswer)) {
 					result = getResources()
 							.getString(R.string.heavy_check_mark);
-					((Button)findViewById(R.id.next_question)).setClickable(true);
-					
+					((Button) findViewById(R.id.next_question))
+							.setClickable(true);
+
 				}
 
 				String newText = text.getText().toString() + " " + result;
@@ -94,10 +92,6 @@ public class ShowQuestionsActivity extends Activity {
 	/**
 	 * Launches the HTTPGET operation to display a new random question
 	 */
-
-	public void onechecked() {
-
-	}
 
 	public void fetchNewQuestion() {
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -187,7 +181,6 @@ public class ShowQuestionsActivity extends Activity {
 							result.getAnswers());
 
 					answerChoices.setAdapter(adapter);
-
 					adapter.setNotifyOnChange(true);
 
 				}
