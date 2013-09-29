@@ -21,6 +21,14 @@
             android:layout_height="wrap_content"
             android:onClick="askNextQuestion"
             android:text="@string/next_question" />
+
+        <LinearLayout
+            android:id="@+id/answer_choices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+        </LinearLayout>
+
     </LinearLayout>
 
 </ScrollView>

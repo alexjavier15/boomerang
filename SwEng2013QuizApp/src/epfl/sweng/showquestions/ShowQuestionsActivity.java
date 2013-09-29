@@ -12,8 +12,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
@@ -30,11 +32,20 @@ import epfl.sweng.testing.TestingTransactions.TTChecks;
  */
 public class ShowQuestionsActivity extends Activity {
 	private TextView text;
+	private View newAnswerBlock;
+	private LinearLayout answerChoice;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show_questions);
+		LayoutInflater inflater = (LayoutInflater) this.getLayoutInflater();
+		
+		
+		newAnswerBlock = inflater.inflate(R.layout.activity_quiz_option,
+				null);
+		answerChoice = (LinearLayout) findViewById(R.id.answersBlock);
+		
 
 		text = (TextView) findViewById(R.id.show_question);
 		Debug.out(text);
@@ -76,10 +87,10 @@ public class ShowQuestionsActivity extends Activity {
 	}
 
 	private class HttpCommsBackgroundTask extends
-			AsyncTask<String, Void, String> {
+			AsyncTask<String, Void, QuizQuestion> {
 
 		@Override
-		protected String doInBackground(String... params) {
+		protected QuizQuestion doInBackground(String... params) {
 			String randomQuestion = null;
 			HttpResponse response = null;
 			QuizQuestion quizQuestion = null;
@@ -91,9 +102,6 @@ public class ShowQuestionsActivity extends Activity {
 					quizQuestion = JSONParser.parseJsonToQuiz(response);
 				}
 
-				if (quizQuestion != null) {
-					randomQuestion = quizQuestion.getQuestion();
-				}
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -104,14 +112,14 @@ public class ShowQuestionsActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return randomQuestion;
+			return quizQuestion;
 		}
 
 		/**
 		 * Set the text on the screen with the fetched random question
 		 */
 		@Override
-		protected void onPostExecute(String result) {
+		protected void onPostExecute(QuizQuestion result) {
 			Debug.out(result);
 
 			if (result == null) {
@@ -122,7 +130,7 @@ public class ShowQuestionsActivity extends Activity {
 				}
 
 				else {
-					text.setText(result);
+					text.setText(result.getQuestion());
 				}
 			}
 		}
