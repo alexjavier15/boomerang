@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import epfl.sweng.R;
@@ -34,18 +35,16 @@ public class ShowQuestionsActivity extends Activity {
 	private TextView text;
 	private View newAnswerBlock;
 	private LinearLayout answerChoice;
+	LayoutInflater inflater;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show_questions);
-		LayoutInflater inflater = (LayoutInflater) this.getLayoutInflater();
+		inflater = (LayoutInflater) this.getLayoutInflater();
+
 		
-		
-		newAnswerBlock = inflater.inflate(R.layout.activity_quiz_option,
-				null);
-		answerChoice = (LinearLayout) findViewById(R.id.answersBlock);
-		
+		answerChoice = (LinearLayout) findViewById(R.id.answer_choices);
 
 		text = (TextView) findViewById(R.id.show_question);
 		Debug.out(text);
@@ -91,7 +90,7 @@ public class ShowQuestionsActivity extends Activity {
 
 		@Override
 		protected QuizQuestion doInBackground(String... params) {
-			String randomQuestion = null;
+
 			HttpResponse response = null;
 			QuizQuestion quizQuestion = null;
 
@@ -131,6 +130,16 @@ public class ShowQuestionsActivity extends Activity {
 
 				else {
 					text.setText(result.getQuestion());
+					for (String answer : result.getAnswers()) {
+						
+						newAnswerBlock = inflater.inflate(R.layout.activity_quiz_option, null);
+						CheckBox checkBox= (CheckBox) newAnswerBlock.findViewById(R.id.answer_choice);
+						checkBox.setText(answer);
+
+						answerChoice.addView(newAnswerBlock);
+
+					}
+
 				}
 			}
 		}
