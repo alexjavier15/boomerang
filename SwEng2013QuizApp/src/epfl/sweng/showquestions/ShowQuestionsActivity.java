@@ -39,7 +39,8 @@ public class ShowQuestionsActivity extends Activity {
 	private ListView answerChoices;
 
 	private ArrayAdapter<String> adapter;
-    private QuizQuestion currrentQuestion;
+	private QuizQuestion currrentQuestion;
+	private int lastChoice = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,24 +51,34 @@ public class ShowQuestionsActivity extends Activity {
 
 		text = (TextView) findViewById(R.id.show_question);
 		Debug.out(text);
-		
-	
 
 		answerChoices.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				ListView list = (ListView) arg0;
-				TextView text = (TextView) list.getChildAt(arg2);
-				String result= getResources().getString(R.string.heavy_ballot_x);
-				
-				if (currrentQuestion.checkAnswer(arg2)){
-					result = getResources().getString(R.string.heavy_check_mark);
+			public void onItemClick(AdapterView<?> listAdapter, View view,
+					int selectedAnswer, long arg3) {
+				ListView list = (ListView) listAdapter;
+				TextView text = (TextView) list.getChildAt(selectedAnswer);
+				if (lastChoice != -1) {
+					TextView lastChild = ((TextView) list
+							.getChildAt(lastChoice));
+					String lastAnswer = lastChild.getText().toString();
+					lastAnswer = lastAnswer.substring(0,
+							lastAnswer.length() - 1);
+					lastChild.setText(lastAnswer);
 				}
-				
-				String newText =  text.getText().toString() + " " + result;
+
+				String result = getResources().getString(
+						R.string.heavy_ballot_x);
+
+				if (currrentQuestion.checkAnswer(selectedAnswer)) {
+					result = getResources()
+							.getString(R.string.heavy_check_mark);
+				}
+
+				String newText = text.getText().toString() + " " + result;
 				text.setText(newText);
+				lastChoice = selectedAnswer;
 
 			}
 
@@ -77,8 +88,6 @@ public class ShowQuestionsActivity extends Activity {
 		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 	}
 
-	
-	
 	/**
 	 * Launches the HTTPGET operation to display a new random question
 	 */
@@ -166,7 +175,7 @@ public class ShowQuestionsActivity extends Activity {
 				}
 
 				else {
-					
+
 					currrentQuestion = result;
 
 					text.setText(result.getQuestion());
