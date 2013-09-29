@@ -6,17 +6,19 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
+import android.R.string;
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
@@ -33,29 +35,58 @@ import epfl.sweng.testing.TestingTransactions.TTChecks;
  */
 public class ShowQuestionsActivity extends Activity {
 	private TextView text;
-	private View newAnswerBlock;
-	private LinearLayout answerChoice;
-	LayoutInflater inflater;
+
+	private ListView answerChoices;
+
+	private ArrayAdapter<String> adapter;
+    private QuizQuestion currrentQuestion;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show_questions);
-		inflater = (LayoutInflater) this.getLayoutInflater();
 
-		
-		answerChoice = (LinearLayout) findViewById(R.id.answer_choices);
+		answerChoices = (ListView) findViewById(R.id.answer_choices);
 
 		text = (TextView) findViewById(R.id.show_question);
 		Debug.out(text);
+		
+	
+
+		answerChoices.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				ListView list = (ListView) arg0;
+				TextView text = (TextView) list.getChildAt(arg2);
+				String result= getResources().getString(R.string.heavy_ballot_x);
+				
+				if (currrentQuestion.checkAnswer(arg2)){
+					result = getResources().getString(R.string.heavy_check_mark);
+				}
+				
+				String newText =  text.getText().toString() + " " + result;
+				text.setText(newText);
+
+			}
+
+		});
 
 		fetchNewQuestion();
 		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 	}
 
+	
+	
 	/**
 	 * Launches the HTTPGET operation to display a new random question
 	 */
+
+	public void onechecked() {
+
+	}
+
 	public void fetchNewQuestion() {
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -64,7 +95,7 @@ public class ShowQuestionsActivity extends Activity {
 			text.setText("You are currently not connected to a network.");
 		} else {
 			Debug.out("starting fetching");
-			new HttpCommsBackgroundTask().execute(HttpCommunications.URL);
+			new HttpCommsBackgroundTask(this).execute(HttpCommunications.URL);
 		}
 	}
 
@@ -87,6 +118,12 @@ public class ShowQuestionsActivity extends Activity {
 
 	private class HttpCommsBackgroundTask extends
 			AsyncTask<String, Void, QuizQuestion> {
+		private ShowQuestionsActivity activity;
+
+		public HttpCommsBackgroundTask(ShowQuestionsActivity activity) {
+			super();
+			this.activity = activity;
+		}
 
 		@Override
 		protected QuizQuestion doInBackground(String... params) {
@@ -129,16 +166,17 @@ public class ShowQuestionsActivity extends Activity {
 				}
 
 				else {
+					
+					currrentQuestion = result;
+
 					text.setText(result.getQuestion());
-					for (String answer : result.getAnswers()) {
-						
-						newAnswerBlock = inflater.inflate(R.layout.activity_quiz_option, null);
-						CheckBox checkBox= (CheckBox) newAnswerBlock.findViewById(R.id.answer_choice);
-						checkBox.setText(answer);
+					adapter = new ArrayAdapter<String>(activity,
+							android.R.layout.simple_list_item_1,
+							result.getAnswers());
 
-						answerChoice.addView(newAnswerBlock);
+					answerChoices.setAdapter(adapter);
 
-					}
+					adapter.setNotifyOnChange(true);
 
 				}
 			}
