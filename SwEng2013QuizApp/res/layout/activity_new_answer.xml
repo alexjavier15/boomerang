@@ -9,7 +9,6 @@
         android:id="@+id/edit_buttonProperty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="checkAnswer"
         android:text="@string/heavy_ballot_x" >
     </Button>
 
@@ -23,7 +22,6 @@
         android:id="@+id/edit_cancelAnswer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="removeAnswer"
         android:text="@string/hyphen_minus" >
     </Button>
 

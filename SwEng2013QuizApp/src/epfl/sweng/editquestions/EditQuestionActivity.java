@@ -1,13 +1,13 @@
 package epfl.sweng.editquestions;
 
+import java.util.ArrayList;
 import epfl.sweng.R;
 import android.os.Bundle;
 import android.app.Activity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
+import android.view.View.OnClickListener;
+import android.widget.ListView;
 import android.widget.Toast;
 
 /**
@@ -16,12 +16,31 @@ import android.widget.Toast;
  * 
  */
 public class EditQuestionActivity extends Activity {
+	private AnswerAdapter adapter;
+	private ArrayList<Answer> fetch;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_question);
-		this.newAnswer(null);
+
+		final ListView listView = (ListView) findViewById(R.id.listview);
+		Answer firstAnswer = new Answer("✘", null, "-");
+
+		fetch = new ArrayList<Answer>();
+		fetch.add(firstAnswer);
+		adapter = new AnswerAdapter(this, R.id.listview, fetch);
+		listView.setAdapter(adapter);
+
+		findViewById(R.id.newAnswer).setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Answer temp = new Answer("✘", null, "-");
+				fetch.add(temp);
+				adapter.notifyDataSetChanged();
+			}
+		});
 	}
 
 	@Override
@@ -29,23 +48,6 @@ public class EditQuestionActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.edit_question, menu);
 		return true;
-	}
-
-	public void newAnswer(View view) {
-		LayoutInflater inflater = (LayoutInflater) this.getLayoutInflater();
-		View newAnswerBlock = inflater.inflate(R.layout.activity_new_answer,
-				null);
-		LinearLayout linearLayout = (LinearLayout) findViewById(R.id.answersBlock);
-		linearLayout.addView(newAnswerBlock);
-	}
-
-	public void checkAnswer(View view) {
-		Button button = (Button) findViewById(R.id.edit_buttonProperty);
-		button.setText(R.string.heavy_check_mark);
-	}
-
-	public void removeAnswer(View view) {
-
 	}
 
 	/**
