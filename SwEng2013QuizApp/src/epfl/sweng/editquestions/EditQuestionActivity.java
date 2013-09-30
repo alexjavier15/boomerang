@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,18 +33,6 @@ public class EditQuestionActivity extends Activity {
 		adapter = new AnswerAdapter(this, R.id.listview, fetch);
 		adapter.notifyDataSetChanged();
 		listView.setAdapter(adapter);
-
-		findViewById(R.id.newAnswer).setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				Answer temp = new Answer(getResources().getString(
-						R.string.heavy_ballot_x), null, getResources()
-						.getString(R.string.hyphen_minus));
-				fetch.add(temp);
-				adapter.notifyDataSetChanged();
-			}
-		});
 	}
 
 	@Override
@@ -53,6 +40,14 @@ public class EditQuestionActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.edit_question, menu);
 		return true;
+	}
+
+	public void addNewSlot(View view) {
+		Answer temp = new Answer(getResources().getString(
+				R.string.heavy_ballot_x), null, getResources().getString(
+				R.string.hyphen_minus));
+		fetch.add(temp);
+		adapter.notifyDataSetChanged();
 	}
 
 	/**
