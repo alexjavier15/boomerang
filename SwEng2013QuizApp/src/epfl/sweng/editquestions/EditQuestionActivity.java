@@ -25,7 +25,9 @@ public class EditQuestionActivity extends Activity {
 		setContentView(R.layout.activity_edit_question);
 
 		final ListView listView = (ListView) findViewById(R.id.listview);
-		Answer firstAnswer = new Answer("✘", null, "-");
+		Answer firstAnswer = new Answer(getResources().getString(
+				R.string.heavy_ballot_x), null, getResources().getString(
+				R.string.hyphen_minus));
 
 		fetch = new ArrayList<Answer>();
 		fetch.add(firstAnswer);
@@ -36,7 +38,9 @@ public class EditQuestionActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Answer temp = new Answer("✘", null, "-");
+				Answer temp = new Answer(getResources().getString(
+						R.string.heavy_ballot_x), null, getResources()
+						.getString(R.string.hyphen_minus));
 				fetch.add(temp);
 				adapter.notifyDataSetChanged();
 			}

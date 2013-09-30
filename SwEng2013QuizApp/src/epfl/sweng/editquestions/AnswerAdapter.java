@@ -59,9 +59,12 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 			@Override
 			public void onClick(View v) {
 				for (Answer answer : entries) {
-					answer.setChecked("✘");
+					answer.setChecked(context.getResources().getString(
+							R.string.heavy_ballot_x));
 				}
-				entries.get(position).setChecked("✔");
+				entries.get(position).setChecked(
+						context.getResources().getString(
+								R.string.heavy_check_mark));
 				AnswerAdapter.this.notifyDataSetChanged();
 			}
 		});
