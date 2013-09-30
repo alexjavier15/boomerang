@@ -5,6 +5,11 @@ public class Answer {
 	private String answer;
 	private String removed;
 
+	/**
+	 * 
+	 * @author CanGuzelhan
+	 * 
+	 */
 	public Answer(String checked, String answer, String removed) {
 		this.checked = checked;
 		this.answer = answer;

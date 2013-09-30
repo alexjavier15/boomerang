@@ -12,6 +12,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/**
+ * 
+ * @author CanGuzelhan
+ * 
+ */
 public class AnswerAdapter extends ArrayAdapter<Answer> {
 	private Activity context;
 	private ArrayList<Answer> entries;
@@ -32,7 +37,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		View view = convertView;
-		ViewHolder holder;
+		final ViewHolder holder;
 		if (view == null) {
 			LayoutInflater inflater = context.getLayoutInflater();
 			view = inflater.inflate(R.layout.activity_new_answer, null);
