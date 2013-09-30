@@ -82,7 +82,7 @@ public class JSONParser {
 			throws JSONException {
 		int numAnswers = array.length();
 		String[] newStringArray = new String[numAnswers];
-		for (int i = 0; i <= numAnswers; i++) {
+		for (int i = 0; i < numAnswers; i++) {
 			newStringArray[i] = array.getString(i);
 		}
 		return newStringArray;
