@@ -136,6 +136,9 @@ public class ShowQuestionsActivity extends Activity {
 			this.activity = activity;
 		}
 
+		/**
+		 * Getting the question on the server asynchronously. Called by execute().
+		 */
 		@Override
 		protected QuizQuestion doInBackground(String... params) {
 
@@ -163,21 +166,22 @@ public class ShowQuestionsActivity extends Activity {
 		}
 
 		/**
-		 * Set the text on the screen with the fetched random question
+		 * Set the text on the screen with the fetched random question. 
+		 * Called by execute() right after doInBackground().
 		 */
 		@Override
 		protected void onPostExecute(QuizQuestion result) {
 			Debug.out(result);
 
 			if (result == null) {
-				text.setText("Aucune question n'a pu etre obtenue.");
+				text.setText("No question can be obtained !");
 			} else {
 				if (text == null) {
 					Debug.out("null textview");
 				}
 
 				else {
-
+					//We've got a satisfying result => treating it
 					currrentQuestion = result;
 
 					text.setText(result.getQuestion());
