@@ -1,8 +1,11 @@
 package epfl.sweng.editquestions;
 
 import java.util.ArrayList;
+
 import epfl.sweng.R;
+
 import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,6 +22,7 @@ import android.widget.Toast;
  */
 public class AnswerAdapter extends ArrayAdapter<Answer> {
 	private Activity context;
+	private LayoutInflater inflater;
 	private ArrayList<Answer> entries;
 
 	public static class ViewHolder {
@@ -32,15 +36,16 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 		super(context, resourceId, entries);
 		this.context = context;
 		this.entries = entries;
+		inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		View view = convertView;
-		final ViewHolder holder;
+		ViewHolder holder;
 		if (view == null) {
-			LayoutInflater inflater = context.getLayoutInflater();
-			view = inflater.inflate(R.layout.activity_new_answer, null);
+			view = inflater.inflate(R.layout.activity_answer_slot, null);
 			holder = new ViewHolder();
 			holder.checkButton = (Button) view
 					.findViewById(R.id.edit_buttonProperty);
@@ -85,7 +90,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 			}
 		});
 
-		Answer answer = entries.get(position);
+		final Answer answer = entries.get(position);
 		if (answer != null) {
 			holder.checkButton.setText(answer.getChecked());
 			holder.answerText.setText(holder.answerText.getText());

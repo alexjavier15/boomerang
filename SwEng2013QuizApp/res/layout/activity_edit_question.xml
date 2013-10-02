@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="fill_parent"
     android:orientation="vertical"
     tools:context=".EditQuestionActivity" >
 
@@ -14,12 +14,11 @@
 
     <ListView
         android:id="@+id/listview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
     </ListView>
 
     <Button
-        android:id="@+id/newAnswer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
@@ -41,8 +40,9 @@
         android:orientation="vertical" >
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="145dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center"
             android:layout_marginBottom="10dp"
             android:onClick="submitQuestion"
             android:text="@string/submit_button" />
