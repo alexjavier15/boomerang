@@ -65,11 +65,6 @@ public class ShowQuestionsActivity extends Activity {
 							lastAnswer.length() - 1);
 					lastChild.setText(lastAnswer);
 				}
-			
-				
-				
-				
-				
 
 				String result = getResources().getString(
 						R.string.heavy_ballot_x);
@@ -97,7 +92,6 @@ public class ShowQuestionsActivity extends Activity {
 	/**
 	 * Launches the HTTPGET operation to display a new random question
 	 */
-
 	public void fetchNewQuestion() {
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -137,7 +131,8 @@ public class ShowQuestionsActivity extends Activity {
 		}
 
 		/**
-		 * Getting the question on the server asynchronously. Called by execute().
+		 * Getting the question on the server asynchronously. Called by
+		 * execute().
 		 */
 		@Override
 		protected QuizQuestion doInBackground(String... params) {
@@ -166,8 +161,8 @@ public class ShowQuestionsActivity extends Activity {
 		}
 
 		/**
-		 * Set the text on the screen with the fetched random question. 
-		 * Called by execute() right after doInBackground().
+		 * Set the text on the screen with the fetched random question. Called
+		 * by execute() right after doInBackground().
 		 */
 		@Override
 		protected void onPostExecute(QuizQuestion result) {
@@ -181,7 +176,7 @@ public class ShowQuestionsActivity extends Activity {
 				}
 
 				else {
-					//We've got a satisfying result => treating it
+					// We've got a satisfying result => treating it
 					currrentQuestion = result;
 
 					text.setText(result.getQuestion());
