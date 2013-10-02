@@ -18,7 +18,7 @@
         android:onClick="askNextQuestion"
         android:clickable="false"
         android:text="@string/next_question" />
-
+    
     <ListView
         android:id="@+id/answer_choices"
         android:layout_width="match_parent"
