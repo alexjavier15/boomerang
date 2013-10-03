@@ -2,7 +2,9 @@ package epfl.sweng.editquestions;
 
 import java.util.ArrayList;
 import epfl.sweng.R;
+import epfl.sweng.testing.Debug;
 import android.app.Activity;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -10,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 /**
@@ -19,14 +22,32 @@ import android.widget.Toast;
  */
 public class AnswerAdapter extends ArrayAdapter<Answer> {
 	private Activity context;
-	private ArrayList<Answer> entries;
-	
-	
+	private View resource;
 
-	public static class ViewHolder {
+	public ArrayList<Answer> getEntries() {
+		return entries;
+
+	}
+
+	private ArrayList<Answer> entries;
+
+	public class ViewHolder {
 		public Button checkButton;
 		public EditText answerText;
 		public Button removeButton;
+
+		public Button getCheckButton() {
+			return checkButton;
+		}
+
+		public EditText getAnswerText() {
+			return answerText;
+		}
+
+		public Button getRemoveButton() {
+			return removeButton;
+		}
+
 	}
 
 	public AnswerAdapter(Activity context, int resourceId,
@@ -34,11 +55,12 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 		super(context, resourceId, entries);
 		this.context = context;
 		this.entries = entries;
+		resource = context.findViewById(resourceId);
 	}
 
 	@Override
-	public View getView(final int position, View convertView, ViewGroup parent) {
-		View view = convertView;
+	public View getView(final int position, View view, ViewGroup parent) {
+
 		final ViewHolder holder;
 		if (view == null) {
 			LayoutInflater inflater = context.getLayoutInflater();
@@ -67,6 +89,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 				entries.get(position).setChecked(
 						context.getResources().getString(
 								R.string.heavy_check_mark));
+				
 				AnswerAdapter.this.notifyDataSetChanged();
 			}
 		});
@@ -89,11 +112,39 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
 		Answer answer = entries.get(position);
 		if (answer != null) {
-			entries.get(position).setAnswer(holder.answerText.getText().toString());
+
 			holder.checkButton.setText(answer.getChecked());
-			holder.answerText.setText(holder.answerText.getText());
+			holder.answerText.setText(answer.getAnswer());
 			holder.removeButton.setText(answer.getRemoved());
+
 		}
 		return view;
+	}
+
+	
+	
+	
+	@Override	
+	public void notifyDataSetChanged() {
+	
+		ListView listView = (ListView)this.resource;
+		
+		int size = listView.getChildCount();
+		for (int i = 0; i < size; i++) {
+			View view = listView.getChildAt(i);
+			ViewHolder holder = (ViewHolder) view.getTag();
+			Answer currentAnswer = entries.get(i);
+			currentAnswer
+					.setAnswer(holder.getAnswerText().getText().toString());
+			
+			Debug.out(holder.getAnswerText() + "UPDATING..");
+				
+			super.notifyDataSetChanged();
+			
+			
+
+		}
+
+		super.notifyDataSetChanged();
 	}
 }

@@ -2,7 +2,10 @@ package epfl.sweng.editquestions;
 
 import java.util.ArrayList;
 import epfl.sweng.R;
+import epfl.sweng.editquestions.AnswerAdapter.ViewHolder;
+import epfl.sweng.testing.Debug;
 import android.os.Bundle;
+
 import android.app.Activity;
 import android.view.Menu;
 import android.view.View;
@@ -18,13 +21,13 @@ import android.widget.Toast;
 public class EditQuestionActivity extends Activity {
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch;
+	private ListView listView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_question);
-
-		final ListView listView = (ListView) findViewById(R.id.listview);
+        listView = (ListView) findViewById(R.id.listview);
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), null, getResources().getString(
 				R.string.hyphen_minus));
@@ -32,7 +35,7 @@ public class EditQuestionActivity extends Activity {
 		fetch = new ArrayList<Answer>();
 		fetch.add(firstAnswer);
 		adapter = new AnswerAdapter(this, R.id.listview, fetch);
-		adapter.notifyDataSetChanged();
+		adapter.setNotifyOnChange(true);
 		listView.setAdapter(adapter);
 	}
 
@@ -49,6 +52,7 @@ public class EditQuestionActivity extends Activity {
 				R.string.hyphen_minus));
 		fetch.add(temp);
 		adapter.notifyDataSetChanged();
+	
 	}
 
 	/**
@@ -57,6 +61,7 @@ public class EditQuestionActivity extends Activity {
 	 * @param view
 	 */
 	public void submitQuestion(View view) {
+		adapter.notifyDataSetChanged();
 		if (isValid()) {
 			Toast.makeText(this, "Your submission was successful!",
 					Toast.LENGTH_SHORT).show();
@@ -76,7 +81,11 @@ public class EditQuestionActivity extends Activity {
 				|| fetch.size() < 2) {
 			return false;
 		}
+		
+		
 		for (Answer answer : fetch) {
+		;
+
 			if (answer.getChecked().equals(
 					getResources().getString(R.string.heavy_check_mark))) {
 				correct++;
