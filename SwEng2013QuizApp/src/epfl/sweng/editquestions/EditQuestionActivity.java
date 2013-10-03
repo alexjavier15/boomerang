@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -55,8 +56,35 @@ public class EditQuestionActivity extends Activity {
 	 * 
 	 * @param view
 	 */
-	public void initialState(View view) {
-		Toast.makeText(this, "You submitted successfully a question!",
-				Toast.LENGTH_SHORT).show();
+	public void submitQuestion(View view) {
+		if (isValid()) {
+			Toast.makeText(this, "Your submission was successful!",
+					Toast.LENGTH_SHORT).show();
+		} else {
+			Toast.makeText(
+					this,
+					"Your submission was NOT successful. Please check that you filled in all fields.",
+					Toast.LENGTH_SHORT).show();
+		}
+
+	}
+
+	public boolean isValid() {
+		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
+		int correct = 0;
+		if (questionText.getText().toString().trim().equals("")
+				|| fetch.size() < 2) {
+			return false;
+		}
+		for (Answer answer : fetch) {
+			if (answer.getChecked().equals(
+					getResources().getString(R.string.heavy_check_mark))) {
+				correct++;
+			}
+			if (answer.getAnswer().trim().equals("")) {
+				return false;
+			}
+		}
+		return (correct == 1);
 	}
 }

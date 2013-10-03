@@ -39,6 +39,7 @@ public class ShowQuestionsActivity extends Activity {
 	private ArrayAdapter<String> adapter;
 	private QuizQuestion currrentQuestion;
 	private int lastChoice = -1;
+	private OnItemClickListener answerListener = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class ShowQuestionsActivity extends Activity {
 		text = (TextView) findViewById(R.id.show_question);
 		Debug.out(text);
 
-		answerChoices.setOnItemClickListener(new OnItemClickListener() {
+		answerListener = new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> listAdapter, View view,
@@ -74,6 +75,8 @@ public class ShowQuestionsActivity extends Activity {
 							.getString(R.string.heavy_check_mark);
 					((Button) findViewById(R.id.next_question))
 							.setClickable(true);
+					list.setOnItemClickListener(null);
+					// answerChoices.setOnClickListener(null);
 
 				}
 
@@ -83,7 +86,8 @@ public class ShowQuestionsActivity extends Activity {
 
 			}
 
-		});
+		};
+		answerChoices.setOnItemClickListener(answerListener);
 
 		fetchNewQuestion();
 		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
@@ -93,6 +97,7 @@ public class ShowQuestionsActivity extends Activity {
 	 * Launches the HTTPGET operation to display a new random question
 	 */
 	public void fetchNewQuestion() {
+
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
@@ -118,6 +123,7 @@ public class ShowQuestionsActivity extends Activity {
 	 * @param view
 	 */
 	public void askNextQuestion(View view) {
+		answerChoices.setOnItemClickListener(answerListener);
 		fetchNewQuestion();
 	}
 
