@@ -1,6 +1,9 @@
 package epfl.sweng.editquestions;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+
+import org.apache.http.entity.StringEntity;
 
 import epfl.sweng.R;
 
@@ -18,22 +21,29 @@ import android.widget.Toast;
  * 
  */
 public class EditQuestionActivity extends Activity {
-	private AnswerAdapter adapter;
 	private ListView listView;
+	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch = new ArrayList<Answer>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_question);
+
+		/**
+		 * add item in arraylist
+		 */
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
 				R.string.hyphen_minus));
 		fetch.add(firstAnswer);
-
-		listView = (ListView) findViewById(R.id.listview);
+		/**
+		 * set item into adapter
+		 */
 		adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview,
 				fetch);
+		adapter.setNotifyOnChange(true);
+		listView = (ListView) findViewById(R.id.listview);
 		listView.setAdapter(adapter);
 	}
 
@@ -58,7 +68,26 @@ public class EditQuestionActivity extends Activity {
 	 * @param view
 	 */
 	public void submitQuestion(View view) {
+		adapter.notifyDataSetChanged();
 		if (isValid()) {
+			String question = " \"question\": \""
+					+ ((EditText) listView.findViewById(R.id.edit_questionText))
+							.getText().toString() + "\",";
+			String answers = " \"answers\":" + fetch.toString() + ",";
+			String solutionIndex = " \"solutionIndex\": "
+					+ adapter.getWhoIsChecked() + ",";
+			String tags = " \"tags\": "
+					+ ((EditText) listView.findViewById(R.id.edit_tagsText))
+							.getText().toString();
+
+			try {
+				StringEntity entity = new StringEntity("{" + question + answers
+						+ solutionIndex + tags + " }");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			Toast.makeText(this, "Your submission was successful!",
 					Toast.LENGTH_SHORT).show();
 		} else {
@@ -76,7 +105,8 @@ public class EditQuestionActivity extends Activity {
 		System.out.println("Checking the question...");
 		if (questionText.getText().toString().trim().equals("")
 				|| fetch.size() < 2) {
-			System.out.println("The question is empty or not enough slot!");
+			System.out
+					.println("The question is empty or the list size is smaller than 2!");
 			return false;
 		}
 		System.out
@@ -88,12 +118,12 @@ public class EditQuestionActivity extends Activity {
 				System.out.println("This one has the check mark!");
 				correctAnswer++;
 			}
-			System.out
-					.println("We got " + answer.getAnswer() + "as an answer.");
 			if (answer.getAnswer().trim().equals("")) {
 				System.out.println("The answer is empty!");
 				return false;
 			}
+			System.out.println("This one has the answer : "
+					+ answer.getAnswer());
 		}
 		System.out.println("All correct!");
 		return correctAnswer == 1;

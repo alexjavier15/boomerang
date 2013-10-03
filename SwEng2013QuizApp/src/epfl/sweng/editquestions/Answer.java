@@ -11,6 +11,7 @@ public class Answer {
 	 * 
 	 */
 	public Answer(String checked, String answer, String removed) {
+		super();
 		this.checked = checked;
 		this.answer = answer;
 		this.removed = removed;
