@@ -20,6 +20,8 @@ import android.widget.Toast;
 public class AnswerAdapter extends ArrayAdapter<Answer> {
 	private Activity context;
 	private ArrayList<Answer> entries;
+	
+	
 
 	public static class ViewHolder {
 		public Button checkButton;
@@ -87,6 +89,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
 		Answer answer = entries.get(position);
 		if (answer != null) {
+			entries.get(position).setAnswer(holder.answerText.getText().toString());
 			holder.checkButton.setText(answer.getChecked());
 			holder.answerText.setText(holder.answerText.getText());
 			holder.removeButton.setText(answer.getRemoved());
