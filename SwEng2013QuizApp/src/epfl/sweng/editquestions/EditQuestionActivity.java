@@ -15,6 +15,9 @@ import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.JSONParser;
+import epfl.sweng.testing.TestingTransactions;
+import epfl.sweng.testing.TestingTransactions.TTChecks;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -22,8 +25,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-import epfl.sweng.testing.TestingTransactions;
-import epfl.sweng.testing.TestingTransactions.TTChecks;
 
 /**
  * 
