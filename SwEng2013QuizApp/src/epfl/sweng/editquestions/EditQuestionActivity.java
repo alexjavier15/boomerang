@@ -33,13 +33,14 @@ import epfl.sweng.testing.TestingTransactions.TTChecks;
 public class EditQuestionActivity extends Activity {
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch;
+	private ListView listView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_question);
 
-		final ListView listView = (ListView) findViewById(R.id.listview);
+		listView = (ListView) findViewById(R.id.listview);
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), null, getResources().getString(
 				R.string.hyphen_minus));
@@ -76,35 +77,23 @@ public class EditQuestionActivity extends Activity {
 	 */
 	public void submitQuestion(View view) {
 		if (isValid()) {
-			String questionString = ((EditText) findViewById(R.id.edit_questionText))
-					.getText().toString();
-			List<String> answers = new LinkedList<String>();
-			int solIndex = 0;
-			boolean check = true;
-			for (Answer answer : fetch) {
-				answers.add(answer.getAnswer());
-				if (check) {
-					if (answer.getChecked()
-							.equals(getResources().getString(
-									R.string.heavy_check_mark))) {
-						check = false;
-					} else {
-						solIndex++;
-					}
-				}
-			}
-			String[] arrayStringTags = ((EditText) findViewById(R.id.edit_tagsText))
-					.getText().toString().split("\\s*([a-zA-Z]+)[\\s.,]*");
-			Set<String> tags = new HashSet<String>(
-					Arrays.asList(arrayStringTags));
-			QuizQuestion question = new QuizQuestion(-1, questionString,
-					answers, solIndex, tags);
-			JSONObject jObject;
+			// Loop over view to save answers in case of failure.
+			for (int i = 0; i < listView.getChildCount(); i++) {
 
+				View view1 = listView.getChildAt(i);
+
+				EditText answer = (EditText) view1
+						.findViewById(R.id.edit_answerText);
+				adapter.getItem(i).setAnswer(answer.getText().toString());
+
+			}
+
+			JSONObject jObject;
+			boolean responsecheck = false;
 			try {
-				jObject = JSONParser.parseQuiztoJSON(question);
-				HttpCommunications.postQuestion(HttpCommunications.URLPUSH,
-						jObject);
+				jObject = JSONParser.parseQuiztoJSON(createQuestion());
+				responsecheck = HttpCommunications.postQuestion(
+						HttpCommunications.URLPUSH, jObject);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -114,9 +103,10 @@ public class EditQuestionActivity extends Activity {
 						Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
 			}
-			Toast.makeText(this, "Your submission was successful!",
-					Toast.LENGTH_SHORT).show();
-			// send the question TODO
+			if (responsecheck) {
+				Toast.makeText(this, "Your submission was successful!",
+						Toast.LENGTH_SHORT).show();
+			}
 			TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
 		} else {
 			Toast.makeText(
@@ -125,6 +115,31 @@ public class EditQuestionActivity extends Activity {
 					Toast.LENGTH_SHORT).show();
 		}
 
+	}
+
+	private QuizQuestion createQuestion() {
+
+		String questionString = ((EditText) findViewById(R.id.edit_questionText))
+				.getText().toString();
+		List<String> answers = new LinkedList<String>();
+		int solIndex = 0;
+		boolean check = true;
+		for (int i = 0; i < adapter.getCount(); i++) {
+			Answer answerI = adapter.getItem(i);
+			answers.add(answerI.getAnswer());
+			if (check) {
+				if (answerI.getChecked().equals(
+						getResources().getString(R.string.heavy_check_mark))) {
+					check = false;
+				} else {
+					solIndex++;
+				}
+			}
+		}
+		String[] arrayStringTags = ((EditText) findViewById(R.id.edit_tagsText))
+				.getText().toString().split("\\s*([a-zA-Z]+)[\\s.,]*");
+		Set<String> tags = new HashSet<String>(Arrays.asList(arrayStringTags));
+		return new QuizQuestion(-1, questionString, answers, solIndex, tags);
 	}
 
 	public boolean isValid() {
