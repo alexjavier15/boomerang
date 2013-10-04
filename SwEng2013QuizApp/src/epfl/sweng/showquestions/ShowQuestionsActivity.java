@@ -57,7 +57,7 @@ public class ShowQuestionsActivity extends Activity {
 			public void onItemClick(AdapterView<?> listAdapter, View view,
 					int selectedAnswer, long arg3) {
 				ListView list = (ListView) listAdapter;
-				TextView text = (TextView) list.getChildAt(selectedAnswer);
+				TextView textListener = (TextView) list.getChildAt(selectedAnswer);
 				
 				if (lastChoice != -1) {
 					TextView lastChild = (TextView) list.getChildAt(lastChoice);
@@ -80,8 +80,8 @@ public class ShowQuestionsActivity extends Activity {
 
 				}
 
-				String newText = text.getText().toString() + " " + result;
-				text.setText(newText);
+				String newText = textListener.getText().toString() + " " + result;
+				textListener.setText(newText);
 				lastChoice = selectedAnswer;
 
 			}
