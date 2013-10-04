@@ -58,7 +58,7 @@ public class EditQuestionActivity extends Activity {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
 				R.string.hyphen_minus));
-		fetch.add(temp);
+		adapter.add(temp);
 		adapter.notifyDataSetChanged();
 	}
 
@@ -68,7 +68,6 @@ public class EditQuestionActivity extends Activity {
 	 * @param view
 	 */
 	public void submitQuestion(View view) {
-		adapter.notifyDataSetChanged();
 		if (isValid()) {
 			String question = " \"question\": \""
 					+ ((EditText) listView.findViewById(R.id.edit_questionText))
