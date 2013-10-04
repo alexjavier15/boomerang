@@ -93,7 +93,7 @@ public class ShowQuestionsActivity extends Activity {
 						+ result;
 				textListener.setText(newText);
 				lastChoice = selectedAnswer;
-
+				TestingTransactions.check(TTChecks.ANSWER_SELECTED);
 			}
 
 		};
