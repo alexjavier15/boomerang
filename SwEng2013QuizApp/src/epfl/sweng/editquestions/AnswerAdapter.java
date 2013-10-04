@@ -89,7 +89,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 				entries.get(position).setChecked(
 						context.getResources().getString(
 								R.string.heavy_check_mark));
-				
+
 				AnswerAdapter.this.notifyDataSetChanged();
 			}
 		});
@@ -121,14 +121,11 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 		return view;
 	}
 
-	
-	
-	
-	@Override	
+	@Override
 	public void notifyDataSetChanged() {
-	
-		ListView listView = (ListView)this.resource;
-		
+
+		ListView listView = (ListView) this.resource;
+
 		int size = listView.getChildCount();
 		for (int i = 0; i < size; i++) {
 			View view = listView.getChildAt(i);
@@ -136,12 +133,10 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 			Answer currentAnswer = entries.get(i);
 			currentAnswer
 					.setAnswer(holder.getAnswerText().getText().toString());
-			
+
 			Debug.out(holder.getAnswerText() + "UPDATING..");
-				
+
 			super.notifyDataSetChanged();
-			
-			
 
 		}
 

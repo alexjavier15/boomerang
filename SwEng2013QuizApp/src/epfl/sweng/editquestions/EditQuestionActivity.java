@@ -1,9 +1,19 @@
 package epfl.sweng.editquestions;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import epfl.sweng.R;
-import epfl.sweng.editquestions.AnswerAdapter.ViewHolder;
-import epfl.sweng.testing.Debug;
+import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.JSONParser;
 import android.os.Bundle;
 
 import android.app.Activity;
@@ -27,7 +37,7 @@ public class EditQuestionActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_question);
-        listView = (ListView) findViewById(R.id.listview);
+		listView = (ListView) findViewById(R.id.listview);
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), null, getResources().getString(
 				R.string.hyphen_minus));
@@ -52,7 +62,7 @@ public class EditQuestionActivity extends Activity {
 				R.string.hyphen_minus));
 		fetch.add(temp);
 		adapter.notifyDataSetChanged();
-	
+
 	}
 
 	/**
@@ -63,8 +73,47 @@ public class EditQuestionActivity extends Activity {
 	public void submitQuestion(View view) {
 		adapter.notifyDataSetChanged();
 		if (isValid()) {
+			int id = 0;
+			String questionString = ((EditText) findViewById(R.id.edit_questionText))
+					.getText().toString();
+
+			List<String> answers = new LinkedList<String>();
+			int solIndex = 0;
+			boolean check = true;
+			for (Answer answer : fetch) {
+				answers.add(answer.getAnswer());
+				if (check) {
+					if (answer.getChecked()
+							.equals(getResources().getString(
+									R.string.heavy_check_mark))) {
+						check = false;
+					} else {
+						solIndex++;
+					}
+				}
+			}
+
+			Set<String> tags = new HashSet<String>();//TODO
+			QuizQuestion question = new QuizQuestion(id, questionString,
+					answers, solIndex, tags);
+			JSONObject jObject;
+
+			try {
+				jObject = JSONParser.parseQuiztoJSON(question);
+				HttpCommunications.postQuestion(HttpCommunications.URLPUSH,
+						jObject);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				Toast.makeText(
+						this,
+						"Your submission was NOT successful. Problem with the connection.",
+						Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			}
 			Toast.makeText(this, "Your submission was successful!",
 					Toast.LENGTH_SHORT).show();
+
 		} else {
 			Toast.makeText(
 					this,
@@ -81,10 +130,8 @@ public class EditQuestionActivity extends Activity {
 				|| fetch.size() < 2) {
 			return false;
 		}
-		
-		
+
 		for (Answer answer : fetch) {
-		;
 
 			if (answer.getChecked().equals(
 					getResources().getString(R.string.heavy_check_mark))) {

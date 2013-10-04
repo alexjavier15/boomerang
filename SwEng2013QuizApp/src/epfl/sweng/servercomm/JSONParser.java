@@ -62,7 +62,6 @@ public class JSONParser {
 	public static JSONObject parseQuiztoJSON(QuizQuestion question)
 			throws JSONException {
 		JSONObject jsonQuestion = new JSONObject();
-		jsonQuestion.put("id", question.getID());
 		jsonQuestion.put("question", question.getQuestion());
 		jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
 		jsonQuestion.put("solutionIndex", question.getIndex());
