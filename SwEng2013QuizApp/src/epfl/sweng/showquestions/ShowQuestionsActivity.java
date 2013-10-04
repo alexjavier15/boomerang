@@ -57,10 +57,10 @@ public class ShowQuestionsActivity extends Activity {
 			public void onItemClick(AdapterView<?> listAdapter, View view,
 					int selectedAnswer, long arg3) {
 				ListView list = (ListView) listAdapter;
-				TextView text = (TextView) list.getChildAt(selectedAnswer);
+				TextView textListener = (TextView) list.getChildAt(selectedAnswer);
+				
 				if (lastChoice != -1) {
-					TextView lastChild = ((TextView) list
-							.getChildAt(lastChoice));
+					TextView lastChild = (TextView) list.getChildAt(lastChoice);
 					String lastAnswer = lastChild.getText().toString();
 					lastAnswer = lastAnswer.substring(0,
 							lastAnswer.length() - 1);
@@ -80,10 +80,10 @@ public class ShowQuestionsActivity extends Activity {
 
 				}
 
-				String newText = text.getText().toString() + " " + result;
-				text.setText(newText);
+				String newText = textListener.getText().toString() + " " + result;
+				textListener.setText(newText);
 				lastChoice = selectedAnswer;
-
+				TestingTransactions.check(TTChecks.ANSWER_SELECTED);
 			}
 
 		};
@@ -138,7 +138,8 @@ public class ShowQuestionsActivity extends Activity {
 		}
 
 		/**
-		 * Getting the question on the server asynchronously. Called by execute().
+		 * Getting the question on the server asynchronously. Called by
+		 * execute().
 		 */
 		@Override
 		protected QuizQuestion doInBackground(String... params) {
@@ -167,8 +168,8 @@ public class ShowQuestionsActivity extends Activity {
 		}
 
 		/**
-		 * Set the text on the screen with the fetched random question. 
-		 * Called by execute() right after doInBackground().
+		 * Set the text on the screen with the fetched random question. Called
+		 * by execute() right after doInBackground().
 		 */
 		@Override
 		protected void onPostExecute(QuizQuestion result) {
@@ -176,25 +177,21 @@ public class ShowQuestionsActivity extends Activity {
 
 			if (result == null) {
 				text.setText("No question can be obtained !");
+			} else if (text == null) {
+				Debug.out("null textview");
 			} else {
-				if (text == null) {
-					Debug.out("null textview");
-				}
+				// We've got a satisfying result => treating it
+				currrentQuestion = result;
 
-				else {
-					//We've got a satisfying result => treating it
-					currrentQuestion = result;
+				text.setText(result.getQuestion());
+				adapter = new ArrayAdapter<String>(activity,
+						android.R.layout.simple_list_item_1,
+						result.getAnswers());
 
-					text.setText(result.getQuestion());
-					adapter = new ArrayAdapter<String>(activity,
-							android.R.layout.simple_list_item_1,
-							result.getAnswers());
+				answerChoices.setAdapter(adapter);
 
-					answerChoices.setAdapter(adapter);
+				adapter.setNotifyOnChange(true);
 
-					adapter.setNotifyOnChange(true);
-
-				}
 			}
 		}
 	}

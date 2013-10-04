@@ -21,13 +21,12 @@ import android.widget.Toast;
  * 
  */
 public class AnswerAdapter extends ArrayAdapter<Answer> {
-	private Context context;
+	private Context activity;
 	private int isChecked;
 
-	public AnswerAdapter(Context context, int resourceId,
-			ArrayList<Answer> entries) {
+	public AnswerAdapter(Context context, int resourceId, ArrayList<Answer> entries) {
 		super(context, resourceId, entries);
-		this.context = context;
+		this.activity = context;
 		this.isChecked = 0;
 	}
 
@@ -40,34 +39,35 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 		final AnswerHolder holder;
 
 		if (view == null) {
-			LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+			LayoutInflater inflater = ((Activity) activity).getLayoutInflater();
 			view = inflater.inflate(R.layout.activity_answer_slot, null);
 			holder = new AnswerHolder();
-			holder.checkButton = (Button) view
-					.findViewById(R.id.edit_buttonProperty);
-			holder.answerText = (EditText) view
-					.findViewById(R.id.edit_answerText);
-			holder.removeButton = (Button) view
-					.findViewById(R.id.edit_cancelAnswer);
+			holder.setCheckButton((Button) view
+					.findViewById(R.id.edit_buttonProperty));
+			holder.setAnswerText((EditText) view
+					.findViewById(R.id.edit_answerText));
+			holder.setRemoveButton((Button) view
+					.findViewById(R.id.edit_cancelAnswer));
+
 			view.setTag(holder);
 		} else {
 			holder = (AnswerHolder) view.getTag();
 		}
-		holder.checkButton.setOnClickListener(new OnClickListener() {
+		holder.getCheckButton().setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				AnswerAdapter.this.getItem(isChecked).setChecked(
-						context.getResources().getString(
+						activity.getResources().getString(
 								R.string.heavy_ballot_x));
 				AnswerAdapter.this.isChecked = position;
 				AnswerAdapter.this.getItem(position).setChecked(
-						context.getResources().getString(
+						activity.getResources().getString(
 								R.string.heavy_check_mark));
 				AnswerAdapter.this.notifyDataSetChanged();
 			}
 		});
-		holder.removeButton.setOnClickListener(new OnClickListener() {
+		holder.getRemoveButton().setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -80,7 +80,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 					AnswerAdapter.this.notifyDataSetChanged();
 				} else {
 					Toast.makeText(
-							context,
+							activity,
 							"A question without an answer is useless, isn't it?",
 							Toast.LENGTH_SHORT).show();
 				}
@@ -91,10 +91,39 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
 		return view;
 	}
-
+	
+	/**
+	 * 
+	 * @author CanGuzelhan
+	 *
+	 */
 	public static class AnswerHolder {
-		public Button checkButton;
-		public EditText answerText;
-		public Button removeButton;
+		private Button checkButton;
+		private EditText answerText;
+		private Button removeButton;
+		
+		public Button getCheckButton() {
+			return checkButton;
+		}
+		
+		public void setCheckButton(Button button) {
+			checkButton = button;
+		}
+		
+		public EditText getAnswerText() {
+			return answerText;
+		}
+		
+		public void setAnswerText(EditText text) {
+			answerText = text;
+		}
+		
+		public Button getRemoveButton() {
+			return removeButton;
+		}
+		
+		public void setRemoveButton(Button button) {
+			removeButton = button;
+		}
 	}
 }

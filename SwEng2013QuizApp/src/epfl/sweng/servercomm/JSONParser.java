@@ -31,10 +31,12 @@ public class JSONParser {
 	 * @throws IOException
 	 */
 	public static QuizQuestion parseJsonToQuiz(HttpResponse response)
-			throws HttpResponseException, JSONException, IOException {
+		throws HttpResponseException, JSONException, IOException {
 
+		final int errorCode = 404;
+		
 		if (response == null) {
-			throw new HttpResponseException(404, "Empty response");
+			throw new HttpResponseException(errorCode, "Empty response");
 		}
 
 		BasicResponseHandler responseHandler = new BasicResponseHandler();
@@ -47,6 +49,7 @@ public class JSONParser {
 		int solutionIndex = parser.getInt("solutionIndex");
 		String[] tags = jsonArrayToStringArray(parser.getJSONArray("tags"));
 		Set<String> set = new HashSet<String>(Arrays.asList(tags));
+		
 		return new QuizQuestion(id, question, Arrays.asList(answers),
 				solutionIndex, set);
 
@@ -60,9 +63,9 @@ public class JSONParser {
 	 * @throws JSONException
 	 */
 	public static JSONObject parseQuiztoJSON(QuizQuestion question)
-			throws JSONException {
+		throws JSONException {
+		
 		JSONObject jsonQuestion = new JSONObject();
-		jsonQuestion.put("id", question.getID());
 		jsonQuestion.put("question", question.getQuestion());
 		jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
 		jsonQuestion.put("solutionIndex", question.getIndex());
@@ -79,12 +82,15 @@ public class JSONParser {
 	 * @throws JSONException
 	 */
 	private static String[] jsonArrayToStringArray(JSONArray array)
-			throws JSONException {
+		throws JSONException {
+		
 		int numAnswers = array.length();
 		String[] newStringArray = new String[numAnswers];
+		
 		for (int i = 0; i < numAnswers; i++) {
 			newStringArray[i] = array.getString(i);
 		}
+		
 		return newStringArray;
 	}
 }

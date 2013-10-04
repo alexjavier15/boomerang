@@ -10,18 +10,18 @@ import java.util.Set;
  */
 public interface QuestionProvider {
 
-	public long getID();
+	long getID();
 
-	public String getQuestion();
+	String getQuestion();
 
-	public String getCorrectAnswer();
+	String getCorrectAnswer();
 
-	public int getIndex();
+	int getIndex();
 
-	public List<String> getAnswers();
+	List<String> getAnswers();
 
-	public boolean checkAnswer(int sol);
+	boolean checkAnswer(int sol);
 
-	public Set<String> getSetOfTags();
+	Set<String> getSetOfTags();
 
 }
