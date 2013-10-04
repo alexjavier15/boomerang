@@ -1,7 +1,19 @@
 package epfl.sweng.editquestions;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import epfl.sweng.R;
+import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.JSONParser;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -58,8 +70,45 @@ public class EditQuestionActivity extends Activity {
 	 */
 	public void submitQuestion(View view) {
 		if (isValid()) {
+			String questionString = ((EditText) findViewById(R.id.edit_questionText))
+					.getText().toString();
+			List<String> answers = new LinkedList<String>();
+			int solIndex = 0;
+			boolean check = true;
+			for (Answer answer : fetch) {
+				answers.add(answer.getAnswer());
+				if (check) {
+					if (answer.getChecked()
+							.equals(getResources().getString(
+									R.string.heavy_check_mark))) {
+						check = false;
+					} else {
+						solIndex++;
+					}
+				}
+			}
+
+			Set<String> tags = new HashSet<String>();//TODO
+			QuizQuestion question = new QuizQuestion(-1, questionString,
+					answers, solIndex, tags);
+			JSONObject jObject;
+
+			try {
+				jObject = JSONParser.parseQuiztoJSON(question);
+				HttpCommunications.postQuestion(HttpCommunications.URLPUSH,
+						jObject);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				Toast.makeText(
+						this,
+						"Your submission was NOT successful. Problem with the connection.",
+						Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			}
 			Toast.makeText(this, "Your submission was successful!",
 					Toast.LENGTH_SHORT).show();
+
 		} else {
 			Toast.makeText(
 					this,
