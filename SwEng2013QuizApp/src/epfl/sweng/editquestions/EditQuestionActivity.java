@@ -27,7 +27,7 @@ public class EditQuestionActivity extends Activity {
 		final ListView listView = (ListView) findViewById(R.id.listview);
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), null, getResources().getString(
-				R.string.hyphen_minus));
+						R.string.hyphen_minus));
 
 		fetch = new ArrayList<Answer>();
 		fetch.add(firstAnswer);
@@ -46,7 +46,7 @@ public class EditQuestionActivity extends Activity {
 	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), null, getResources().getString(
-				R.string.hyphen_minus));
+						R.string.hyphen_minus));
 		fetch.add(temp);
 		adapter.notifyDataSetChanged();
 	}
@@ -85,6 +85,7 @@ public class EditQuestionActivity extends Activity {
 				return false;
 			}
 		}
-		return (correct == 1);
+		// removed parenthesis on return
+		return correct == 1;
 	}
 }

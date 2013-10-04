@@ -58,9 +58,9 @@ public class ShowQuestionsActivity extends Activity {
 					int selectedAnswer, long arg3) {
 				ListView list = (ListView) listAdapter;
 				TextView text = (TextView) list.getChildAt(selectedAnswer);
+
 				if (lastChoice != -1) {
-					TextView lastChild = ((TextView) list
-							.getChildAt(lastChoice));
+					TextView lastChild = (TextView) list.getChildAt(lastChoice);
 					String lastAnswer = lastChild.getText().toString();
 					lastAnswer = lastAnswer.substring(0,
 							lastAnswer.length() - 1);
@@ -176,6 +176,8 @@ public class ShowQuestionsActivity extends Activity {
 
 			if (result == null) {
 				text.setText("No question can be obtained !");
+			} else if (text == null) {
+				Debug.out("null textview");
 			} else {
 				if (text == null) {
 					Debug.out("null textview");
@@ -197,6 +199,6 @@ public class ShowQuestionsActivity extends Activity {
 				}
 			}
 		}
-	}
 
+	}
 }
