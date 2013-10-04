@@ -2,6 +2,7 @@ package epfl.sweng.editquestions;
 
 import java.util.ArrayList;
 import epfl.sweng.R;
+import epfl.sweng.testing.Debug;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,86 +20,81 @@ import android.widget.Toast;
  */
 public class AnswerAdapter extends ArrayAdapter<Answer> {
 	private Activity context;
-	private ArrayList<Answer> entries;
+	private int lastChecked = -1;
 
 	public static class ViewHolder {
 		private Button checkButton;
 		private EditText answerText;
 		private Button removeButton;
-		
-		public Button getCheckButton() {
-			return checkButton;
-		}
-		
-		public void setCheckButton(Button button) {
-			checkButton = button;
-		}
-		
-		public EditText getAnswerText() {
-			return answerText;
-		}
-		
-		public void setAnswerText(EditText text) {
-			answerText = text;
-		}
-		
-		public Button getRemoveButton() {
-			return removeButton;
-		}
-		
-		public void setRemoveButton(Button button) {
-			removeButton = button;
-		}
+
 	}
 
 	public AnswerAdapter(Activity context, int resourceId,
 			ArrayList<Answer> entries) {
 		super(context, resourceId, entries);
 		this.context = context;
-		this.entries = entries;
+		
 	}
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		View view = convertView;
+
 		final ViewHolder holder;
 		if (view == null) {
 			LayoutInflater inflater = context.getLayoutInflater();
 			view = inflater.inflate(R.layout.activity_new_answer, null);
 			holder = new ViewHolder();
-			holder.setCheckButton((Button) view
-					.findViewById(R.id.edit_buttonProperty));
-			holder.setAnswerText((EditText) view
-					.findViewById(R.id.edit_answerText));
-			holder.setRemoveButton((Button) view
-					.findViewById(R.id.edit_cancelAnswer));
+			holder.checkButton = (Button) view
+					.findViewById(R.id.edit_buttonProperty);
+			holder.answerText = (EditText) view
+					.findViewById(R.id.edit_answerText);
+			holder.removeButton = (Button) view
+					.findViewById(R.id.edit_cancelAnswer);
 
 			view.setTag(holder);
 		} else {
+			Debug.out("pass pour" + position);
 			holder = (ViewHolder) view.getTag();
 		}
 
-		holder.getCheckButton().setOnClickListener(new OnClickListener() {
+		holder.checkButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				for (Answer answer : entries) {
-					answer.setChecked(context.getResources().getString(
-							R.string.heavy_ballot_x));
+				if (AnswerAdapter.this.lastChecked != -1) {
+					AnswerAdapter.this.getItem(lastChecked).setChecked(
+							context.getResources().getString(
+									R.string.heavy_ballot_x));
 				}
-				entries.get(position).setChecked(
+
+				Debug.out(position);
+
+				AnswerAdapter.this.getItem(position).setChecked(
 						context.getResources().getString(
 								R.string.heavy_check_mark));
+				lastChecked = position;
+				Debug.out(AnswerAdapter.this.getItem(position).getChecked()
+						+ " answer : "
+						+ AnswerAdapter.this.getItem(position).getAnswer());
 				AnswerAdapter.this.notifyDataSetChanged();
 			}
 		});
 
-		holder.getRemoveButton().setOnClickListener(new OnClickListener() {
+		holder.removeButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				if (entries.size() > 1) {
-					entries.remove(position);
+
+				Debug.out(" pre " + AnswerAdapter.this.getCount());
+				if (AnswerAdapter.this.getCount() > 1) {
+
+					holder.answerText.setText("");
+
+					AnswerAdapter.this.remove(AnswerAdapter.this
+							.getItem(position));
+
+					Debug.out("après " + AnswerAdapter.this.getCount());
 					AnswerAdapter.this.notifyDataSetChanged();
 				} else {
 					Toast.makeText(
@@ -109,12 +105,8 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 			}
 		});
 
-		Answer answer = entries.get(position);
-		if (answer != null) {
-			holder.getCheckButton().setText(answer.getChecked());
-			holder.getAnswerText().setText(holder.answerText.getText());
-			holder.getRemoveButton().setText(answer.getRemoved());
-		}
+		holder.checkButton.setText(this.getItem(position).getChecked());
+
 		return view;
 	}
 }

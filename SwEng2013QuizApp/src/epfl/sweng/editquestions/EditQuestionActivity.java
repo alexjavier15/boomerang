@@ -61,9 +61,12 @@ public class EditQuestionActivity extends Activity {
 	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), null, getResources().getString(
-				R.string.hyphen_minus));
+
+		R.string.hyphen_minus));
 		fetch.add(temp);
+		adapter.add(temp);
 		adapter.notifyDataSetChanged();
+
 	}
 
 	/**
@@ -113,7 +116,7 @@ public class EditQuestionActivity extends Activity {
 			}
 			Toast.makeText(this, "Your submission was successful!",
 					Toast.LENGTH_SHORT).show();
-			//send the question TODO
+			// send the question TODO
 			TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
 		} else {
 			Toast.makeText(
