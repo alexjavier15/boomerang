@@ -1,6 +1,7 @@
 package epfl.sweng.showquestions;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -36,6 +37,7 @@ import epfl.sweng.testing.TestingTransactions.TTChecks;
 public class ShowQuestionsActivity extends Activity {
 	private TextView text;
 	private ListView answerChoices;
+	private TextView tags;
 	private ArrayAdapter<String> adapter;
 	private QuizQuestion currrentQuestion;
 	private int lastChoice = -1;
@@ -46,7 +48,11 @@ public class ShowQuestionsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show_questions);
 
-		answerChoices = (ListView) findViewById(R.id.answer_choices);
+		View found = findViewById(R.id.answer_choices);
+		answerChoices = (ListView) found;
+		// answerChoices = (ListView) findViewById(R.id.answer_choices);
+
+		tags = (TextView) findViewById(R.id.show_tags);
 
 		text = (TextView) findViewById(R.id.show_question);
 		Debug.out(text);
@@ -57,8 +63,9 @@ public class ShowQuestionsActivity extends Activity {
 			public void onItemClick(AdapterView<?> listAdapter, View view,
 					int selectedAnswer, long arg3) {
 				ListView list = (ListView) listAdapter;
-				TextView textListener = (TextView) list.getChildAt(selectedAnswer);
-				
+				TextView textListener = (TextView) list
+						.getChildAt(selectedAnswer);
+
 				if (lastChoice != -1) {
 					TextView lastChild = (TextView) list.getChildAt(lastChoice);
 					String lastAnswer = lastChild.getText().toString();
@@ -80,7 +87,8 @@ public class ShowQuestionsActivity extends Activity {
 
 				}
 
-				String newText = textListener.getText().toString() + " " + result;
+				String newText = textListener.getText().toString() + " "
+						+ result;
 				textListener.setText(newText);
 				lastChoice = selectedAnswer;
 				TestingTransactions.check(TTChecks.ANSWER_SELECTED);
@@ -96,9 +104,8 @@ public class ShowQuestionsActivity extends Activity {
 	/**
 	 * Launches the HTTPGET operation to display a new random question
 	 */
-
 	public void fetchNewQuestion() {
-
+		((Button) findViewById(R.id.next_question)).setClickable(false);
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
@@ -180,20 +187,46 @@ public class ShowQuestionsActivity extends Activity {
 			} else if (text == null) {
 				Debug.out("null textview");
 			} else {
-				// We've got a satisfying result => treating it
-				currrentQuestion = result;
+				if (text == null) {
+					Debug.out("null textview");
+				}
 
-				text.setText(result.getQuestion());
-				adapter = new ArrayAdapter<String>(activity,
-						android.R.layout.simple_list_item_1,
-						result.getAnswers());
+				else {
+					// We've got a satisfying result => treating it
+					currrentQuestion = result;
 
-				answerChoices.setAdapter(adapter);
+					text.setText(result.getQuestion());
+					tags.setText(displayTags(result.getSetOfTags()));
+					adapter = new ArrayAdapter<String>(activity,
+							android.R.layout.simple_list_item_1,
+							result.getAnswers());
 
-				adapter.setNotifyOnChange(true);
+					answerChoices.setAdapter(adapter);
 
+					adapter.setNotifyOnChange(true);
+
+				}
 			}
 		}
-	}
 
+		private String displayTags(Set<String> tags) {
+			if (tags.size() > 0) {
+				System.out.println("Va afficher les tags");
+				String tagsInString = "";
+				int counter = 0;
+				for (String s : tags) {
+					counter++;
+					if (counter == tags.size()) {
+						tagsInString += s;
+					} else {
+						tagsInString += s + ", ";
+					}
+				}
+				return tagsInString;
+			} else {
+				return "No tags for this question";
+			}
+		}
+
+	}
 }
