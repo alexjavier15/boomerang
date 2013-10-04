@@ -73,10 +73,8 @@ public class EditQuestionActivity extends Activity {
 	public void submitQuestion(View view) {
 		adapter.notifyDataSetChanged();
 		if (isValid()) {
-			int id = 0;
 			String questionString = ((EditText) findViewById(R.id.edit_questionText))
 					.getText().toString();
-
 			List<String> answers = new LinkedList<String>();
 			int solIndex = 0;
 			boolean check = true;
@@ -94,7 +92,7 @@ public class EditQuestionActivity extends Activity {
 			}
 
 			Set<String> tags = new HashSet<String>();//TODO
-			QuizQuestion question = new QuizQuestion(id, questionString,
+			QuizQuestion question = new QuizQuestion(-1, questionString,
 					answers, solIndex, tags);
 			JSONObject jObject;
 
