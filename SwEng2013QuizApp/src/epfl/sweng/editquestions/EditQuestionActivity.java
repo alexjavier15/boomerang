@@ -21,6 +21,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import epfl.sweng.testing.TestingTransactions;
+import epfl.sweng.testing.TestingTransactions.TTChecks;
 
 /**
  * 
@@ -108,7 +110,8 @@ public class EditQuestionActivity extends Activity {
 			}
 			Toast.makeText(this, "Your submission was successful!",
 					Toast.LENGTH_SHORT).show();
-
+			//send the question TODO
+			TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
 		} else {
 			Toast.makeText(
 					this,
