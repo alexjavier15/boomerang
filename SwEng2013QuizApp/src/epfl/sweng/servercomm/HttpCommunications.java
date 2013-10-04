@@ -21,6 +21,8 @@ public class HttpCommunications {
 
 	public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
 	public final static String URLPUSH = " https://sweng-quiz.appspot.com/quizquestions";
+	public final static int RESPONSE_CODE = 201;
+	public final static int STRING_ENTITY = 4;
 
 	/**
 	 * Gets an HttpResponse from the server in parameter
@@ -31,10 +33,11 @@ public class HttpCommunications {
 	 * @throws IOException
 	 */
 	public static HttpResponse getHttpResponse(String urlString)
-			throws ClientProtocolException, IOException {
+		throws ClientProtocolException, IOException {
+		
 		HttpClient client = SwengHttpClientFactory.getInstance();
-
 		HttpGet request = new HttpGet(urlString);
+		
 		return client.execute(request);
 	}
 
@@ -49,20 +52,21 @@ public class HttpCommunications {
 	 * @throws IOException
 	 */
 	public static boolean postQuestion(String url, JSONObject question)
-			throws JSONException, IOException {
+		throws JSONException, IOException {
+		
 		if (question == null) {
 			throw new JSONException("This is not a valid question");
 		}
 
 		HttpPost post = new HttpPost(url);
-		post.setEntity(new StringEntity(question.toString(4)));
+		post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
 		post.setHeader("Content-type", "application/json");
 
 		BasicResponseHandler handler = new BasicResponseHandler();
 		String response = SwengHttpClientFactory.getInstance().execute(post,
 				handler);
 
-		return response.equals(201);
+		return response.equals(RESPONSE_CODE);
 	}
 
 }

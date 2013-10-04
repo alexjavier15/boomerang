@@ -20,23 +20,23 @@ public class Answer {
 		return checked;
 	}
 
-	public void setChecked(String checked) {
-		this.checked = checked;
+	public void setChecked(String receivedChecked) {
+		this.checked = receivedChecked;
 	}
 
 	public String getAnswer() {
 		return answer;
 	}
 
-	public void setAnswer(String answer) {
-		this.answer = answer;
+	public void setAnswer(String receivedAnswer) {
+		this.answer = receivedAnswer;
 	}
 
 	public String getRemoved() {
 		return removed;
 	}
 
-	public void setRemoved(String removed) {
-		this.removed = removed;
+	public void setRemoved(String receivedRemoved) {
+		this.removed = receivedRemoved;
 	}
 }

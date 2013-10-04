@@ -22,9 +22,33 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 	private ArrayList<Answer> entries;
 
 	public static class ViewHolder {
-		public Button checkButton;
-		public EditText answerText;
-		public Button removeButton;
+		private Button checkButton;
+		private EditText answerText;
+		private Button removeButton;
+		
+		public Button getCheckButton() {
+			return checkButton;
+		}
+		
+		public void setCheckButton(Button button) {
+			checkButton = button;
+		}
+		
+		public EditText getAnswerText() {
+			return answerText;
+		}
+		
+		public void setAnswerText(EditText text) {
+			answerText = text;
+		}
+		
+		public Button getRemoveButton() {
+			return removeButton;
+		}
+		
+		public void setRemoveButton(Button button) {
+			removeButton = button;
+		}
 	}
 
 	public AnswerAdapter(Activity context, int resourceId,
@@ -42,19 +66,19 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 			LayoutInflater inflater = context.getLayoutInflater();
 			view = inflater.inflate(R.layout.activity_new_answer, null);
 			holder = new ViewHolder();
-			holder.checkButton = (Button) view
-					.findViewById(R.id.edit_buttonProperty);
-			holder.answerText = (EditText) view
-					.findViewById(R.id.edit_answerText);
-			holder.removeButton = (Button) view
-					.findViewById(R.id.edit_cancelAnswer);
+			holder.setCheckButton((Button) view
+					.findViewById(R.id.edit_buttonProperty));
+			holder.setAnswerText((EditText) view
+					.findViewById(R.id.edit_answerText));
+			holder.setRemoveButton((Button) view
+					.findViewById(R.id.edit_cancelAnswer));
 
 			view.setTag(holder);
 		} else {
 			holder = (ViewHolder) view.getTag();
 		}
 
-		holder.checkButton.setOnClickListener(new OnClickListener() {
+		holder.getCheckButton().setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -69,7 +93,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 			}
 		});
 
-		holder.removeButton.setOnClickListener(new OnClickListener() {
+		holder.getRemoveButton().setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -87,9 +111,9 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
 		Answer answer = entries.get(position);
 		if (answer != null) {
-			holder.checkButton.setText(answer.getChecked());
-			holder.answerText.setText(holder.answerText.getText());
-			holder.removeButton.setText(answer.getRemoved());
+			holder.getCheckButton().setText(answer.getChecked());
+			holder.getAnswerText().setText(holder.answerText.getText());
+			holder.getRemoveButton().setText(answer.getRemoved());
 		}
 		return view;
 	}
