@@ -2,6 +2,7 @@ package epfl.sweng.editquestions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class EditQuestionActivity extends Activity {
 		final ListView listView = (ListView) findViewById(R.id.listview);
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), null, getResources().getString(
-						R.string.hyphen_minus));
+				R.string.hyphen_minus));
 
 		fetch = new ArrayList<Answer>();
 		fetch.add(firstAnswer);
@@ -58,7 +59,7 @@ public class EditQuestionActivity extends Activity {
 	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), null, getResources().getString(
-						R.string.hyphen_minus));
+				R.string.hyphen_minus));
 		fetch.add(temp);
 		adapter.notifyDataSetChanged();
 	}
@@ -87,8 +88,10 @@ public class EditQuestionActivity extends Activity {
 					}
 				}
 			}
-
-			Set<String> tags = new HashSet<String>();//TODO
+			String[] arrayStringTags = ((EditText) findViewById(R.id.edit_tagsText))
+					.getText().toString().split("\\s*([a-zA-Z]+)[\\s.,]*");
+			Set<String> tags = new HashSet<String>(
+					Arrays.asList(arrayStringTags));
 			QuizQuestion question = new QuizQuestion(-1, questionString,
 					answers, solIndex, tags);
 			JSONObject jObject;
