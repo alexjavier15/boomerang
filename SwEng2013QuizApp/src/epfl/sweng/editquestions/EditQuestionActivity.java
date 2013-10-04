@@ -27,7 +27,7 @@ import epfl.sweng.testing.TestingTransactions.TTChecks;
 
 /**
  * 
- * @author CanGuzelhan
+ * @author CanGuzelhan & LorenzoLeon
  * 
  */
 public class EditQuestionActivity extends Activity {
