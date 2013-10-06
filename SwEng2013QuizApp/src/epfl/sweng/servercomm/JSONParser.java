@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.testing.Debug;
 
 /**
  * 
@@ -72,6 +73,8 @@ public class JSONParser {
 		jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
 		jsonQuestion.put("solutionIndex", question.getIndex());
 		jsonQuestion.put("tags", new JSONArray(question.getSetOfTags()));
+		
+		Debug.out(jsonQuestion);
 
 		return jsonQuestion;
 	}
