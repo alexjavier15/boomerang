@@ -63,7 +63,6 @@ public class EditQuestionActivity extends Activity {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				// TODO Auto-generated method stub
 				if (!reset) {
 					TestingTransactions.check(TTChecks.QUESTION_EDITED);
 				}
@@ -72,14 +71,10 @@ public class EditQuestionActivity extends Activity {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
-				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void afterTextChanged(Editable s) {
-				// TODO Auto-generated method stub
-
 			}
 		};
 
@@ -172,7 +167,7 @@ public class EditQuestionActivity extends Activity {
 						"Your submission was NOT successful. Please check that you filled in all fields.",
 						Toast.LENGTH_SHORT).show();
 			}
-			
+
 		} else {
 			Toast.makeText(
 					this,
@@ -213,7 +208,8 @@ public class EditQuestionActivity extends Activity {
 				.getText().toString().replace(",", " ").split("\\s+");
 		// split("\\s*([a-zA-Z]+)[\\s.,]*");
 
-		HashSet<String> tags = new HashSet<String>(Arrays.asList(arrayStringTags));
+		HashSet<String> tags = new HashSet<String>(
+				Arrays.asList(arrayStringTags));
 		tags.removeAll(Arrays.asList("", null));
 		return new QuizQuestion(-1, questionString, answers, solIndex, tags);
 	}
@@ -245,20 +241,22 @@ public class EditQuestionActivity extends Activity {
 				.println("The question is valid!\nChecking the answers with fetch size : "
 						+ fetch.size());
 
-		for (Answer answer : fetch) {
-			if (answer.getChecked().equals(
-					getResources().getString(R.string.heavy_check_mark))) {
+		for (int i = 0; i < adapter.getCount(); i++) {
+			if (adapter
+					.getItem(i)
+					.getChecked()
+					.equals(getResources().getString(R.string.heavy_check_mark))) {
 				System.out.println("This one has the check mark!");
 				correctAnswer++;
 			}
 
-			if (answer.getAnswer().trim().equals("")) {
+			if (adapter.getItem(i).getAnswer().trim().equals("")) {
 				System.out.println("The answer is empty!");
 				return false;
 			}
 
 			System.out.println("This one has the answer : "
-					+ answer.getAnswer());
+					+ adapter.getItem(i).getAnswer());
 		}
 
 		System.out.println("All correct!");
