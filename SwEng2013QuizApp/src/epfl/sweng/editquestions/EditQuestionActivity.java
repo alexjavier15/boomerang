@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONException;
@@ -166,8 +165,7 @@ public class EditQuestionActivity extends Activity {
 						"Your submission was NOT successful. Please check that you filled in all fields.",
 						Toast.LENGTH_SHORT).show();
 			}
-
-			TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
+			
 		} else {
 			Toast.makeText(
 					this,
