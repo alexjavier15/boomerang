@@ -109,16 +109,21 @@ public class EditQuestionActivity extends Activity {
 				responsecheck = HttpCommunications.postQuestion(
 						HttpCommunications.URLPUSH, jObject);
 			} catch (JSONException e) {
+				System.out.println(e.getMessage());
 				e.printStackTrace();
 			} catch (IOException e) {
 				Toast.makeText(
 						this,
 						"Your submission was NOT successful. Problem with the connection.",
 						Toast.LENGTH_SHORT).show();
-				e.printStackTrace();
 			}
 			if (responsecheck) {
 				Toast.makeText(this, "Your submission was successful!",
+						Toast.LENGTH_SHORT).show();
+			}else{
+				Toast.makeText(
+						this,
+						"Your submission was NOT successful. Please check that you filled in all fields.",
 						Toast.LENGTH_SHORT).show();
 			}
 			TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
