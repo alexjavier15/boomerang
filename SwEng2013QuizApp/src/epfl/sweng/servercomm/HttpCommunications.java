@@ -39,7 +39,8 @@ public class HttpCommunications {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException {
+	public static HttpResponse getHttpResponse(String urlString)
+		throws ClientProtocolException, IOException {
 
 		HttpClient client = SwengHttpClientFactory.getInstance();
 		HttpGet request = new HttpGet(urlString);
@@ -59,7 +60,8 @@ public class HttpCommunications {
 	 * @throws JSONException
 	 * @throws IOException
 	 */
-	public static boolean postQuestion(String url, JSONObject question) throws JSONException, IOException {
+	public static boolean postQuestion(String url, JSONObject question)
+		throws JSONException, IOException {
 
 		if (question == null) {
 			throw new JSONException("This is not a valid question");

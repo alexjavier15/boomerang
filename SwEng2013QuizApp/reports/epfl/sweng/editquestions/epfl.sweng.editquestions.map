@@ -1,0 +1,10 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./EditQuestionActivity.html" title="epfl.sweng.editquestions.EditQuestionActivity" alt="" coords="109,21,419,195"/>
+<area shape="rect" id="node1" href="./EditQuestionActivity.html" title="&lt;TABLE&gt;" alt="" coords="99,15,429,201"/>
+<area shape="rect" id="node3_1" href="./AnswerAdapter.html" title="epfl.sweng.editquestions.AnswerAdapter" alt="" coords="16,265,512,421"/>
+<area shape="rect" id="node3" href="./AnswerAdapter.html" title="&lt;TABLE&gt;" alt="" coords="5,259,523,426"/>
+<area shape="rect" id="node2_2" href="./AnswerHolder.html" title="epfl.sweng.editquestions.AnswerHolder" alt="" coords="464,11,696,205"/>
+<area shape="rect" id="node2" href="./AnswerHolder.html" title="&lt;TABLE&gt;" alt="" coords="453,6,707,210"/>
+<area shape="rect" id="node4_3" href="./Answer.html" title="epfl.sweng.editquestions.Answer" alt="" coords="742,11,1122,205"/>
+<area shape="rect" id="node4" href="./Answer.html" title="&lt;TABLE&gt;" alt="" coords="731,6,1133,210"/>
+</map>

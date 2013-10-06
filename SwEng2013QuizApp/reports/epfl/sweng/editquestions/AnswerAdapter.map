@@ -1,0 +1,14 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./EditQuestionActivity.html" title="epfl.sweng.editquestions.EditQuestionActivity" alt="" coords="484,189,793,363"/>
+<area shape="rect" id="node1" href="./EditQuestionActivity.html" title="&lt;TABLE&gt;" alt="" coords="473,183,804,369"/>
+<area shape="rect" id="node2_1" href="./AnswerAdapter.html" title="epfl.sweng.editquestions.AnswerAdapter" alt="" coords="973,601,1469,757"/>
+<area shape="rect" id="node2" href="./AnswerAdapter.html" title="&lt;TABLE&gt;" alt="" coords="963,595,1480,762"/>
+<area shape="rect" id="node4_2" href="http://java.sun.com/j2se/1.4.2/docs/api/android/view/View.html" title="android.view.View" alt="" coords="15,817,747,10997"/>
+<area shape="rect" id="node4" href="http://java.sun.com/j2se/1.4.2/docs/api/android/view/View.html" title="&lt;TABLE&gt;" alt="" coords="5,811,758,11002"/>
+<area shape="rect" id="node5_3" href="http://java.sun.com/j2se/1.4.2/docs/api/android/content/Context.html" title="android.content.Context" alt="" coords="793,4513,1754,7301"/>
+<area shape="rect" id="node5" href="http://java.sun.com/j2se/1.4.2/docs/api/android/content/Context.html" title="&lt;TABLE&gt;" alt="" coords="782,4507,1765,7306"/>
+<area shape="rect" id="node6_4" href="http://java.sun.com/j2se/1.4.2/docs/api/android/view/ViewGroup.html" title="android.view.ViewGroup" alt="" coords="1799,4438,2427,7375"/>
+<area shape="rect" id="node6" href="http://java.sun.com/j2se/1.4.2/docs/api/android/view/ViewGroup.html" title="&lt;TABLE&gt;" alt="" coords="1789,4433,2438,7381"/>
+<area shape="rect" id="node3_5" href="http://java.sun.com/j2se/1.4.2/docs/api/android/widget/ArrayAdapter.html" title="android.widget.ArrayAdapter" alt="" coords="941,11,1501,541"/>
+<area shape="rect" id="node3" href="http://java.sun.com/j2se/1.4.2/docs/api/android/widget/ArrayAdapter.html" title="&lt;TABLE&gt;" alt="" coords="931,6,1512,546"/>
+</map>
