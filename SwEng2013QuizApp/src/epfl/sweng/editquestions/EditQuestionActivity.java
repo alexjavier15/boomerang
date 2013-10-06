@@ -60,6 +60,14 @@ public class EditQuestionActivity extends Activity {
 		return true;
 	}
 
+	/**
+	 * Whenever the button with the plus sign (+) is clicked, it adds a new
+	 * possible answer with the hint "Type in the answer" and it is marked as
+	 * incorrect.
+	 * 
+	 * @param view
+	 *            The view that was clicked.
+	 */
 	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
@@ -70,9 +78,15 @@ public class EditQuestionActivity extends Activity {
 	}
 
 	/**
-	 * Called when the user clicks on the button labeled "Submit."
+	 * When the user clicks on the button labeled "Submit.", this method first
+	 * verifies that the quiz question is valid. If the quiz question is valid,
+	 * then it saves each answer typed in the answer slots and posts it to the
+	 * SwEng quiz server. After the question is submitted, EditQuestionActivity
+	 * is brought to the state identical to that when the user freshly started
+	 * it.
 	 * 
 	 * @param view
+	 *            The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
 		if (isValid()) {
@@ -116,6 +130,13 @@ public class EditQuestionActivity extends Activity {
 
 	}
 
+	/**
+	 * This method is called when the quiz question is valid and all answers the
+	 * user typed in are saved in order to create a quiz question in JSON format
+	 * for the SwEng quiz server.
+	 * 
+	 * @return The quiz question is JSON format.
+	 */
 	private QuizQuestion createQuestion() {
 		String questionString = ((EditText) findViewById(R.id.edit_questionText))
 				.getText().toString();
@@ -140,6 +161,17 @@ public class EditQuestionActivity extends Activity {
 		return new QuizQuestion(-1, questionString, answers, solIndex, tags);
 	}
 
+	/**
+	 * When the user clicks on the submission button, this method is triggered
+	 * to verify all the four requirements defining a valid quiz question : 1)
+	 * None of the fields of a quiz question may be empty or contain only white
+	 * spaces. 2) None of the answers of a quiz question may be empty or contain
+	 * only white spaces. 3) There must be at least 2 answers. 4) One of the
+	 * answers must be marked as correct.
+	 * 
+	 * @return True if all requirements defining a valid quiz question are
+	 *         verified, otherwise false.
+	 */
 	public boolean isValid() {
 		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
 		int correctAnswer = 0;
