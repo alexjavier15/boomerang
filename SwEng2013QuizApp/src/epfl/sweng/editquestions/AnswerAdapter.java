@@ -26,12 +26,22 @@ import android.widget.Toast;
 public class AnswerAdapter extends ArrayAdapter<Answer> {
 	private Context activity;
 	private int isChecked;
+	private boolean reset;
 
 	public AnswerAdapter(Context context, int resourceId,
 			ArrayList<Answer> entries) {
 		super(context, resourceId, entries);
 		this.activity = context;
 		this.isChecked = 0;
+		this.reset = false;
+	}
+
+	public boolean getReset() {
+		return reset;
+	}
+
+	public void setReset(boolean newStatus) {
+		this.reset = newStatus;
 	}
 
 	public int getWhoIsChecked() {
@@ -62,9 +72,10 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 				@Override
 				public void onTextChanged(CharSequence s, int start,
 						int before, int count) {
-					((Answer) holder.getAnswerText().getTag()).setAnswer(s
-							.toString());
-					TestingTransactions.check(TTChecks.QUESTION_EDITED);
+					if (!reset) {
+						((Answer) holder.getAnswerText().getTag()).setAnswer(s
+								.toString());
+					}
 				}
 
 				@Override
