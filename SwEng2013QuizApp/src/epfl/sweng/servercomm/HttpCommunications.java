@@ -21,6 +21,7 @@ public class HttpCommunications {
 
 	public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
 	public final static String URLPUSH = "https://sweng-quiz.appspot.com/quizquestions/";
+
 	public final static int RESPONSE_CODE = 201;
 	public final static int STRING_ENTITY = 4;
 

@@ -18,6 +18,7 @@ import epfl.sweng.servercomm.JSONParser;
 import epfl.sweng.testing.TestingTransactions;
 import epfl.sweng.testing.TestingTransactions.TTChecks;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.text.Editable;
@@ -138,26 +139,9 @@ public class EditQuestionActivity extends Activity {
 
 		if (isValid()) {
 
-			JSONObject jObject;
-			boolean responsecheck = false;
-			try {
-				jObject = JSONParser.parseQuiztoJSON(createQuestion());
-				responsecheck = HttpCommunications.postQuestion(
-						HttpCommunications.URLPUSH, jObject);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				Toast.makeText(
-						this,
-						"Your submission was NOT successful. Problem with the connection.",
-						Toast.LENGTH_SHORT).show();
-				e.printStackTrace();
-			}
-			if (responsecheck) {
-				Toast.makeText(this, "Your submission was successful!",
-						Toast.LENGTH_SHORT).show();
-			}
-			TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
+			new HttpCommsBackgroundTask(this).execute(HttpCommunications.URLPUSH);
+			
+
 		} else {
 			Toast.makeText(
 					this,
@@ -238,4 +222,54 @@ public class EditQuestionActivity extends Activity {
 		System.out.println("All correct!");
 		return correctAnswer == 1;
 	}
+	
+	private class HttpCommsBackgroundTask extends
+	AsyncTask<String, Void, Boolean> {
+private EditQuestionActivity activity;
+
+public HttpCommsBackgroundTask(EditQuestionActivity activity) {
+	super();
+	this.activity = activity;
+}
+
+/**
+ * Getting the question on the server asynchronously. Called by
+ * execute().
+ */
+@Override
+protected Boolean doInBackground(String... params) {
+
+	JSONObject jObject;
+	boolean responsecheck = false;
+	try {
+		jObject = JSONParser.parseQuiztoJSON(createQuestion());
+		responsecheck = HttpCommunications.postQuestion(
+				HttpCommunications.URLPUSH, jObject);
+	} catch (JSONException e) {
+		e.printStackTrace();
+	} catch (IOException e) {
+	//	Toast.makeText(
+		//		this.activity,
+			//	"Your submission was NOT successful. Problem with the connection.",
+				//Toast.LENGTH_SHORT).show();
+		e.printStackTrace();
+	}
+	if (responsecheck) {
+		//Toast.makeText(this.activity, "Your submission was successful!",
+			//	Toast.LENGTH_SHORT).show();
+	}
+	TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
+	return responsecheck;
+}
+
+/**
+ * Set the text on the screen with the fetched random question. Called
+ * by execute() right after doInBackground().
+ */
+@Override
+protected void onPostExecute(Boolean result) {
+
+}
+
+}
 }
