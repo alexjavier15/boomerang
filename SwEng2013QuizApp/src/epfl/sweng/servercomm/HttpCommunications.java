@@ -13,6 +13,8 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import epfl.sweng.testing.Debug;
+
 /**
  * @author LorenzoLeon & Noortch
  * 
@@ -34,17 +36,17 @@ public class HttpCommunications {
 	 * @throws IOException
 	 */
 	public static HttpResponse getHttpResponse(String urlString)
-		throws ClientProtocolException, IOException {
-		
+			throws ClientProtocolException, IOException {
+
 		HttpClient client = SwengHttpClientFactory.getInstance();
 		HttpGet request = new HttpGet(urlString);
-		
+
 		return client.execute(request);
 	}
 
 	/**
-	 * Posts a JSONObject question on the server in parameter
-	 * Returns true if the question is valid, false if not
+	 * Posts a JSONObject question on the server in parameter Returns true if
+	 * the question is valid, false if not
 	 * 
 	 * @param url
 	 * @param question
@@ -53,8 +55,8 @@ public class HttpCommunications {
 	 * @throws IOException
 	 */
 	public static boolean postQuestion(String url, JSONObject question)
-		throws JSONException, IOException {
-		
+			throws JSONException, IOException {
+
 		if (question == null) {
 			throw new JSONException("This is not a valid question");
 		}
@@ -62,6 +64,8 @@ public class HttpCommunications {
 		HttpPost post = new HttpPost(url);
 		post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
 		post.setHeader("Content-type", "application/json");
+
+		Debug.out(post);
 
 		BasicResponseHandler handler = new BasicResponseHandler();
 		String response = SwengHttpClientFactory.getInstance().execute(post,
