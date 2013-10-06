@@ -89,17 +89,18 @@ public class EditQuestionActivity extends Activity {
 	 *            The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
+		// Loop over view to save answers in case of failure.
+		for (int i = 0; i < listView.getChildCount(); i++) {
+
+			View view1 = listView.getChildAt(i);
+
+			EditText answer = (EditText) view1
+					.findViewById(R.id.edit_answerText);
+			adapter.getItem(i).setAnswer(answer.getText().toString());
+
+		}
+
 		if (isValid()) {
-			// Loop over view to save answers in case of failure.
-			for (int i = 0; i < listView.getChildCount(); i++) {
-
-				View view1 = listView.getChildAt(i);
-
-				EditText answer = (EditText) view1
-						.findViewById(R.id.edit_answerText);
-				adapter.getItem(i).setAnswer(answer.getText().toString());
-
-			}
 
 			JSONObject jObject;
 			boolean responsecheck = false;
