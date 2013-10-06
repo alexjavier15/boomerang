@@ -41,7 +41,13 @@ public class EditQuestionActivity extends Activity {
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch = new ArrayList<Answer>();
 
-	@Override
+	/**
+	 * Starts the window adding a modified ArrayAdapter to list the answers.
+	 * Creates the multiple Test Listeners for when text has been edited. Shows
+	 * the view.
+	 * 
+	 * @param savedInstanceState
+	 */
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_question);
@@ -108,8 +114,9 @@ public class EditQuestionActivity extends Activity {
 
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
-		if(!adapter.getReset()){
-		TestingTransactions.check(TTChecks.QUESTION_EDITED);}
+		if (!adapter.getReset()) {
+			TestingTransactions.check(TTChecks.QUESTION_EDITED);
+		}
 
 	}
 
@@ -125,7 +132,6 @@ public class EditQuestionActivity extends Activity {
 	 *            The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
-		
 
 		if (isValid()) {
 
