@@ -133,6 +133,7 @@ public class ShowQuestionsActivity extends Activity {
 	public void askNextQuestion(View view) {
 		answerChoices.setOnItemClickListener(answerListener);
 		fetchNewQuestion();
+		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 	}
 
 	private class HttpCommsBackgroundTask extends
@@ -159,6 +160,8 @@ public class ShowQuestionsActivity extends Activity {
 
 				if (response != null) {
 					quizQuestion = JSONParser.parseJsonToQuiz(response);
+				} else {
+					Debug.out("can't get an answer from the server");
 				}
 
 			} catch (ClientProtocolException e) {
