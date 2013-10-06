@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -141,23 +142,19 @@ public class EditQuestionActivity extends Activity {
 		}
 
 		if (isValid()) {
-			new HttpCommsBackgroundTask(this)
-					.execute(HttpCommunications.URLPUSH);
 
 			JSONObject jObject;
 			boolean responsecheck = false;
 			try {
 				jObject = JSONParser.parseQuiztoJSON(createQuestion());
-				responsecheck = HttpCommunications.postQuestion(
-						HttpCommunications.URLPUSH, jObject);
+				responsecheck = new HttpCommsBackgroundTask().execute(jObject)
+						.get();
 			} catch (JSONException e) {
-				System.out.println(e.getMessage());
 				e.printStackTrace();
-			} catch (IOException e) {
-				Toast.makeText(
-						this,
-						"Your submission was NOT successful. Problem with the connection.",
-						Toast.LENGTH_SHORT).show();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
 			}
 
 			if (responsecheck) {
@@ -215,10 +212,11 @@ public class EditQuestionActivity extends Activity {
 		}
 
 		String[] arrayStringTags = ((EditText) findViewById(R.id.edit_tagsText))
-				.getText().toString().split("\\s*([a-zA-Z]+)[\\s.,]*");
+				.getText().toString().replace(",", " ").split("\\s+");
+		// split("\\s*([a-zA-Z]+)[\\s.,]*");
 
-		Set<String> tags = new HashSet<String>(Arrays.asList(arrayStringTags));
-
+		HashSet<String> tags = new HashSet<String>(Arrays.asList(arrayStringTags));
+		tags.removeAll(Arrays.asList("", null));
 		return new QuizQuestion(-1, questionString, answers, solIndex, tags);
 	}
 
@@ -269,53 +267,33 @@ public class EditQuestionActivity extends Activity {
 		return correctAnswer == 1;
 	}
 
+	/**
+	 * This Class creates a background task that establishes a HTTP connection
+	 * and posts the created question into the server
+	 * 
+	 * @author LorenzoLeon
+	 * 
+	 */
 	private class HttpCommsBackgroundTask extends
-			AsyncTask<String, Void, Boolean> {
-		private EditQuestionActivity activity;
-
-		public HttpCommsBackgroundTask(EditQuestionActivity activity) {
-			super();
-			this.activity = activity;
-		}
+			AsyncTask<JSONObject, Void, Boolean> {
 
 		/**
 		 * Getting the question on the server asynchronously. Called by
 		 * execute().
 		 */
 		@Override
-		protected Boolean doInBackground(String... params) {
-
-			JSONObject jObject;
+		protected Boolean doInBackground(JSONObject... params) {
 			boolean responsecheck = false;
 			try {
-				jObject = JSONParser.parseQuiztoJSON(createQuestion());
 				responsecheck = HttpCommunications.postQuestion(
-						HttpCommunications.URLPUSH, jObject);
+						HttpCommunications.URLPUSH, params[0]);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
-				// Toast.makeText(
-				// this.activity,
-				// "Your submission was NOT successful. Problem with the connection.",
-				// Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
-			}
-			if (responsecheck) {
-				// Toast.makeText(this.activity,
-				// "Your submission was successful!",
-				// Toast.LENGTH_SHORT).show();
 			}
 			TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
 			return responsecheck;
-		}
-
-		/**
-		 * Set the text on the screen with the fetched random question. Called
-		 * by execute() right after doInBackground().
-		 */
-		@Override
-		protected void onPostExecute(Boolean result) {
-
 		}
 
 	}

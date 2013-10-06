@@ -69,10 +69,10 @@ public class JSONParser {
 		throws JSONException {
 		
 		JSONObject jsonQuestion = new JSONObject();
-		jsonQuestion.put("question", question.getQuestion());
-		jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
-		jsonQuestion.put("solutionIndex", question.getIndex());
 		jsonQuestion.put("tags", new JSONArray(question.getSetOfTags()));
+		jsonQuestion.put("solutionIndex", question.getIndex());
+		jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
+		jsonQuestion.put("question", question.getQuestion());		
 		
 		Debug.out(jsonQuestion);
 

@@ -120,11 +120,10 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 					this.getItem(position));
 		}
 
-		final Answer answer = AnswerAdapter.this.getItem(position);
-		if (answer != null) {
-			holder.getAnswerText().setText(answer.getAnswer());
-			holder.getCheckButton().setText(answer.getChecked());
-		}
+		holder.getAnswerText().setText(
+				AnswerAdapter.this.getItem(position).getAnswer());
+		holder.getCheckButton().setText(
+				AnswerAdapter.this.getItem(position).getChecked());
 
 		return newView;
 	}
