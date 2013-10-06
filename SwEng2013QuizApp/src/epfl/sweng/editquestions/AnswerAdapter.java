@@ -59,66 +59,67 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 			newView.setTag(holder);
 			
 		
-		holder.getAnswerText().addTextChangedListener(new TextWatcher() {
+			holder.getAnswerText().addTextChangedListener(new TextWatcher() {
 			
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				((Answer)holder.getAnswerText().getTag()).setAnswer(s.toString());
-				TestingTransactions.check(TTChecks.QUESTION_EDITED);
-			}
-			
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-				// TODO Auto-generated method stub
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					((Answer) holder.getAnswerText().getTag()).setAnswer(s.toString());
+					TestingTransactions.check(TTChecks.QUESTION_EDITED);
+				}
 				
-			}
-			
-			@Override
-			public void afterTextChanged(Editable s) {
-				// TODO Auto-generated method stub
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count,
+						int after) {
+					// TODO Auto-generated method stub
+					
+				}
 				
-			}
-		});
+				@Override
+				public void afterTextChanged(Editable s) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
 
-		holder.getCheckButton().setOnClickListener(new OnClickListener() {
+			holder.getCheckButton().setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				AnswerAdapter.this.getItem(isChecked).setChecked(
-						activity.getResources().getString(
-								R.string.heavy_ballot_x));
-				AnswerAdapter.this.isChecked = position;
-				AnswerAdapter.this.getItem(position).setChecked(
-						activity.getResources().getString(
-								R.string.heavy_check_mark));
-				AnswerAdapter.this.notifyDataSetChanged();
-				TestingTransactions.check(TTChecks.QUESTION_EDITED);
-			}
-		});
-		
-		holder.getRemoveButton().setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (AnswerAdapter.this.getCount() > 1) {
-					AnswerAdapter.this.remove(AnswerAdapter.this
-							.getItem(position));
+				@Override
+				public void onClick(View v) {
+					AnswerAdapter.this.getItem(isChecked).setChecked(
+							activity.getResources().getString(
+									R.string.heavy_ballot_x));
+					AnswerAdapter.this.isChecked = position;
+					AnswerAdapter.this.getItem(position).setChecked(
+							activity.getResources().getString(
+									R.string.heavy_check_mark));
 					AnswerAdapter.this.notifyDataSetChanged();
 					TestingTransactions.check(TTChecks.QUESTION_EDITED);
-				} else {
-					Toast.makeText(
-							activity,
-							"A question without an answer is useless, isn't it?",
-							Toast.LENGTH_SHORT).show();
 				}
-			}
-		});
+			});
+		
+			holder.getRemoveButton().setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					if (AnswerAdapter.this.getCount() > 1) {
+						AnswerAdapter.this.remove(AnswerAdapter.this
+								.getItem(position));
+						AnswerAdapter.this.notifyDataSetChanged();
+						TestingTransactions.check(TTChecks.QUESTION_EDITED);
+					} else {
+						Toast.makeText(
+								activity,
+								"A question without an answer is useless, isn't it?",
+								Toast.LENGTH_SHORT).show();
+					}
+				}
+			});
+			
 		} else {
 			holder = (AnswerHolder) view.getTag();
-			 newView = view; 
-			 ((AnswerHolder) view.getTag()).getAnswerText().setTag(this.getItem(position));     
-			 ((AnswerHolder) view.getTag()).getCheckButton().setTag(this.getItem(position));
+			newView = view; 
+			((AnswerHolder) view.getTag()).getAnswerText().setTag(this.getItem(position));     
+			((AnswerHolder) view.getTag()).getCheckButton().setTag(this.getItem(position));
 		}
 		
 		holder.getAnswerText().setText(this.getItem(position).getAnswer());
