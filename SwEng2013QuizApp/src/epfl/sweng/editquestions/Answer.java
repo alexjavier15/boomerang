@@ -1,5 +1,8 @@
 package epfl.sweng.editquestions;
 
+import epfl.sweng.testing.TestingTransactions;
+import epfl.sweng.testing.TestingTransactions.TTChecks;
+
 /**
  * 
  * @author CanGuzelhan
@@ -38,6 +41,7 @@ public class Answer {
 	}
 
 	public void setChecked(String receivedChecked) {
+				
 		this.checked = receivedChecked;
 	}
 
@@ -46,7 +50,9 @@ public class Answer {
 	}
 
 	public void setAnswer(String receivedAnswer) {
-		this.answer = receivedAnswer;
+		if( !receivedAnswer.equals(this.answer)){
+			TestingTransactions.check(TTChecks.QUESTION_EDITED);
+		this.answer = receivedAnswer;}
 	}
 
 	public String getRemoved() {

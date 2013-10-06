@@ -64,7 +64,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 						int before, int count) {
 					((Answer) holder.getAnswerText().getTag()).setAnswer(s
 							.toString());
-					TestingTransactions.check(TTChecks.QUESTION_EDITED);
+				
 				}
 
 				@Override
