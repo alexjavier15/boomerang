@@ -36,7 +36,7 @@ public class HttpCommunications {
 	 * @throws IOException
 	 */
 	public static HttpResponse getHttpResponse(String urlString)
-			throws ClientProtocolException, IOException {
+		throws ClientProtocolException, IOException {
 
 		HttpClient client = SwengHttpClientFactory.getInstance();
 		HttpGet request = new HttpGet(urlString);

@@ -31,6 +31,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 /**
+ * This activity enables the user to submit new quiz questions.
  * 
  * @author CanGuzelhan & LorenzoLeon
  * 
@@ -64,6 +65,7 @@ public class EditQuestionActivity extends Activity {
 					int count) {
 				// TODO Auto-generated method stub
 				if (!reset) {
+					System.out.println("Testing hooks");
 					TestingTransactions.check(TTChecks.QUESTION_EDITED);
 				}
 			}
@@ -145,14 +147,15 @@ public class EditQuestionActivity extends Activity {
 			boolean responsecheck = false;
 			try {
 				jObject = JSONParser.parseQuiztoJSON(createQuestion());
-				responsecheck = new HttpCommsBackgroundTask().execute(jObject).get();
+				responsecheck = new HttpCommsBackgroundTask().execute(jObject)
+						.get();
 			} catch (JSONException e) {
 				e.printStackTrace();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (ExecutionException e) {
 				e.printStackTrace();
-			}		
+			}
 
 			if (responsecheck) {
 				Toast.makeText(this, "Your submission was successful!",
@@ -203,7 +206,7 @@ public class EditQuestionActivity extends Activity {
 
 		String[] arrayStringTags = ((EditText) findViewById(R.id.edit_tagsText))
 				.getText().toString().replace(",", " ").split("\\s+");
-				//split("\\s*([a-zA-Z]+)[\\s.,]*");
+		// split("\\s*([a-zA-Z]+)[\\s.,]*");
 
 		Set<String> tags = new HashSet<String>(Arrays.asList(arrayStringTags));
 
