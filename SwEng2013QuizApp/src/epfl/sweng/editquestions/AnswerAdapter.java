@@ -3,7 +3,6 @@ package epfl.sweng.editquestions;
 import java.util.ArrayList;
 
 import epfl.sweng.R;
-
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -24,7 +23,8 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 	private Context activity;
 	private int isChecked;
 
-	public AnswerAdapter(Context context, int resourceId, ArrayList<Answer> entries) {
+	public AnswerAdapter(Context context, int resourceId,
+			ArrayList<Answer> entries) {
 		super(context, resourceId, entries);
 		this.activity = context;
 		this.isChecked = 0;
@@ -91,37 +91,37 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
 		return view;
 	}
-	
+
 	/**
 	 * 
 	 * @author CanGuzelhan
-	 *
+	 * 
 	 */
 	public static class AnswerHolder {
 		private Button checkButton;
 		private EditText answerText;
 		private Button removeButton;
-		
+
 		public Button getCheckButton() {
 			return checkButton;
 		}
-		
+
 		public void setCheckButton(Button button) {
 			checkButton = button;
 		}
-		
+
 		public EditText getAnswerText() {
 			return answerText;
 		}
-		
+
 		public void setAnswerText(EditText text) {
 			answerText = text;
 		}
-		
+
 		public Button getRemoveButton() {
 			return removeButton;
 		}
-		
+
 		public void setRemoveButton(Button button) {
 			removeButton = button;
 		}

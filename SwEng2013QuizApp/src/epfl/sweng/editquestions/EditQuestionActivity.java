@@ -70,6 +70,7 @@ public class EditQuestionActivity extends Activity {
 				R.string.hyphen_minus));
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
+
 	}
 
 	/**
@@ -119,7 +120,7 @@ public class EditQuestionActivity extends Activity {
 			}
 			Toast.makeText(this, "Your submission was successful!",
 					Toast.LENGTH_SHORT).show();
-			//send the question TODO
+			// send the question TODO
 			TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
 		} else {
 			Toast.makeText(
