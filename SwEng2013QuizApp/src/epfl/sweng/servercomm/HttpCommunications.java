@@ -54,8 +54,7 @@ public class HttpCommunications {
 	 * @throws JSONException
 	 * @throws IOException
 	 */
-	public static boolean postQuestion(String url, JSONObject question)
-		throws JSONException, IOException {
+	public static boolean postQuestion(String url, JSONObject question) throws JSONException, IOException {
 
 		if (question == null) {
 			throw new JSONException("This is not a valid question");
