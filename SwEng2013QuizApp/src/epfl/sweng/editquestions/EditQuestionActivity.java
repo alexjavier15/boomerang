@@ -36,27 +36,21 @@ public class EditQuestionActivity extends Activity {
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch = new ArrayList<Answer>();
 
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_question);
 
-		/**
-		 * add item in arraylist
-		 */
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
 				R.string.hyphen_minus));
 		fetch.add(firstAnswer);
-		/**
-		 * set item into adapter
-		 */
 		adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview,
 				fetch);
 		adapter.setNotifyOnChange(true);
 		listView = (ListView) findViewById(R.id.listview);
 		listView.setAdapter(adapter);
+		TestingTransactions.check(TTChecks.EDIT_QUESTIONS_SHOWN);
 	}
 
 	@Override
@@ -123,7 +117,6 @@ public class EditQuestionActivity extends Activity {
 	}
 
 	private QuizQuestion createQuestion() {
-
 		String questionString = ((EditText) findViewById(R.id.edit_questionText))
 				.getText().toString();
 		List<String> answers = new LinkedList<String>();

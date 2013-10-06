@@ -8,14 +8,16 @@
 
     <EditText
         android:id="@+id/edit_questionText"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="@string/edit_question" />
 
     <ListView
         android:id="@+id/listview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="top" >
     </ListView>
 
     <Button
@@ -27,25 +29,16 @@
 
     <EditText
         android:id="@+id/edit_tagsText"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:hint="@string/edit_tags" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1"
-        android:gravity="center|bottom"
-        android:orientation="vertical" >
-
-        <Button
-            android:layout_width="145dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center"
-            android:layout_marginBottom="10dp"
-            android:onClick="submitQuestion"
-            android:text="@string/submit_button" />
-    </LinearLayout>
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:onClick="submitQuestion"
+        android:text="@string/submit_button" />
 
 </LinearLayout>

@@ -1,15 +1,15 @@
 package epfl.sweng.editquestions;
 
+/**
+ * 
+ * @author CanGuzelhan
+ *
+ */
 public class Answer {
 	private String checked;
 	private String answer;
 	private String removed;
 
-	/**
-	 * 
-	 * @author CanGuzelhan
-	 * 
-	 */
 	public Answer(String checked, String answer, String removed) {
 		super();
 		this.checked = checked;
