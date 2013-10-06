@@ -3,6 +3,7 @@ package epfl.sweng.testing;
 import android.util.Log;
 
 public final class Debug {
+	
 	private Debug() {
 	}
 

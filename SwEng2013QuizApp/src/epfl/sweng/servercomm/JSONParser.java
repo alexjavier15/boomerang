@@ -43,9 +43,11 @@ public class JSONParser {
 		JSONObject parser = new JSONObject(
 				responseHandler.handleResponse(response));
 		int id = parser.getInt("id");
+		
 		String question = parser.getString("question");
 		String[] answers = jsonArrayToStringArray(parser
 				.getJSONArray("answers"));
+		
 		int solutionIndex = parser.getInt("solutionIndex");
 		String[] tags = jsonArrayToStringArray(parser.getJSONArray("tags"));
 		Set<String> set = new HashSet<String>(Arrays.asList(tags));

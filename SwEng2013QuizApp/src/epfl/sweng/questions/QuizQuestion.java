@@ -16,6 +16,20 @@ public class QuizQuestion implements QuestionProvider {
 	private int solutionIndex;
 	private Set<String> tags;
 
+	/**
+	 * Constructor of a QuizQuestion : class to modelize a
+	 * quiz question at the json format.
+	 * @param id
+	 * 			of the question
+	 * @param question
+	 * 				String
+	 * @param answers
+	 * 				List of String
+	 * @param solIndex
+	 * 				int
+	 * @param tags
+	 * 			themas of the question
+	 */
 	public QuizQuestion(long id, String question, List<String> answers,
 			int solIndex, Set<String> tags) {
 		this.id = id;

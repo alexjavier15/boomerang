@@ -36,8 +36,8 @@ import epfl.sweng.testing.TestingTransactions.TTChecks;
  */
 public class ShowQuestionsActivity extends Activity {
 	private TextView text;
-	private ListView answerChoices;
 	private TextView tags;
+	private ListView answerChoices;
 	private ArrayAdapter<String> adapter;
 	private QuizQuestion currrentQuestion;
 	private int lastChoice = -1;
@@ -91,6 +91,7 @@ public class ShowQuestionsActivity extends Activity {
 						+ result;
 				textListener.setText(newText);
 				lastChoice = selectedAnswer;
+				
 				TestingTransactions.check(TTChecks.ANSWER_SELECTED);
 			}
 
@@ -98,6 +99,7 @@ public class ShowQuestionsActivity extends Activity {
 		answerChoices.setOnItemClickListener(answerListener);
 
 		fetchNewQuestion();
+		
 		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 	}
 
@@ -132,10 +134,18 @@ public class ShowQuestionsActivity extends Activity {
 	 */
 	public void askNextQuestion(View view) {
 		answerChoices.setOnItemClickListener(answerListener);
+		
 		fetchNewQuestion();
+		
 		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 	}
 
+	/**
+	 * 
+	 * @author albanMarguet
+	 * Permits to do an asyncTask in order to get the quiz question
+	 * soon enough for the user.
+	 */
 	private class HttpCommsBackgroundTask extends
 			AsyncTask<String, Void, QuizQuestion> {
 		private ShowQuestionsActivity activity;
@@ -210,11 +220,17 @@ public class ShowQuestionsActivity extends Activity {
 			}
 		}
 
+		/**
+		 * Get the tags of the question to display them on the screen
+		 * @param setTags : set of Strings
+		 * @return the tags
+		 */
 		private String displayTags(Set<String> setTags) {
 			if (setTags.size() > 0) {
 				System.out.println("Va afficher les tags");
 				String tagsInString = "";
 				int counter = 0;
+				
 				for (String s : setTags) {
 					counter++;
 					if (counter == setTags.size()) {
@@ -223,8 +239,10 @@ public class ShowQuestionsActivity extends Activity {
 						tagsInString += s + ", ";
 					}
 				}
+				
 				return tagsInString;
 			} else {
+				
 				return "No tags for this question";
 			}
 		}
