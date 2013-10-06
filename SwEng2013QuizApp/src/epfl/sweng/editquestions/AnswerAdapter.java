@@ -54,30 +54,26 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 					.findViewById(R.id.edit_cancelAnswer));
 
 			view.setTag(holder);
-			
+
 		} else {
 			holder = (AnswerHolder) view.getTag();
 		}
-		
+
 		holder.getAnswerText().addTextChangedListener(new TextWatcher() {
-			
+
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				// TODO Auto-generated method stub
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
 				TestingTransactions.check(TTChecks.QUESTION_EDITED);
 			}
-			
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
-				// TODO Auto-generated method stub
-				
 			}
-			
+
 			@Override
 			public void afterTextChanged(Editable s) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 
@@ -96,7 +92,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 				TestingTransactions.check(TTChecks.QUESTION_EDITED);
 			}
 		});
-		
+
 		holder.getRemoveButton().setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -117,7 +113,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 				}
 			}
 		});
-		
+
 		holder.getCheckButton().setText(
 				AnswerAdapter.this.getItem(position).getChecked());
 

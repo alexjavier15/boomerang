@@ -30,6 +30,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 /**
+ * 
  * This activity enables the user to submit new quiz questions.
  * 
  * @author CanGuzelhan & LorenzoLeon
@@ -64,7 +65,6 @@ public class EditQuestionActivity extends Activity {
 					int count) {
 				// TODO Auto-generated method stub
 				if (!reset) {
-					System.out.println("Testing hooks");
 					TestingTransactions.check(TTChecks.QUESTION_EDITED);
 				}
 			}
@@ -109,7 +109,7 @@ public class EditQuestionActivity extends Activity {
 	 */
 	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
-				R.string.heavy_ballot_x), null, getResources().getString(
+				R.string.heavy_ballot_x), "", getResources().getString(
 				R.string.hyphen_minus));
 
 		adapter.add(temp);
@@ -163,6 +163,13 @@ public class EditQuestionActivity extends Activity {
 			if (responsecheck) {
 				Toast.makeText(this, "Your submission was successful!",
 						Toast.LENGTH_SHORT).show();
+				
+				reset = true;
+				((EditText) findViewById(R.id.edit_questionText)).setText("");
+				((EditText) findViewById(R.id.edit_tagsText)).setText("");
+				adapter.clear();
+				this.addNewSlot(view);
+				reset = false;
 			} else {
 				Toast.makeText(
 						this,
