@@ -37,6 +37,7 @@ public class EditQuestionActivity extends Activity {
 	private ListView listView;
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch = new ArrayList<Answer>();
+	private boolean reset = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,29 +54,37 @@ public class EditQuestionActivity extends Activity {
 		listView = (ListView) findViewById(R.id.listview);
 		listView.setAdapter(adapter);
 
-		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
-		questionText.addTextChangedListener(new TextWatcher() {
-			
+		TextWatcher watcher = new TextWatcher() {
+
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
 				// TODO Auto-generated method stub
-				TestingTransactions.check(TTChecks.QUESTION_EDITED);
+				if (!reset) {
+					TestingTransactions.check(TTChecks.QUESTION_EDITED);
+				}
 			}
-			
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
-				
+
 			}
-		});
-		
+		};
+
+		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
+		questionText.addTextChangedListener(watcher);
+
+		EditText tagsText = (EditText) findViewById(R.id.edit_tagsText);
+		tagsText.addTextChangedListener(watcher);
+
 		TestingTransactions.check(TTChecks.EDIT_QUESTIONS_SHOWN);
 	}
 
@@ -98,6 +107,7 @@ public class EditQuestionActivity extends Activity {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
 				R.string.hyphen_minus));
+
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
 

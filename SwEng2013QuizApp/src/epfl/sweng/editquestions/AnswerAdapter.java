@@ -7,6 +7,8 @@ import epfl.sweng.testing.TestingTransactions;
 import epfl.sweng.testing.TestingTransactions.TTChecks;
 import android.app.Activity;
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -55,6 +57,27 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 		} else {
 			holder = (AnswerHolder) view.getTag();
 		}
+		holder.getAnswerText().addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// TODO Auto-generated method stub
+				TestingTransactions.check(TTChecks.QUESTION_EDITED);
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		holder.getCheckButton().setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -95,4 +118,11 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
 		return view;
 	}
+	
+		
+		
+		
+		
+
+	
 }
