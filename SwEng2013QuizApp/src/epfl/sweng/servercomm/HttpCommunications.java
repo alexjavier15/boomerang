@@ -23,7 +23,7 @@ public class HttpCommunications {
 	public final static String URLPUSH = "https://sweng-quiz.appspot.com/quizquestions/";
 
 	public final static int RESPONSE_CODE = 201;
-	public final static int STRING_ENTITY = 4;
+	public final static int STRING_ENTITY = 1;
 
 	/**
 	 * Gets an HttpResponse from the server in parameter
