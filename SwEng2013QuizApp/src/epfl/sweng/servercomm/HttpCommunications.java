@@ -69,7 +69,7 @@ public class HttpCommunications {
 		BasicResponseHandler handler = new BasicResponseHandler();
 		String response = SwengHttpClientFactory.getInstance().execute(post,
 				handler);
-
+		Debug.out(response);
 		return response.equals(RESPONSE_CODE);
 	}
 
