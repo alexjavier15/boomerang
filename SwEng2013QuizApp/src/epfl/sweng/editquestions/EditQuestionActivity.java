@@ -20,6 +20,8 @@ import epfl.sweng.testing.TestingTransactions.TTChecks;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
@@ -43,13 +45,37 @@ public class EditQuestionActivity extends Activity {
 
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
-						R.string.hyphen_minus));
+				R.string.hyphen_minus));
 		fetch.add(firstAnswer);
 		adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview,
 				fetch);
 		adapter.setNotifyOnChange(true);
 		listView = (ListView) findViewById(R.id.listview);
 		listView.setAdapter(adapter);
+
+		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
+		questionText.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// TODO Auto-generated method stub
+				TestingTransactions.check(TTChecks.QUESTION_EDITED);
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 		TestingTransactions.check(TTChecks.EDIT_QUESTIONS_SHOWN);
 	}
 
@@ -71,7 +97,7 @@ public class EditQuestionActivity extends Activity {
 	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
-						R.string.hyphen_minus));
+				R.string.hyphen_minus));
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
 
