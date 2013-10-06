@@ -65,7 +65,7 @@ public class HttpCommunications {
 		post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
 		post.setHeader("Content-type", "application/json");
 
-		Debug.out(post);
+		Debug.out(post);//TODO post out
 
 		BasicResponseHandler handler = new BasicResponseHandler();
 		String response = SwengHttpClientFactory.getInstance().execute(post,
