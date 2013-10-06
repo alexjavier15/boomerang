@@ -37,7 +37,8 @@ public class MainActivity extends Activity {
 	 * Launches the new Activity ShowQuestionsActivity to display a random
 	 * question
 	 * 
-	 * @param view The view that was clicked.
+	 * @param view
+	 *            The view that was clicked.
 	 */
 	public void askQuestion(View view) {
 		Toast.makeText(this, "You are on the page to show a random question!",
@@ -51,7 +52,8 @@ public class MainActivity extends Activity {
 	 * Launches the new Activity EditQuestionActivity to permit the user to
 	 * submit a new question to the server
 	 * 
-	 * @param view The view that was clicked.
+	 * @param view
+	 *            The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
 		Toast.makeText(this, "You are on the page to submit a question!",

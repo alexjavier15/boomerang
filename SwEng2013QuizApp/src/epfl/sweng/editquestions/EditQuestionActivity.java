@@ -48,7 +48,7 @@ public class EditQuestionActivity extends Activity {
 
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
-				R.string.hyphen_minus));
+						R.string.hyphen_minus));
 
 		fetch.add(firstAnswer);
 		adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview,
@@ -104,12 +104,13 @@ public class EditQuestionActivity extends Activity {
 	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
-				R.string.hyphen_minus));
+						R.string.hyphen_minus));
 
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
-		if(!adapter.getReset()){
-		TestingTransactions.check(TTChecks.QUESTION_EDITED);}
+		if (!adapter.getReset()) {
+			TestingTransactions.check(TTChecks.QUESTION_EDITED);
+		}
 
 	}
 
@@ -125,7 +126,6 @@ public class EditQuestionActivity extends Activity {
 	 *            The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
-		
 
 		if (isValid()) {
 
@@ -223,7 +223,7 @@ public class EditQuestionActivity extends Activity {
 		System.out.println("Checking the question...");
 
 		if (questionText.getText().toString().trim().equals("")
-				|| fetch.size() < 2) {
+				|| adapter.getCount() < 2) {
 			System.out
 					.println("The question is empty or the list size is smaller than 2!");
 			return false;
@@ -231,7 +231,7 @@ public class EditQuestionActivity extends Activity {
 
 		System.out
 				.println("The question is valid!\nChecking the answers with fetch size : "
-						+ fetch.size());
+						+ adapter.getCount());
 
 		for (int i = 0; i < adapter.getCount(); i++) {
 			if (adapter

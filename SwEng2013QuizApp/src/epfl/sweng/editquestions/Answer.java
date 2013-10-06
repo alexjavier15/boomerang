@@ -20,20 +20,20 @@ public class Answer {
 	 * The user can modify the text and choose whether this answer is the
 	 * correct one or not.
 	 * 
-	 * @param checked
+	 * @param check
 	 *            The property of the answer: it might be marked as correct (✔)
 	 *            or incorrect (✘).
-	 * @param answer
+	 * @param answerText
 	 *            The text of the answer that the user can enter.
-	 * @param removed
+	 * @param remove
 	 *            The String value of the hyphen minus symbol (-) the button to
 	 *            remove this particular answer has.
 	 */
-	public Answer(String checked, String answer, String removed) {
+	public Answer(String check, String answerText, String remove) {
 		super();
-		this.checked = checked;
-		this.answer = answer;
-		this.removed = removed;
+		this.checked = check;
+		this.answer = answerText;
+		this.removed = remove;
 	}
 
 	public String getChecked() {
