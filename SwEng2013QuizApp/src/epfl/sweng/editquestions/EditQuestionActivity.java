@@ -108,6 +108,7 @@ public class EditQuestionActivity extends Activity {
 
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
+		TestingTransactions.check(TTChecks.QUESTION_EDITED);
 
 	}
 

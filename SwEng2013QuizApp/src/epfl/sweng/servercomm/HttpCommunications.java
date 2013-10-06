@@ -70,15 +70,10 @@ public class HttpCommunications {
 		BasicResponseHandler handler = new BasicResponseHandler();
 		String response = SwengHttpClientFactory.getInstance().execute(post,
 				handler);
-		
-		Debug.out(response);
-		if (response !=null){
-			
-			
-			return true;
-			
-		}
 
+		if (response != null) {
+			return true;
+		}
 		return false;
 	}
 

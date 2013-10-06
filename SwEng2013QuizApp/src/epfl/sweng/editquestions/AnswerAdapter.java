@@ -75,7 +75,6 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 					if (!reset) {
 						((Answer) holder.getAnswerText().getTag()).setAnswer(s
 								.toString());
-						TestingTransactions.check(TTChecks.QUESTION_EDITED);
 					}
 				}
 
