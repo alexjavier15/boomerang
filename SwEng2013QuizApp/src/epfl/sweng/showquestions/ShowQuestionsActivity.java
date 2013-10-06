@@ -133,6 +133,7 @@ public class ShowQuestionsActivity extends Activity {
 	public void askNextQuestion(View view) {
 		answerChoices.setOnItemClickListener(answerListener);
 		fetchNewQuestion();
+		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 	}
 
 	private class HttpCommsBackgroundTask extends
@@ -159,6 +160,8 @@ public class ShowQuestionsActivity extends Activity {
 
 				if (response != null) {
 					quizQuestion = JSONParser.parseJsonToQuiz(response);
+				} else {
+					Debug.out("can't get an answer from the server");
 				}
 
 			} catch (ClientProtocolException e) {
@@ -189,9 +192,7 @@ public class ShowQuestionsActivity extends Activity {
 			} else {
 				if (text == null) {
 					Debug.out("null textview");
-				}
-
-				else {
+				} else {
 					// We've got a satisfying result => treating it
 					currrentQuestion = result;
 
@@ -209,14 +210,14 @@ public class ShowQuestionsActivity extends Activity {
 			}
 		}
 
-		private String displayTags(Set<String> tags) {
-			if (tags.size() > 0) {
+		private String displayTags(Set<String> setTags) {
+			if (setTags.size() > 0) {
 				System.out.println("Va afficher les tags");
 				String tagsInString = "";
 				int counter = 0;
-				for (String s : tags) {
+				for (String s : setTags) {
 					counter++;
-					if (counter == tags.size()) {
+					if (counter == setTags.size()) {
 						tagsInString += s;
 					} else {
 						tagsInString += s + ", ";
