@@ -87,8 +87,7 @@ public class ShowQuestionsActivity extends Activity {
 
 				}
 
-				String newText = textListener.getText().toString() + " "
-						+ result;
+				String newText = textListener.getText().toString() + result;
 				textListener.setText(newText);
 				lastChoice = selectedAnswer;
 				
