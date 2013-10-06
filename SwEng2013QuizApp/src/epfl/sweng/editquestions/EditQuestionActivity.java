@@ -163,7 +163,7 @@ public class EditQuestionActivity extends Activity {
 			if (responsecheck) {
 				Toast.makeText(this, "Your submission was successful!",
 						Toast.LENGTH_SHORT).show();
-				
+
 				reset = true;
 				((EditText) findViewById(R.id.edit_questionText)).setText("");
 				((EditText) findViewById(R.id.edit_tagsText)).setText("");
