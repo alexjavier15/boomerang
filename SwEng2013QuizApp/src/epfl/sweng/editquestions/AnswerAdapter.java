@@ -41,29 +41,29 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 	@Override
 	public View getView(final int position, View view, ViewGroup parent) {
 		final AnswerHolder holder;
-
+		View newView = null;
 		if (view == null) {
 			LayoutInflater inflater = ((Activity) activity).getLayoutInflater();
-			view = inflater.inflate(R.layout.activity_answer_slot, null);
+			newView = inflater.inflate(R.layout.activity_answer_slot, null);
 			holder = new AnswerHolder();
-			holder.setCheckButton((Button) view
+			holder.setCheckButton((Button) newView
 					.findViewById(R.id.edit_buttonProperty));
-			holder.setAnswerText((EditText) view
+			holder.setAnswerText((EditText) newView
 					.findViewById(R.id.edit_answerText));
-			holder.setRemoveButton((Button) view
+			holder.setRemoveButton((Button) newView
 					.findViewById(R.id.edit_cancelAnswer));
-
-			view.setTag(holder);
+			holder.getAnswerText().setTag(this.getItem(position));
+			holder.getCheckButton().setTag(this.getItem(position));
 			
-		} else {
-			holder = (AnswerHolder) view.getTag();
-		}
+
+			newView.setTag(holder);
+			
 		
 		holder.getAnswerText().addTextChangedListener(new TextWatcher() {
 			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				// TODO Auto-generated method stub
+				((Answer)holder.getAnswerText().getTag()).setAnswer(s.toString());
 				TestingTransactions.check(TTChecks.QUESTION_EDITED);
 			}
 			
@@ -102,9 +102,6 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 			@Override
 			public void onClick(View v) {
 				if (AnswerAdapter.this.getCount() > 1) {
-					AnswerAdapter.this.getItem(position).setAnswer("");
-					holder.getAnswerText().setText(
-							AnswerAdapter.this.getItem(position).getAnswer());
 					AnswerAdapter.this.remove(AnswerAdapter.this
 							.getItem(position));
 					AnswerAdapter.this.notifyDataSetChanged();
@@ -117,10 +114,17 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 				}
 			}
 		});
+		} else {
+			holder = (AnswerHolder) view.getTag();
+			 newView = view; 
+			 ((AnswerHolder) view.getTag()).getAnswerText().setTag(this.getItem(position));     
+			 ((AnswerHolder) view.getTag()).getCheckButton().setTag(this.getItem(position));
+		}
 		
+		holder.getAnswerText().setText(this.getItem(position).getAnswer());
 		holder.getCheckButton().setText(
 				AnswerAdapter.this.getItem(position).getChecked());
 
-		return view;
+		return newView;
 	}
 }
