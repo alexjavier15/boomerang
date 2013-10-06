@@ -221,7 +221,7 @@ public class EditQuestionActivity extends Activity {
 		System.out.println("Checking the question...");
 
 		if (questionText.getText().toString().trim().equals("")
-				|| fetch.size() < 2) {
+				|| adapter.getCount() < 2) {
 			System.out
 					.println("The question is empty or the list size is smaller than 2!");
 			return false;
@@ -229,7 +229,7 @@ public class EditQuestionActivity extends Activity {
 
 		System.out
 				.println("The question is valid!\nChecking the answers with fetch size : "
-						+ fetch.size());
+						+ adapter.getCount());
 
 		for (int i = 0; i < adapter.getCount(); i++) {
 			if (adapter
