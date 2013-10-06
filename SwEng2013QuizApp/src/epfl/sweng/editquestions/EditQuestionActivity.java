@@ -40,7 +40,6 @@ public class EditQuestionActivity extends Activity {
 	private ListView listView;
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch = new ArrayList<Answer>();
-	private boolean reset = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +62,7 @@ public class EditQuestionActivity extends Activity {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				if (!reset) {
+				if (!adapter.getReset()) {
 					TestingTransactions.check(TTChecks.QUESTION_EDITED);
 				}
 			}
@@ -155,12 +154,12 @@ public class EditQuestionActivity extends Activity {
 				Toast.makeText(this, "Your submission was successful!",
 						Toast.LENGTH_SHORT).show();
 
-				reset = true;
+				adapter.setReset(true);
 				((EditText) findViewById(R.id.edit_questionText)).setText("");
 				((EditText) findViewById(R.id.edit_tagsText)).setText("");
 				adapter.clear();
 				this.addNewSlot(view);
-				reset = false;
+				adapter.setReset(false);
 			} else {
 				Toast.makeText(
 						this,
