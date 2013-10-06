@@ -47,7 +47,8 @@ public class EditQuestionActivity extends Activity {
 
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
-				R.string.hyphen_minus));
+						R.string.hyphen_minus));
+		
 		fetch.add(firstAnswer);
 		adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview,
 				fetch);
@@ -106,8 +107,8 @@ public class EditQuestionActivity extends Activity {
 	 */
 	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
-				R.string.heavy_ballot_x), "", getResources().getString(
-				R.string.hyphen_minus));
+				R.string.heavy_ballot_x), null, getResources().getString(
+						R.string.hyphen_minus));
 
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
@@ -138,10 +139,36 @@ public class EditQuestionActivity extends Activity {
 		}
 
 		if (isValid()) {
+			new HttpCommsBackgroundTask(this)
+					.execute(HttpCommunications.URLPUSH);
 
-			new HttpCommsBackgroundTask(this).execute(HttpCommunications.URLPUSH);
-			
+			JSONObject jObject;
+			boolean responsecheck = false;
+			try {
+				jObject = JSONParser.parseQuiztoJSON(createQuestion());
+				responsecheck = HttpCommunications.postQuestion(
+						HttpCommunications.URLPUSH, jObject);
+			} catch (JSONException e) {
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			} catch (IOException e) {
+				Toast.makeText(
+						this,
+						"Your submission was NOT successful. Problem with the connection.",
+						Toast.LENGTH_SHORT).show();
+			}
 
+			if (responsecheck) {
+				Toast.makeText(this, "Your submission was successful!",
+						Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(
+						this,
+						"Your submission was NOT successful. Please check that you filled in all fields.",
+						Toast.LENGTH_SHORT).show();
+			}
+
+			TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
 		} else {
 			Toast.makeText(
 					this,
@@ -164,6 +191,7 @@ public class EditQuestionActivity extends Activity {
 		List<String> answers = new LinkedList<String>();
 		int solIndex = 0;
 		boolean check = true;
+
 		for (int i = 0; i < adapter.getCount(); i++) {
 			Answer answerI = adapter.getItem(i);
 			answers.add(answerI.getAnswer());
@@ -176,9 +204,12 @@ public class EditQuestionActivity extends Activity {
 				}
 			}
 		}
+
 		String[] arrayStringTags = ((EditText) findViewById(R.id.edit_tagsText))
 				.getText().toString().split("\\s*([a-zA-Z]+)[\\s.,]*");
+
 		Set<String> tags = new HashSet<String>(Arrays.asList(arrayStringTags));
+
 		return new QuizQuestion(-1, questionString, answers, solIndex, tags);
 	}
 
@@ -197,79 +228,86 @@ public class EditQuestionActivity extends Activity {
 		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
 		int correctAnswer = 0;
 		System.out.println("Checking the question...");
+
 		if (questionText.getText().toString().trim().equals("")
 				|| fetch.size() < 2) {
 			System.out
 					.println("The question is empty or the list size is smaller than 2!");
 			return false;
 		}
+
 		System.out
 				.println("The question is valid!\nChecking the answers with fetch size : "
 						+ fetch.size());
+
 		for (Answer answer : fetch) {
 			if (answer.getChecked().equals(
 					getResources().getString(R.string.heavy_check_mark))) {
 				System.out.println("This one has the check mark!");
 				correctAnswer++;
 			}
+
 			if (answer.getAnswer().trim().equals("")) {
 				System.out.println("The answer is empty!");
 				return false;
 			}
+
 			System.out.println("This one has the answer : "
 					+ answer.getAnswer());
 		}
+
 		System.out.println("All correct!");
 		return correctAnswer == 1;
 	}
-	
+
 	private class HttpCommsBackgroundTask extends
-	AsyncTask<String, Void, Boolean> {
-private EditQuestionActivity activity;
+			AsyncTask<String, Void, Boolean> {
+		private EditQuestionActivity activity;
 
-public HttpCommsBackgroundTask(EditQuestionActivity activity) {
-	super();
-	this.activity = activity;
-}
+		public HttpCommsBackgroundTask(EditQuestionActivity activity) {
+			super();
+			this.activity = activity;
+		}
 
-/**
- * Getting the question on the server asynchronously. Called by
- * execute().
- */
-@Override
-protected Boolean doInBackground(String... params) {
+		/**
+		 * Getting the question on the server asynchronously. Called by
+		 * execute().
+		 */
+		@Override
+		protected Boolean doInBackground(String... params) {
 
-	JSONObject jObject;
-	boolean responsecheck = false;
-	try {
-		jObject = JSONParser.parseQuiztoJSON(createQuestion());
-		responsecheck = HttpCommunications.postQuestion(
-				HttpCommunications.URLPUSH, jObject);
-	} catch (JSONException e) {
-		e.printStackTrace();
-	} catch (IOException e) {
-	//	Toast.makeText(
-		//		this.activity,
-			//	"Your submission was NOT successful. Problem with the connection.",
-				//Toast.LENGTH_SHORT).show();
-		e.printStackTrace();
+			JSONObject jObject;
+			boolean responsecheck = false;
+			try {
+				jObject = JSONParser.parseQuiztoJSON(createQuestion());
+				responsecheck = HttpCommunications.postQuestion(
+						HttpCommunications.URLPUSH, jObject);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				// Toast.makeText(
+				// this.activity,
+				// "Your submission was NOT successful. Problem with the connection.",
+				// Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			}
+			if (responsecheck) {
+				// Toast.makeText(this.activity,
+				// "Your submission was successful!",
+				// Toast.LENGTH_SHORT).show();
+			}
+			TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
+			return responsecheck;
+		}
+
+		/**
+		 * Set the text on the screen with the fetched random question. Called
+		 * by execute() right after doInBackground().
+		 */
+		@Override
+		protected void onPostExecute(Boolean result) {
+
+		}
+
 	}
-	if (responsecheck) {
-		//Toast.makeText(this.activity, "Your submission was successful!",
-			//	Toast.LENGTH_SHORT).show();
-	}
-	TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
-	return responsecheck;
-}
-
-/**
- * Set the text on the screen with the fetched random question. Called
- * by execute() right after doInBackground().
- */
-@Override
-protected void onPostExecute(Boolean result) {
-
-}
-
-}
 }
