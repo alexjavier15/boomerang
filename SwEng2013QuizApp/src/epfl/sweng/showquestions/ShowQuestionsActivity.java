@@ -151,9 +151,9 @@ public class ShowQuestionsActivity extends Activity {
 			AsyncTask<String, Void, QuizQuestion> {
 		private ShowQuestionsActivity activity;
 
-		public HttpCommsBackgroundTask(ShowQuestionsActivity activity) {
+		public HttpCommsBackgroundTask(ShowQuestionsActivity act) {
 			super();
-			this.activity = activity;
+			this.activity = act;
 		}
 
 		/**
