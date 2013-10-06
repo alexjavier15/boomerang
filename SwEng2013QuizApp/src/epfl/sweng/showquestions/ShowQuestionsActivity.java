@@ -68,10 +68,12 @@ public class ShowQuestionsActivity extends Activity {
 
 				if (lastChoice != -1) {
 					TextView lastChild = (TextView) list.getChildAt(lastChoice);
-					String lastAnswer = lastChild.getText().toString();
-					lastAnswer = lastAnswer.substring(0,
-							lastAnswer.length() - 1);
-					lastChild.setText(lastAnswer);
+					if (lastChild != null) {
+						String lastAnswer = lastChild.getText().toString();
+						lastAnswer = lastAnswer.substring(0,
+								lastAnswer.length() - 1);
+						lastChild.setText(lastAnswer);
+					}
 				}
 
 				String result = getResources().getString(

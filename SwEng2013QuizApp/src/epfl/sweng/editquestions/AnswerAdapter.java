@@ -54,30 +54,26 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 					.findViewById(R.id.edit_cancelAnswer));
 			holder.getAnswerText().setTag(this.getItem(position));
 			holder.getCheckButton().setTag(this.getItem(position));
-			
 
 			newView.setTag(holder);
-			
-		
+
 			holder.getAnswerText().addTextChangedListener(new TextWatcher() {
-			
+
 				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
-					((Answer) holder.getAnswerText().getTag()).setAnswer(s.toString());
+				public void onTextChanged(CharSequence s, int start,
+						int before, int count) {
+					((Answer) holder.getAnswerText().getTag()).setAnswer(s
+							.toString());
 					TestingTransactions.check(TTChecks.QUESTION_EDITED);
 				}
-				
+
 				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count,
-						int after) {
-					// TODO Auto-generated method stub
-					
+				public void beforeTextChanged(CharSequence s, int start,
+						int count, int after) {
 				}
-				
+
 				@Override
 				public void afterTextChanged(Editable s) {
-					// TODO Auto-generated method stub
-					
 				}
 			});
 
@@ -96,7 +92,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 					TestingTransactions.check(TTChecks.QUESTION_EDITED);
 				}
 			});
-		
+
 			holder.getRemoveButton().setOnClickListener(new OnClickListener() {
 
 				@Override
@@ -114,15 +110,18 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 					}
 				}
 			});
-			
+
 		} else {
 			holder = (AnswerHolder) view.getTag();
-			newView = view; 
-			((AnswerHolder) view.getTag()).getAnswerText().setTag(this.getItem(position));     
-			((AnswerHolder) view.getTag()).getCheckButton().setTag(this.getItem(position));
+			newView = view;
+			((AnswerHolder) view.getTag()).getAnswerText().setTag(
+					this.getItem(position));
+			((AnswerHolder) view.getTag()).getCheckButton().setTag(
+					this.getItem(position));
 		}
-		
-		holder.getAnswerText().setText(this.getItem(position).getAnswer());
+
+		holder.getAnswerText().setText(
+				AnswerAdapter.this.getItem(position).getAnswer());
 		holder.getCheckButton().setText(
 				AnswerAdapter.this.getItem(position).getChecked());
 

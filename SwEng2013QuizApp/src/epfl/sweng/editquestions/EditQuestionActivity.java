@@ -30,6 +30,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 /**
+ * 
  * This activity enables the user to submit new quiz questions.
  * 
  * @author CanGuzelhan & LorenzoLeon
@@ -48,7 +49,7 @@ public class EditQuestionActivity extends Activity {
 
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
-						R.string.hyphen_minus));
+				R.string.hyphen_minus));
 
 		fetch.add(firstAnswer);
 		adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview,
@@ -62,9 +63,7 @@ public class EditQuestionActivity extends Activity {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				// TODO Auto-generated method stub
 				if (!reset) {
-					System.out.println("Testing hooks");
 					TestingTransactions.check(TTChecks.QUESTION_EDITED);
 				}
 			}
@@ -72,14 +71,10 @@ public class EditQuestionActivity extends Activity {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
-				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void afterTextChanged(Editable s) {
-				// TODO Auto-generated method stub
-
 			}
 		};
 
@@ -109,8 +104,8 @@ public class EditQuestionActivity extends Activity {
 	 */
 	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
-				R.string.heavy_ballot_x), null, getResources().getString(
-						R.string.hyphen_minus));
+				R.string.heavy_ballot_x), "", getResources().getString(
+				R.string.hyphen_minus));
 
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
@@ -159,6 +154,13 @@ public class EditQuestionActivity extends Activity {
 			if (responsecheck) {
 				Toast.makeText(this, "Your submission was successful!",
 						Toast.LENGTH_SHORT).show();
+
+				reset = true;
+				((EditText) findViewById(R.id.edit_questionText)).setText("");
+				((EditText) findViewById(R.id.edit_tagsText)).setText("");
+				adapter.clear();
+				this.addNewSlot(view);
+				reset = false;
 			} else {
 				Toast.makeText(
 						this,
@@ -166,7 +168,6 @@ public class EditQuestionActivity extends Activity {
 						Toast.LENGTH_SHORT).show();
 			}
 
-			TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
 		} else {
 			Toast.makeText(
 					this,
@@ -207,7 +208,8 @@ public class EditQuestionActivity extends Activity {
 				.getText().toString().replace(",", " ").split("\\s+");
 		// split("\\s*([a-zA-Z]+)[\\s.,]*");
 
-		HashSet<String> tags = new HashSet<String>(Arrays.asList(arrayStringTags));
+		HashSet<String> tags = new HashSet<String>(
+				Arrays.asList(arrayStringTags));
 		tags.removeAll(Arrays.asList("", null));
 		return new QuizQuestion(-1, questionString, answers, solIndex, tags);
 	}
@@ -239,20 +241,22 @@ public class EditQuestionActivity extends Activity {
 				.println("The question is valid!\nChecking the answers with fetch size : "
 						+ fetch.size());
 
-		for (Answer answer : fetch) {
-			if (answer.getChecked().equals(
-					getResources().getString(R.string.heavy_check_mark))) {
+		for (int i = 0; i < adapter.getCount(); i++) {
+			if (adapter
+					.getItem(i)
+					.getChecked()
+					.equals(getResources().getString(R.string.heavy_check_mark))) {
 				System.out.println("This one has the check mark!");
 				correctAnswer++;
 			}
 
-			if (answer.getAnswer().trim().equals("")) {
+			if (adapter.getItem(i).getAnswer().trim().equals("")) {
 				System.out.println("The answer is empty!");
 				return false;
 			}
 
 			System.out.println("This one has the answer : "
-					+ answer.getAnswer());
+					+ adapter.getItem(i).getAnswer());
 		}
 
 		System.out.println("All correct!");
