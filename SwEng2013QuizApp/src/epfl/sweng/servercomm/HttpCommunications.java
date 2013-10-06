@@ -36,7 +36,7 @@ public class HttpCommunications {
 	 * @throws IOException
 	 */
 	public static HttpResponse getHttpResponse(String urlString)
-		throws ClientProtocolException, IOException {
+			throws ClientProtocolException, IOException {
 
 		HttpClient client = SwengHttpClientFactory.getInstance();
 		HttpGet request = new HttpGet(urlString);
@@ -55,7 +55,7 @@ public class HttpCommunications {
 	 * @throws IOException
 	 */
 	public static boolean postQuestion(String url, JSONObject question)
-		throws JSONException, IOException {
+			throws JSONException, IOException {
 
 		if (question == null) {
 			throw new JSONException("This is not a valid question");
@@ -65,13 +65,21 @@ public class HttpCommunications {
 		post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
 		post.setHeader("Content-type", "application/json");
 
-		Debug.out(post); //TODO post out
+		Debug.out(post); // TODO post out
 
 		BasicResponseHandler handler = new BasicResponseHandler();
 		String response = SwengHttpClientFactory.getInstance().execute(post,
 				handler);
+		
+		Debug.out(response);
+		if (response !=null){
+			
+			
+			return true;
+			
+		}
 
-		return response.equals(RESPONSE_CODE);
+		return false;
 	}
 
 }
