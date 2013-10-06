@@ -41,7 +41,6 @@ public class Answer {
 	}
 
 	public void setChecked(String receivedChecked) {
-
 		this.checked = receivedChecked;
 	}
 

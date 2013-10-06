@@ -18,6 +18,8 @@ import epfl.sweng.testing.Debug;
 /**
  * 
  * @author LorenzoLeon
+ * 
+ * 			This class is used to parse JSON Objects to QuizQuestion and vice versa.
  *
  */
 public class JSONParser {

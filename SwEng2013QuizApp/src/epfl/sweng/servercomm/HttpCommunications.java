@@ -18,6 +18,8 @@ import epfl.sweng.testing.Debug;
 /**
  * @author LorenzoLeon & Noortch
  * 
+ * 		This class is used to communicate with the server
+ * 
  */
 public class HttpCommunications {
 
@@ -31,12 +33,13 @@ public class HttpCommunications {
 	 * Gets an HttpResponse from the server in parameter
 	 * 
 	 * @param urlString
+	 * 			The URL of the server on which we want to connect to.
 	 * @return
+	 * 			The HttpResponse from the server.
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static HttpResponse getHttpResponse(String urlString)
-			throws ClientProtocolException, IOException {
+	public static HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException {
 
 		HttpClient client = SwengHttpClientFactory.getInstance();
 		HttpGet request = new HttpGet(urlString);
@@ -49,13 +52,14 @@ public class HttpCommunications {
 	 * the question is valid, false if not
 	 * 
 	 * @param url
+	 * 			URL of the server on which we want to post the question.
 	 * @param question
+	 * 			The question that we want to post on the server.
 	 * @return
 	 * @throws JSONException
 	 * @throws IOException
 	 */
-	public static boolean postQuestion(String url, JSONObject question)
-			throws JSONException, IOException {
+	public static boolean postQuestion(String url, JSONObject question) throws JSONException, IOException {
 
 		if (question == null) {
 			throw new JSONException("This is not a valid question");
