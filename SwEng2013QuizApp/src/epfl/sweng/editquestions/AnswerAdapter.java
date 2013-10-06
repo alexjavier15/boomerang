@@ -95,4 +95,11 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
 		return view;
 	}
+	
+		
+		
+		
+		
+
+	
 }
