@@ -208,8 +208,8 @@ public class EditQuestionActivity extends Activity {
 				.getText().toString().replace(",", " ").split("\\s+");
 		// split("\\s*([a-zA-Z]+)[\\s.,]*");
 
-		Set<String> tags = new HashSet<String>(Arrays.asList(arrayStringTags));
-
+		HashSet<String> tags = new HashSet<String>(Arrays.asList(arrayStringTags));
+		tags.removeAll(Arrays.asList("", null));
 		return new QuizQuestion(-1, questionString, answers, solIndex, tags);
 	}
 
