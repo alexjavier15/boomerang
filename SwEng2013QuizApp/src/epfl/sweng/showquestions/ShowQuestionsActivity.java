@@ -1,6 +1,7 @@
 package epfl.sweng.showquestions;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -35,6 +36,7 @@ import epfl.sweng.testing.TestingTransactions.TTChecks;
  */
 public class ShowQuestionsActivity extends Activity {
 	private TextView text;
+	private TextView tags;
 	private ListView answerChoices;
 	private ArrayAdapter<String> adapter;
 	private QuizQuestion currrentQuestion;
@@ -46,7 +48,11 @@ public class ShowQuestionsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show_questions);
 
-		answerChoices = (ListView) findViewById(R.id.answer_choices);
+		View found = findViewById(R.id.answer_choices);
+		answerChoices = (ListView) found;
+		// answerChoices = (ListView) findViewById(R.id.answer_choices);
+
+		tags = (TextView) findViewById(R.id.show_tags);
 
 		text = (TextView) findViewById(R.id.show_question);
 		Debug.out(text);
@@ -57,14 +63,17 @@ public class ShowQuestionsActivity extends Activity {
 			public void onItemClick(AdapterView<?> listAdapter, View view,
 					int selectedAnswer, long arg3) {
 				ListView list = (ListView) listAdapter;
-				TextView text = (TextView) list.getChildAt(selectedAnswer);
+				TextView textListener = (TextView) list
+						.getChildAt(selectedAnswer);
+
 				if (lastChoice != -1) {
-					TextView lastChild = ((TextView) list
-							.getChildAt(lastChoice));
-					String lastAnswer = lastChild.getText().toString();
-					lastAnswer = lastAnswer.substring(0,
-							lastAnswer.length() - 1);
-					lastChild.setText(lastAnswer);
+					TextView lastChild = (TextView) list.getChildAt(lastChoice);
+					if (lastChild != null) {
+						String lastAnswer = lastChild.getText().toString();
+						lastAnswer = lastAnswer.substring(0,
+								lastAnswer.length() - 1);
+						lastChild.setText(lastAnswer);
+					}
 				}
 
 				String result = getResources().getString(
@@ -80,25 +89,26 @@ public class ShowQuestionsActivity extends Activity {
 
 				}
 
-				String newText = text.getText().toString() + " " + result;
-				text.setText(newText);
+				String newText = textListener.getText().toString() + result;
+				textListener.setText(newText);
 				lastChoice = selectedAnswer;
-
+				
+				TestingTransactions.check(TTChecks.ANSWER_SELECTED);
 			}
 
 		};
 		answerChoices.setOnItemClickListener(answerListener);
 
 		fetchNewQuestion();
+		
 		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 	}
 
 	/**
 	 * Launches the HTTPGET operation to display a new random question
 	 */
-
 	public void fetchNewQuestion() {
-
+		((Button) findViewById(R.id.next_question)).setClickable(false);
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
@@ -125,20 +135,30 @@ public class ShowQuestionsActivity extends Activity {
 	 */
 	public void askNextQuestion(View view) {
 		answerChoices.setOnItemClickListener(answerListener);
+		
 		fetchNewQuestion();
+		
+		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 	}
 
+	/**
+	 * 
+	 * @author albanMarguet
+	 * Permits to do an asyncTask in order to get the quiz question
+	 * soon enough for the user.
+	 */
 	private class HttpCommsBackgroundTask extends
 			AsyncTask<String, Void, QuizQuestion> {
 		private ShowQuestionsActivity activity;
 
-		public HttpCommsBackgroundTask(ShowQuestionsActivity activity) {
+		public HttpCommsBackgroundTask(ShowQuestionsActivity act) {
 			super();
-			this.activity = activity;
+			this.activity = act;
 		}
 
 		/**
-		 * Getting the question on the server asynchronously. Called by execute().
+		 * Getting the question on the server asynchronously. Called by
+		 * execute().
 		 */
 		@Override
 		protected QuizQuestion doInBackground(String... params) {
@@ -151,6 +171,8 @@ public class ShowQuestionsActivity extends Activity {
 
 				if (response != null) {
 					quizQuestion = JSONParser.parseJsonToQuiz(response);
+				} else {
+					Debug.out("can't get an answer from the server");
 				}
 
 			} catch (ClientProtocolException e) {
@@ -167,8 +189,8 @@ public class ShowQuestionsActivity extends Activity {
 		}
 
 		/**
-		 * Set the text on the screen with the fetched random question. 
-		 * Called by execute() right after doInBackground().
+		 * Set the text on the screen with the fetched random question. Called
+		 * by execute() right after doInBackground().
 		 */
 		@Override
 		protected void onPostExecute(QuizQuestion result) {
@@ -176,16 +198,17 @@ public class ShowQuestionsActivity extends Activity {
 
 			if (result == null) {
 				text.setText("No question can be obtained !");
+			} else if (text == null) {
+				Debug.out("null textview");
 			} else {
 				if (text == null) {
 					Debug.out("null textview");
-				}
-
-				else {
-					//We've got a satisfying result => treating it
+				} else {
+					// We've got a satisfying result => treating it
 					currrentQuestion = result;
 
 					text.setText(result.getQuestion());
+					tags.setText(displayTags(result.getSetOfTags()));
 					adapter = new ArrayAdapter<String>(activity,
 							android.R.layout.simple_list_item_1,
 							result.getAnswers());
@@ -197,6 +220,33 @@ public class ShowQuestionsActivity extends Activity {
 				}
 			}
 		}
-	}
 
+		/**
+		 * Get the tags of the question to display them on the screen
+		 * @param setTags : set of Strings
+		 * @return the tags
+		 */
+		private String displayTags(Set<String> setTags) {
+			if (setTags.size() > 0) {
+				System.out.println("Va afficher les tags");
+				String tagsInString = "";
+				int counter = 0;
+				
+				for (String s : setTags) {
+					counter++;
+					if (counter == setTags.size()) {
+						tagsInString += s;
+					} else {
+						tagsInString += s + ", ";
+					}
+				}
+				
+				return tagsInString;
+			} else {
+				
+				return "No tags for this question";
+			}
+		}
+
+	}
 }

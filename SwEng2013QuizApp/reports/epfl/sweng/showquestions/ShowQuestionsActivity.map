@@ -1,0 +1,22 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="../questions/QuizQuestion.html" title="epfl.sweng.questions.QuizQuestion" alt="" coords="15,8937,622,9149"/>
+<area shape="rect" id="node1" href="../questions/QuizQuestion.html" title="&lt;TABLE&gt;" alt="" coords="5,8931,633,9154"/>
+<area shape="rect" id="node2_1" href="./ShowQuestionsActivity.html" title="epfl.sweng.showquestions.ShowQuestionsActivity" alt="" coords="2415,3737,2724,3893"/>
+<area shape="rect" id="node2" href="./ShowQuestionsActivity.html" title="&lt;TABLE&gt;" alt="" coords="2404,3731,2735,3898"/>
+<area shape="rect" id="node4_2" href="http://java.sun.com/j2se/1.4.2/docs/api/android/widget/ArrayAdapter.html" title="android.widget.ArrayAdapter" alt="" coords="668,8778,1228,9307"/>
+<area shape="rect" id="node4" href="http://java.sun.com/j2se/1.4.2/docs/api/android/widget/ArrayAdapter.html" title="&lt;TABLE&gt;" alt="" coords="657,8773,1239,9313"/>
+<area shape="rect" id="node5_3" href="http://java.sun.com/j2se/1.4.2/docs/api/android/os/Bundle.html" title="android.os.Bundle" alt="" coords="1274,8162,1747,9923"/>
+<area shape="rect" id="node5" href="http://java.sun.com/j2se/1.4.2/docs/api/android/os/Bundle.html" title="&lt;TABLE&gt;" alt="" coords="1263,8157,1758,9929"/>
+<area shape="rect" id="node6_4" href="http://java.sun.com/j2se/1.4.2/docs/api/android/view/View.html" title="android.view.View" alt="" coords="1793,3953,2525,14133"/>
+<area shape="rect" id="node6" href="http://java.sun.com/j2se/1.4.2/docs/api/android/view/View.html" title="&lt;TABLE&gt;" alt="" coords="1782,3947,2535,14138"/>
+<area shape="rect" id="node7_5" href="http://java.sun.com/j2se/1.4.2/docs/api/android/view/Menu.html" title="android.view.Menu" alt="" coords="2571,8703,3392,9382"/>
+<area shape="rect" id="node7" href="http://java.sun.com/j2se/1.4.2/docs/api/android/view/Menu.html" title="&lt;TABLE&gt;" alt="" coords="2560,8698,3403,9387"/>
+<area shape="rect" id="node8_6" href="http://java.sun.com/j2se/1.4.2/docs/api/android/widget/AdapterView/OnItemClickListener.html" title="android.widget.AdapterView.OnItemClickListener" alt="" coords="3438,8993,3885,9093"/>
+<area shape="rect" id="node8" href="http://java.sun.com/j2se/1.4.2/docs/api/android/widget/AdapterView/OnItemClickListener.html" title="&lt;TABLE&gt;" alt="" coords="3427,8987,3895,9098"/>
+<area shape="rect" id="node9_7" href="http://java.sun.com/j2se/1.4.2/docs/api/android/widget/ListView.html" title="android.widget.ListView" alt="" coords="3930,8526,4454,9559"/>
+<area shape="rect" id="node9" href="http://java.sun.com/j2se/1.4.2/docs/api/android/widget/ListView.html" title="&lt;TABLE&gt;" alt="" coords="3919,8521,4465,9565"/>
+<area shape="rect" id="node10_8" href="http://java.sun.com/j2se/1.4.2/docs/api/android/widget/TextView.html" title="android.widget.TextView" alt="" coords="4500,6743,5249,11342"/>
+<area shape="rect" id="node10" href="http://java.sun.com/j2se/1.4.2/docs/api/android/widget/TextView.html" title="&lt;TABLE&gt;" alt="" coords="4489,6738,5260,11347"/>
+<area shape="rect" id="node3_9" href="http://java.sun.com/j2se/1.4.2/docs/api/android/app/Activity.html" title="android.app.Activity" alt="" coords="2167,11,2971,3677"/>
+<area shape="rect" id="node3" href="http://java.sun.com/j2se/1.4.2/docs/api/android/app/Activity.html" title="&lt;TABLE&gt;" alt="" coords="2157,6,2982,3682"/>
+</map>

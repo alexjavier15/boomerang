@@ -1,0 +1,14 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="../questions/QuizQuestion.html" title="epfl.sweng.questions.QuizQuestion" alt="" coords="15,526,622,738"/>
+<area shape="rect" id="node1" href="../questions/QuizQuestion.html" title="&lt;TABLE&gt;" alt="" coords="5,521,633,743"/>
+<area shape="rect" id="node3_1" href="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/String.html" title="java.lang.String" alt="" coords="231,1134,759,2690"/>
+<area shape="rect" id="node3" href="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/String.html" title="&lt;TABLE&gt;" alt="" coords="220,1129,769,2695"/>
+<area shape="rect" id="node2_2" href="./JSONParser.html" title="epfl.sweng.servercomm.JSONParser" alt="" coords="723,11,1107,130"/>
+<area shape="rect" id="node2" href="./JSONParser.html" title="&lt;TABLE&gt;" alt="" coords="712,6,1117,135"/>
+<area shape="rect" id="node4_3" href="http://java.sun.com/j2se/1.4.2/docs/api/org/apache/http/HttpResponse.html" title="org.apache.http.HttpResponse" alt="" coords="719,498,1110,766"/>
+<area shape="rect" id="node4" href="http://java.sun.com/j2se/1.4.2/docs/api/org/apache/http/HttpResponse.html" title="&lt;TABLE&gt;" alt="" coords="709,493,1121,771"/>
+<area shape="rect" id="node5_4" href="http://java.sun.com/j2se/1.4.2/docs/api/org/json/JSONObject.html" title="org.json.JSONObject" alt="" coords="1156,190,1505,1074"/>
+<area shape="rect" id="node5" href="http://java.sun.com/j2se/1.4.2/docs/api/org/json/JSONObject.html" title="&lt;TABLE&gt;" alt="" coords="1145,185,1516,1079"/>
+<area shape="rect" id="node6_5" href="http://java.sun.com/j2se/1.4.2/docs/api/org/json/JSONArray.html" title="org.json.JSONArray" alt="" coords="1551,199,1865,1065"/>
+<area shape="rect" id="node6" href="http://java.sun.com/j2se/1.4.2/docs/api/org/json/JSONArray.html" title="&lt;TABLE&gt;" alt="" coords="1540,194,1876,1070"/>
+</map>

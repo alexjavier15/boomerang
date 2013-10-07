@@ -7,6 +7,7 @@ import java.util.Set;
  * 
  * @author Noortch
  * 
+ * 			This class represents a question.
  */
 public class QuizQuestion implements QuestionProvider {
 
@@ -16,13 +17,27 @@ public class QuizQuestion implements QuestionProvider {
 	private int solutionIndex;
 	private Set<String> tags;
 
-	public QuizQuestion(long id, String question, List<String> answers,
-			int solIndex, Set<String> tags) {
-		this.id = id;
-		this.question = question;
-		this.answers = answers;
+	/**
+	 * Constructor of a QuizQuestion : class to modelize a
+	 * quiz question at the json format.
+	 * @param id
+	 * 			of the question
+	 * @param question
+	 * 				String
+	 * @param answers
+	 * 				List of String
+	 * @param solIndex
+	 * 				int
+	 * @param tags
+	 * 			themas of the question
+	 */
+	public QuizQuestion(long iD, String quest, List<String> ans,
+			int solIndex, Set<String> tag) {
+		this.id = iD;
+		this.question = quest;
+		this.answers = ans;
 		this.solutionIndex = solIndex;
-		this.tags = tags;
+		this.tags = tag;
 	}
 
 	@Override

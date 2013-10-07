@@ -34,24 +34,30 @@ public class MainActivity extends Activity {
 	}
 
 	/**
-	 * Launches the new Activity ShowQuestionsActivity to display a random question
+	 * Launches the new Activity ShowQuestionsActivity to display a random
+	 * question
+	 * 
 	 * @param view
+	 *            The view that was clicked.
 	 */
 	public void askQuestion(View view) {
 		Toast.makeText(this, "You are on the page to show a random question!",
 				Toast.LENGTH_SHORT).show();
-		Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
+		Intent showQuestionActivityIntent = new Intent(this,
+				ShowQuestionsActivity.class);
 		startActivity(showQuestionActivityIntent);
 	}
 
 	/**
-	 * Launches the new Activity EditQuestionActivity to permit the user to submit a new
-	 * question to the server
+	 * Launches the new Activity EditQuestionActivity to permit the user to
+	 * submit a new question to the server
+	 * 
 	 * @param view
+	 *            The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
 		Toast.makeText(this, "You are on the page to submit a question!",
-				Toast.LENGTH_LONG).show();
+				Toast.LENGTH_SHORT).show();
 		Intent submitActivityIntent = new Intent(this,
 				EditQuestionActivity.class);
 		startActivity(submitActivityIntent);

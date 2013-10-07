@@ -1,0 +1,22 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./R.html" title="epfl.sweng.R" alt="" coords="17,151,66,233"/>
+<area shape="rect" id="node1" href="./R.html" title="&lt;TABLE&gt;" alt="" coords="5,146,77,238"/>
+<area shape="rect" id="node2_1" href="./R.attr.html" title="epfl.sweng.R.attr" alt="" coords="112,151,184,233"/>
+<area shape="rect" id="node2" href="./R.attr.html" title="&lt;TABLE&gt;" alt="" coords="101,146,195,238"/>
+<area shape="rect" id="node3_2" href="./R.dimen.html" title="epfl.sweng.R.dimen" alt="" coords="230,133,439,251"/>
+<area shape="rect" id="node3" href="./R.dimen.html" title="&lt;TABLE&gt;" alt="" coords="219,127,450,257"/>
+<area shape="rect" id="node4_3" href="./R.drawable.html" title="epfl.sweng.R.drawable" alt="" coords="485,151,609,233"/>
+<area shape="rect" id="node4" href="./R.drawable.html" title="&lt;TABLE&gt;" alt="" coords="474,146,619,238"/>
+<area shape="rect" id="node5_4" href="./R.id.html" title="epfl.sweng.R.id" alt="" coords="654,58,826,326"/>
+<area shape="rect" id="node5" href="./R.id.html" title="&lt;TABLE&gt;" alt="" coords="643,53,837,331"/>
+<area shape="rect" id="node6_5" href="./R.layout.html" title="epfl.sweng.R.layout" alt="" coords="871,123,1070,261"/>
+<area shape="rect" id="node6" href="./R.layout.html" title="&lt;TABLE&gt;" alt="" coords="861,118,1081,266"/>
+<area shape="rect" id="node7_6" href="./R.menu.html" title="epfl.sweng.R.menu" alt="" coords="1115,133,1266,251"/>
+<area shape="rect" id="node7" href="./R.menu.html" title="&lt;TABLE&gt;" alt="" coords="1105,127,1277,257"/>
+<area shape="rect" id="node8_7" href="./R.string.html" title="epfl.sweng.R.string" alt="" coords="1311,11,1539,373"/>
+<area shape="rect" id="node8" href="./R.string.html" title="&lt;TABLE&gt;" alt="" coords="1301,6,1550,378"/>
+<area shape="rect" id="node9_8" href="./R.style.html" title="epfl.sweng.R.style" alt="" coords="1585,142,1735,242"/>
+<area shape="rect" id="node9" href="./R.style.html" title="&lt;TABLE&gt;" alt="" coords="1574,137,1746,247"/>
+<area shape="rect" id="node10_9" href="./BuildConfig.html" title="epfl.sweng.BuildConfig" alt="" coords="1781,151,1917,233"/>
+<area shape="rect" id="node10" href="./BuildConfig.html" title="&lt;TABLE&gt;" alt="" coords="1771,146,1928,238"/>
+</map>
