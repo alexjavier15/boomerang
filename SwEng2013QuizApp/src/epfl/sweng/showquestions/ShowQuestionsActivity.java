@@ -101,7 +101,7 @@ public class ShowQuestionsActivity extends Activity {
 
 		fetchNewQuestion();
 		
-		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
+		
 	}
 
 	/**
@@ -138,7 +138,7 @@ public class ShowQuestionsActivity extends Activity {
 		
 		fetchNewQuestion();
 		
-		TestingTransactions.check(TTChecks.QUESTION_SHOWN);
+	
 	}
 
 	/**
@@ -216,6 +216,7 @@ public class ShowQuestionsActivity extends Activity {
 					answerChoices.setAdapter(adapter);
 
 					adapter.setNotifyOnChange(true);
+					TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 
 				}
 			}
