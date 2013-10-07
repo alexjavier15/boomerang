@@ -2,6 +2,7 @@ package epfl.sweng.editquestions;
 
 import java.util.ArrayList;
 import epfl.sweng.R;
+import epfl.sweng.testing.Debug;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -57,6 +58,13 @@ public class EditQuestionActivity extends Activity {
 	 * @param view
 	 */
 	public void submitQuestion(View view) {
+		
+		
+		
+		
+		
+		
+		
 		if (isValid()) {
 			Toast.makeText(this, "Your submission was successful!",
 					Toast.LENGTH_SHORT).show();
@@ -76,11 +84,16 @@ public class EditQuestionActivity extends Activity {
 				|| fetch.size() < 2) {
 			return false;
 		}
-		for (Answer answer : fetch) {
+		Debug.out("Looking for correct " + correct + " entries "+  adapter.getEntries().size()  );
+		for (Answer answer : adapter.getEntries()) {
+			
+			Debug.out("answer " + answer);
 			if (answer.getChecked().equals(
 					getResources().getString(R.string.heavy_check_mark))) {
 				correct++;
+				Debug.out("correct " + correct);	
 			}
+			
 			if (answer.getAnswer().trim().equals("")) {
 				return false;
 			}

@@ -2,6 +2,7 @@ package epfl.sweng.editquestions;
 
 import java.util.ArrayList;
 import epfl.sweng.R;
+import epfl.sweng.testing.Debug;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,26 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 		this.context = context;
 		this.entries = entries;
 	}
+	
+	
+
+	/**
+	 * @return the entries
+	 */
+	public ArrayList<Answer> getEntries() {
+		return entries;
+	}
+
+
+
+	/**
+	 * @param entries the entries to set
+	 */
+	public void setEntries(ArrayList<Answer> entries) {
+		this.entries = entries;
+	}
+
+
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
@@ -88,7 +109,9 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 		Answer answer = entries.get(position);
 		if (answer != null) {
 			holder.checkButton.setText(answer.getChecked());
-			holder.answerText.setText(holder.answerText.getText());
+			Debug.out(holder.answerText.getText().toString());
+			answer.setAnswer(holder.answerText.getText().toString());
+			holder.answerText.setText(answer.getAnswer());
 			holder.removeButton.setText(answer.getRemoved());
 		}
 		return view;

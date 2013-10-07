@@ -39,4 +39,14 @@ public class Answer {
 	public void setRemoved(String removed) {
 		this.removed = removed;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "checked : " + checked + " answer : " + answer; 
+	}
+	
 }
