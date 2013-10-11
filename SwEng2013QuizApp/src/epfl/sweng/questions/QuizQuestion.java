@@ -20,15 +20,15 @@ public class QuizQuestion implements QuestionProvider {
 	/**
 	 * Constructor of a QuizQuestion : class to modelize a
 	 * quiz question at the json format.
-	 * @param id
+	 * @param iD
 	 * 			of the question
-	 * @param question
+	 * @param quest
 	 * 				String
-	 * @param answers
+	 * @param ans
 	 * 				List of String
 	 * @param solIndex
 	 * 				int
-	 * @param tags
+	 * @param tag
 	 * 			themas of the question
 	 */
 	public QuizQuestion(long iD, String quest, List<String> ans,

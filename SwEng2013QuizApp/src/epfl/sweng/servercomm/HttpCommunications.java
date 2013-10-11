@@ -56,7 +56,8 @@ public class HttpCommunications {
 	 * 			URL of the server on which we want to post the question.
 	 * @param question
 	 * 			The question that we want to post on the server.
-	 * @return
+	 * @return boolean
+	 * 			true if the server has received the Question
 	 * @throws JSONException
 	 * @throws IOException
 	 */

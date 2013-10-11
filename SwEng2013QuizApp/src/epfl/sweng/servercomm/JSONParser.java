@@ -28,7 +28,7 @@ public class JSONParser {
 	 * Parses a JSONObject from an HttpResponse to a QuizQuestion
 	 * 
 	 * @param response
-	 * @return
+	 * @return QuizQuestion
 	 * @throws HttpResponseException
 	 * @throws JSONException
 	 * @throws IOException
@@ -64,7 +64,7 @@ public class JSONParser {
 	 * Parses a QuizQuestion to a JSONObject
 	 * 
 	 * @param question
-     * @return
+     * @return jsonObject
 	 * @throws JSONException
 	 */
 	public static JSONObject parseQuiztoJSON(QuizQuestion question)
@@ -85,7 +85,7 @@ public class JSONParser {
 	 * Parses a JSONArray to a StringArray
 	 * 
 	 * @param array
-	 * @return
+	 * @return String[]
 	 * @throws JSONException
 	 */
 	private static String[] jsonArrayToStringArray(JSONArray array)
