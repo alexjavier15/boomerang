@@ -83,7 +83,7 @@ public class ShowQuestionsActivity extends Activity {
 					result = getResources()
 							.getString(R.string.heavy_check_mark);
 					((Button) findViewById(R.id.next_question))
-							.setClickable(true);
+							.setEnabled(true);
 					list.setOnItemClickListener(null);
 					// answerChoices.setOnClickListener(null);
 
@@ -92,7 +92,7 @@ public class ShowQuestionsActivity extends Activity {
 				String newText = textListener.getText().toString() + result;
 				textListener.setText(newText);
 				lastChoice = selectedAnswer;
-				
+
 				TestingTransactions.check(TTChecks.ANSWER_SELECTED);
 			}
 
@@ -100,15 +100,14 @@ public class ShowQuestionsActivity extends Activity {
 		answerChoices.setOnItemClickListener(answerListener);
 
 		fetchNewQuestion();
-		
-		
+
 	}
 
 	/**
 	 * Launches the HTTPGET operation to display a new random question
 	 */
 	public void fetchNewQuestion() {
-		((Button) findViewById(R.id.next_question)).setClickable(false);
+		((Button) findViewById(R.id.next_question)).setEnabled(false);
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
@@ -135,17 +134,15 @@ public class ShowQuestionsActivity extends Activity {
 	 */
 	public void askNextQuestion(View view) {
 		answerChoices.setOnItemClickListener(answerListener);
-		
+
 		fetchNewQuestion();
-		
-	
+
 	}
 
 	/**
 	 * 
-	 * @author albanMarguet
-	 * Permits to do an asyncTask in order to get the quiz question
-	 * soon enough for the user.
+	 * @author albanMarguet Permits to do an asyncTask in order to get the quiz
+	 *         question soon enough for the user.
 	 */
 	private class HttpCommsBackgroundTask extends
 			AsyncTask<String, Void, QuizQuestion> {
@@ -224,7 +221,9 @@ public class ShowQuestionsActivity extends Activity {
 
 		/**
 		 * Get the tags of the question to display them on the screen
-		 * @param setTags : set of Strings
+		 * 
+		 * @param setTags
+		 *            : set of Strings
 		 * @return the tags
 		 */
 		private String displayTags(Set<String> setTags) {
@@ -232,7 +231,7 @@ public class ShowQuestionsActivity extends Activity {
 				System.out.println("Va afficher les tags");
 				String tagsInString = "";
 				int counter = 0;
-				
+
 				for (String s : setTags) {
 					counter++;
 					if (counter == setTags.size()) {
@@ -241,10 +240,10 @@ public class ShowQuestionsActivity extends Activity {
 						tagsInString += s + ", ";
 					}
 				}
-				
+
 				return tagsInString;
 			} else {
-				
+
 				return "No tags for this question";
 			}
 		}
