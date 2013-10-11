@@ -4,6 +4,6 @@ import epfl.sweng.questions.QuizQuestion;
 
 public interface QuestionReader {
 	
-	public  void readQuestion(QuizQuestion question);
+	void readQuestion(QuizQuestion question);
 
 }

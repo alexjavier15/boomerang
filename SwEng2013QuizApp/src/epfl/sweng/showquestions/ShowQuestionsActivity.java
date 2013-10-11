@@ -43,6 +43,7 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 		setContentView(R.layout.activity_show_questions);
 		
 		String[] questionRcvd = getIntent().getExtras().getStringArray("questionName");
+		Debug.out(questionRcvd);
 		QuizQuestion question = new QuizQuestion(questionRcvd);
 		readQuestion(question);
 
