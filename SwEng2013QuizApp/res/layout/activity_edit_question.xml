@@ -35,9 +35,11 @@
         android:hint="@string/edit_tags" />
 
     <Button
+        android:id="@+id/submit_button"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:enabled="false"
         android:onClick="submitQuestion"
         android:text="@string/submit_button" />
 

@@ -26,6 +26,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -55,7 +56,7 @@ public class EditQuestionActivity extends Activity {
 
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
-						R.string.hyphen_minus));
+				R.string.hyphen_minus));
 
 		fetch.add(firstAnswer);
 		adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview,
@@ -79,8 +80,17 @@ public class EditQuestionActivity extends Activity {
 					int after) {
 			}
 
+			/**
+			 * Validates the whole question after each change to enable submit
+			 * button.
+			 */
 			@Override
 			public void afterTextChanged(Editable s) {
+				((Button) findViewById(R.id.submit_button)).setEnabled(false);
+				if (isValid()) {
+					((Button) findViewById(R.id.submit_button))
+							.setEnabled(true);
+				}
 			}
 		};
 
@@ -111,7 +121,7 @@ public class EditQuestionActivity extends Activity {
 	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
-						R.string.hyphen_minus));
+				R.string.hyphen_minus));
 
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
@@ -235,7 +245,6 @@ public class EditQuestionActivity extends Activity {
 					.println("The question is empty or the list size is smaller than 2!");
 			return false;
 		}
-
 
 		System.out
 				.println("The question is valid!\nChecking the answers with fetch size : "
