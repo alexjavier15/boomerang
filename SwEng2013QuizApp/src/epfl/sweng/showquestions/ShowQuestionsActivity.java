@@ -1,17 +1,11 @@
 package epfl.sweng.showquestions;
 
-import java.io.IOException;
 import java.util.Set;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
 
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -24,7 +18,7 @@ import android.widget.TextView;
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommunications;
-import epfl.sweng.servercomm.JSONParser;
+import epfl.sweng.servercomm.QuestionReader;
 import epfl.sweng.testing.Debug;
 import epfl.sweng.testing.TestingTransactions;
 import epfl.sweng.testing.TestingTransactions.TTChecks;
@@ -34,7 +28,7 @@ import epfl.sweng.testing.TestingTransactions.TTChecks;
  * @author AlbanMarguet & LorenzoLeon
  * 
  */
-public class ShowQuestionsActivity extends Activity {
+public class ShowQuestionsActivity extends Activity implements QuestionReader {
 	private TextView text;
 	private TextView tags;
 	private ListView answerChoices;
@@ -47,6 +41,10 @@ public class ShowQuestionsActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show_questions);
+		
+		String[] questionRcvd = getIntent().getExtras().getStringArray("questionName");
+		QuizQuestion question = new QuizQuestion(questionRcvd);
+		readQuestion(question);
 
 		View found = findViewById(R.id.answer_choices);
 		answerChoices = (ListView) found;
@@ -66,6 +64,9 @@ public class ShowQuestionsActivity extends Activity {
 				TextView textListener = (TextView) list
 						.getChildAt(selectedAnswer);
 
+				// TRY IT
+				((Button) findViewById(R.id.next_question)).setEnabled(false);
+
 				if (lastChoice != -1) {
 					TextView lastChild = (TextView) list.getChildAt(lastChoice);
 					if (lastChild != null) {
@@ -76,12 +77,12 @@ public class ShowQuestionsActivity extends Activity {
 					}
 				}
 
-				String result = getResources().getString(
+				String question = getResources().getString(
 						R.string.heavy_ballot_x);
 
 				if (currrentQuestion.checkAnswer(selectedAnswer)) {
-					result = getResources()
-							.getString(R.string.heavy_check_mark);
+					question = getResources().getString(
+							R.string.heavy_check_mark);
 					((Button) findViewById(R.id.next_question))
 							.setEnabled(true);
 					list.setOnItemClickListener(null);
@@ -89,7 +90,7 @@ public class ShowQuestionsActivity extends Activity {
 
 				}
 
-				String newText = textListener.getText().toString() + result;
+				String newText = textListener.getText().toString() + question;
 				textListener.setText(newText);
 				lastChoice = selectedAnswer;
 
@@ -140,108 +141,60 @@ public class ShowQuestionsActivity extends Activity {
 	}
 
 	/**
+	 * Get the tags of the question to display them on the screen
 	 * 
-	 * @author albanMarguet Permits to do an asyncTask in order to get the quiz
-	 *         question soon enough for the user.
+	 * @param setTags
+	 *            : set of Strings
+	 * @return the tags
 	 */
-	private class HttpCommsBackgroundTask extends
-			AsyncTask<String, Void, QuizQuestion> {
-		private ShowQuestionsActivity activity;
+	private String displayTags(Set<String> setTags) {
+		if (setTags.size() > 0) {
+			System.out.println("Va afficher les tags");
+			String tagsInString = "";
+			int counter = 0;
 
-		public HttpCommsBackgroundTask(ShowQuestionsActivity act) {
-			super();
-			this.activity = act;
-		}
-
-		/**
-		 * Getting the question on the server asynchronously. Called by
-		 * execute().
-		 */
-		@Override
-		protected QuizQuestion doInBackground(String... params) {
-
-			HttpResponse response = null;
-			QuizQuestion quizQuestion = null;
-
-			try {
-				response = HttpCommunications.getHttpResponse(params[0]);
-
-				if (response != null) {
-					quizQuestion = JSONParser.parseJsonToQuiz(response);
+			for (String s : setTags) {
+				counter++;
+				if (counter == setTags.size()) {
+					tagsInString += s;
 				} else {
-					Debug.out("can't get an answer from the server");
+					tagsInString += s + ", ";
 				}
-
-			} catch (ClientProtocolException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
-			return quizQuestion;
+
+			return tagsInString;
+		} else {
+
+			return "No tags for this question";
 		}
+	}
 
-		/**
-		 * Set the text on the screen with the fetched random question. Called
-		 * by execute() right after doInBackground().
-		 */
-		@Override
-		protected void onPostExecute(QuizQuestion result) {
-			Debug.out(result);
+	@Override
+	public void readQuestion(QuizQuestion question) {
+		Debug.out(question);
 
-			if (result == null) {
-				text.setText("No question can be obtained !");
-			} else if (text == null) {
+		if (question == null) {
+			text.setText("No question can be obtained !");
+		} else if (text == null) {
+			Debug.out("null textview");
+		} else {
+			if (text == null) {
 				Debug.out("null textview");
 			} else {
-				if (text == null) {
-					Debug.out("null textview");
-				} else {
-					// We've got a satisfying result => treating it
-					currrentQuestion = result;
+				// We've got a satisfying question => treating it
+				currrentQuestion = question;
 
-					text.setText(result.getQuestion());
-					tags.setText(displayTags(result.getSetOfTags()));
-					adapter = new ArrayAdapter<String>(activity,
-							android.R.layout.simple_list_item_1,
-							result.getAnswers());
+				text.setText(question.getQuestion());
+				tags.setText(displayTags(question.getSetOfTags()));
+				adapter = new ArrayAdapter<String>(this,
+						android.R.layout.simple_list_item_1,
+						question.getAnswers());
 
-					answerChoices.setAdapter(adapter);
+				answerChoices.setAdapter(adapter);
 
-					adapter.setNotifyOnChange(true);
-					TestingTransactions.check(TTChecks.QUESTION_SHOWN);
+				adapter.setNotifyOnChange(true);
+				TestingTransactions.check(TTChecks.QUESTION_SHOWN);
 
-				}
-			}
-		}
-
-		/**
-		 * Get the tags of the question to display them on the screen
-		 * 
-		 * @param setTags
-		 *            : set of Strings
-		 * @return the tags
-		 */
-		private String displayTags(Set<String> setTags) {
-			if (setTags.size() > 0) {
-				System.out.println("Va afficher les tags");
-				String tagsInString = "";
-				int counter = 0;
-
-				for (String s : setTags) {
-					counter++;
-					if (counter == setTags.size()) {
-						tagsInString += s;
-					} else {
-						tagsInString += s + ", ";
-					}
-				}
-
-				return tagsInString;
-			} else {
-
-				return "No tags for this question";
 			}
 		}
 
