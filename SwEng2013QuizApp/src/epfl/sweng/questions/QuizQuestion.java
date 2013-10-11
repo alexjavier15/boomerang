@@ -1,5 +1,6 @@
 package epfl.sweng.questions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -16,7 +17,7 @@ public class QuizQuestion implements QuestionProvider {
 	private List<String> answers;
 	private int solutionIndex;
 	private Set<String> tags;
-	private int numberParameter;
+	private int minimumNumberParameter;
 
 	/**
 	 * Constructor of a QuizQuestion : class to modelize a quiz question at the
@@ -41,27 +42,35 @@ public class QuizQuestion implements QuestionProvider {
 		this.solutionIndex = solIndex;
 		this.tags = tag;
 	}
-
+	/**
+	 * Constructor for QuizQuestion.
+	 * 
+	 * The order must be :
+	 * 		1) id - int
+	 * 		2) question - String
+	 * 		3) number of answers - int
+	 * 		4) answers - String
+	 * 		5) solutionIndex - int
+	 * 		6) number of tags - int
+	 * 		7) tags - String
+	 * 
+	 * @param tabQuestion
+	 * 			String tab with right parameters
+	 */
 	public QuizQuestion(String[] tabQuestion) {
-		int idPlace = 0;
-		int questionPlace = 1;
-		int answersSizePlace = 2;
-		int answersPlace = 3;
-		int solutionIndexPlace = 3 + answersSizePlace;
-		int tagsSizePlace = 4 + answersSizePlace;
-		int tagsPlace = 5 + answersSizePlace;
-		if (tabQuestion.length >= numberParameter) {
+		if (tabQuestion.length >= minimumNumberParameter) {
+			int pos = 0;
 			try {
-				id = Integer.parseInt(tabQuestion[idPlace]);
-				question = tabQuestion[questionPlace];
-				int answersSize = Integer.parseInt(tabQuestion[answersSizePlace]);
+				id = Integer.parseInt(tabQuestion[pos++]);
+				question = tabQuestion[pos++];
+				int answersSize = Integer.parseInt(tabQuestion[pos++]);
 				for (int i = 0; i < answersSize; i++) {
-					answers.add(tabQuestion[answersPlace + i]);
+					answers.add(tabQuestion[pos++]);
 				}
-				solutionIndex = Integer.parseInt(tabQuestion[solutionIndexPlace]);
-				int tagsSize = Integer.parseInt(tabQuestion[tagsSizePlace]);
+				solutionIndex = Integer.parseInt(tabQuestion[pos++]);
+				int tagsSize = Integer.parseInt(tabQuestion[pos++]);
 				for (int i = 0; i < tagsSize; i++) {
-					tags.add(tabQuestion[tagsPlace + i]);
+					tags.add(tabQuestion[pos++]);
 				}
 			} catch (NumberFormatException e) {
 			} catch (IndexOutOfBoundsException e) {
@@ -69,6 +78,34 @@ public class QuizQuestion implements QuestionProvider {
 		} else {
 			System.out.println("This is not a valid question!");
 		}
+	}
+	
+	/**
+	 * Takes a QuizQuestion and changes it into a String array.
+	 * 
+	 * The elements in the new array are in the following order:
+	 * 		1) id - int
+	 * 		2) question - String
+	 * 		3) number of answers - int
+	 * 		4) answers - String
+	 * 		5) solutionIndex - int
+	 * 		6) number of tags - int
+	 * 		7) tags - String
+	 * 
+	 * @param quizQuestion
+	 * 			the one to be transformed
+	 * @return
+	 */
+	public String[] getTabQuestion(QuizQuestion quizQuestion) {
+		ArrayList<String> tabQuestion = new ArrayList<String>();
+		tabQuestion.add(quizQuestion.getID()+"");
+		tabQuestion.add(quizQuestion.getQuestion());
+		tabQuestion.add(quizQuestion.getAnswers().size()+"");
+		tabQuestion.addAll(quizQuestion.getAnswers());
+		tabQuestion.add(quizQuestion.getIndex()+"");
+		tabQuestion.add(quizQuestion.getSetOfTags().size()+"");
+		tabQuestion.addAll(quizQuestion.getSetOfTags());
+		return tabQuestion.toArray(new String[0]);
 	}
 
 	@Override
