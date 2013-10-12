@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import epfl.sweng.testing.Debug;
+
 /**
  * 
  * @author Noortch
@@ -61,11 +63,18 @@ public class QuizQuestion implements QuestionProvider {
 		if (tabQuestion.length >= minimumNumberParameter) {
 			int pos = 0;
 			try {
-				id = Integer.parseInt(tabQuestion[pos++]);
+				Debug.out("tabQuestion length : " + tabQuestion.length);
+				id = Long.parseLong(tabQuestion[pos++]);
+				Debug.out(pos);
 				question = tabQuestion[pos++];
+				Debug.out(question);
 				int answersSize = Integer.parseInt(tabQuestion[pos++]);
+				Debug.out("answersize : " + answersSize);
 				for (int i = 0; i < answersSize; i++) {
+					Debug.out(tabQuestion[pos]);
+					Debug.out(tabQuestion[pos + 1]);
 					answers.add(tabQuestion[pos++]);
+					Debug.out("pass pos" + pos);
 				}
 				solutionIndex = Integer.parseInt(tabQuestion[pos++]);
 				int tagsSize = Integer.parseInt(tabQuestion[pos++]);
@@ -105,7 +114,7 @@ public class QuizQuestion implements QuestionProvider {
 		tabQuestion.add(quizQuestion.getIndex()+"");
 		tabQuestion.add(quizQuestion.getSetOfTags().size()+"");
 		tabQuestion.addAll(quizQuestion.getSetOfTags());
-		return tabQuestion.toArray(new String[0]);
+		return (String[]) tabQuestion.toArray(new String[tabQuestion.size()]);
 	}
 
 	@Override

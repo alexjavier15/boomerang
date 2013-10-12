@@ -85,7 +85,6 @@ public class MainActivity extends Activity implements QuestionReader {
 	public void readQuestion(QuizQuestion question) {
 		ArrayList<String> questionComponents = new ArrayList<String>();
 		if (question != null) {
-
 			questionComponents.add(Long.toString(question.getID()));
 			questionComponents.add(question.getQuestion());
 			questionComponents.add(Integer.toString(question.getAnswers()
@@ -98,7 +97,8 @@ public class MainActivity extends Activity implements QuestionReader {
 			Intent showQuestionActivityIntent = new Intent(this,
 					ShowQuestionsActivity.class);
 			showQuestionActivityIntent.putExtra("questionName",
-					questionComponents.toArray());
+					(String[]) questionComponents
+							.toArray(new String[questionComponents.size()]));
 			this.startActivity(showQuestionActivityIntent);
 		}
 
