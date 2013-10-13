@@ -17,7 +17,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
-import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.QuestionReader;
 import epfl.sweng.testing.Debug;
 import epfl.sweng.testing.TestingTransactions;
