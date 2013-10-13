@@ -19,7 +19,7 @@ import epfl.sweng.testing.Debug;
  * @author albanMarguet & LorenzoLeon
  * 
  */
-public class HttpCommsBackgroundTask extends AsyncTask<String, Void, QuizQuestion> {
+public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, QuizQuestion> {
 	
 	private QuestionReader reader;
 
@@ -32,14 +32,14 @@ public class HttpCommsBackgroundTask extends AsyncTask<String, Void, QuizQuestio
 	 * Getting the question on the server asynchronously. Called by execute().
 	 */
 	@Override
-	protected QuizQuestion doInBackground(String... params) {
+	protected QuizQuestion doInBackground(Void... arg) {
 
 		HttpResponse response = null;
 		QuizQuestion quizQuestion = null;
 
 		try {
 
-			response = HttpCommunications.getHttpResponse(params[0]);
+			response = HttpCommunications.getHttpResponse();
 			if (response != null) {
 				quizQuestion = JSONParser.parseJsonToQuiz(response);
 			} else {

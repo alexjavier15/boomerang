@@ -42,9 +42,6 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show_questions);
 
-		QuizQuestion question = new QuizQuestion(getIntent());
-		readQuestion(question);
-
 		View found = findViewById(R.id.answer_choices);
 		answerChoices = (ListView) found;
 		// answerChoices = (ListView) findViewById(R.id.answer_choices);
@@ -98,6 +95,9 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 
 		};
 		answerChoices.setOnItemClickListener(answerListener);
+		//reads intent and displays the question
+		QuizQuestion question = new QuizQuestion(getIntent());
+		readQuestion(question);
 
 	}
 
@@ -113,7 +113,7 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 			text.setText("You are currently not connected to a network.");
 		} else {
 			Debug.out("starting fetching");
-			new HttpCommsBackgroundTask(this).execute(HttpCommunications.URL);
+			new HttpCommsBackgroundTask(this).execute();
 		}
 	}
 
