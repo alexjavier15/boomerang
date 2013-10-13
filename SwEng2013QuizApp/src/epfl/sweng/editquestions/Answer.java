@@ -1,7 +1,8 @@
 package epfl.sweng.editquestions;
 
-import epfl.sweng.testing.TestingTransactions;
-import epfl.sweng.testing.TestingTransactions.TTChecks;
+import epfl.sweng.testing.TestCoordinator;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
+
 
 /**
  * 
@@ -50,7 +51,7 @@ public class Answer {
 
 	public void setAnswer(String receivedAnswer) {
 		if (!receivedAnswer.equals(this.answer)) {
-			TestingTransactions.check(TTChecks.QUESTION_EDITED);
+			TestCoordinator.check(TTChecks.QUESTION_EDITED);
 			this.answer = receivedAnswer;
 		}
 	}

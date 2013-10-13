@@ -7,8 +7,8 @@ import epfl.sweng.servercomm.QuestionReader;
 import epfl.sweng.showquestions.HttpCommsBackgroundTask;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.Debug;
-import epfl.sweng.testing.TestingTransactions;
-import epfl.sweng.testing.TestingTransactions.TTChecks;
+import epfl.sweng.testing.TestCoordinator;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -30,7 +30,7 @@ public class MainActivity extends Activity implements QuestionReader {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		TestingTransactions.check(TTChecks.MAIN_ACTIVITY_SHOWN);
+		TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
 	}
 
 	@Override

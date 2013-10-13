@@ -19,8 +19,8 @@ import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.QuestionReader;
 import epfl.sweng.testing.Debug;
-import epfl.sweng.testing.TestingTransactions;
-import epfl.sweng.testing.TestingTransactions.TTChecks;
+import epfl.sweng.testing.TestCoordinator;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 /**
  * 
@@ -89,7 +89,7 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 				textListener.setText(newText);
 				lastChoice = selectedAnswer;
 
-				TestingTransactions.check(TTChecks.ANSWER_SELECTED);
+				TestCoordinator.check(TTChecks.ANSWER_SELECTED);
 			}
 
 		};
@@ -185,7 +185,7 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 				answerChoices.setAdapter(adapter);
 
 				adapter.setNotifyOnChange(true);
-				TestingTransactions.check(TTChecks.QUESTION_SHOWN);
+				TestCoordinator.check(TTChecks.QUESTION_SHOWN);
 
 			}
 		}

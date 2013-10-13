@@ -16,8 +16,8 @@ import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.JSONParser;
-import epfl.sweng.testing.TestingTransactions;
-import epfl.sweng.testing.TestingTransactions.TTChecks;
+import epfl.sweng.testing.TestCoordinator;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -71,7 +71,7 @@ public class EditQuestionActivity extends Activity {
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
 				if (!adapter.getReset()) {
-					TestingTransactions.check(TTChecks.QUESTION_EDITED);
+					TestCoordinator.check(TTChecks.QUESTION_EDITED);
 				}
 			}
 
@@ -100,7 +100,7 @@ public class EditQuestionActivity extends Activity {
 		EditText tagsText = (EditText) findViewById(R.id.edit_tagsText);
 		tagsText.addTextChangedListener(watcher);
 
-		TestingTransactions.check(TTChecks.EDIT_QUESTIONS_SHOWN);
+		TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
 	}
 
 	@Override
@@ -126,7 +126,7 @@ public class EditQuestionActivity extends Activity {
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
 		if (!adapter.getReset()) {
-			TestingTransactions.check(TTChecks.QUESTION_EDITED);
+			TestCoordinator.check(TTChecks.QUESTION_EDITED);
 		}
 
 	}
@@ -298,7 +298,7 @@ public class EditQuestionActivity extends Activity {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			TestingTransactions.check(TTChecks.NEW_QUESTION_SUBMITTED);
+			TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
 			return responsecheck;
 		}
 
