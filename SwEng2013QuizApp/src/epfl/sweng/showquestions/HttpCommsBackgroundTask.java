@@ -15,11 +15,12 @@ import epfl.sweng.testing.Debug;
 
 /**
  * Handle the AsyncTask before ShowQuestionActivity is created
- * @author albanMarguet
- *
+ * 
+ * @author albanMarguet & LorenzoLeon
+ * 
  */
-public class HttpCommsBackgroundTask extends
-		AsyncTask<String, Void, QuizQuestion> {
+public class HttpCommsBackgroundTask extends AsyncTask<String, Void, QuizQuestion> {
+	
 	private QuestionReader reader;
 
 	public HttpCommsBackgroundTask(QuestionReader reader) {
@@ -37,7 +38,7 @@ public class HttpCommsBackgroundTask extends
 		QuizQuestion quizQuestion = null;
 
 		try {
-			
+
 			response = HttpCommunications.getHttpResponse(params[0]);
 			if (response != null) {
 				quizQuestion = JSONParser.parseJsonToQuiz(response);
@@ -56,8 +57,8 @@ public class HttpCommsBackgroundTask extends
 	}
 
 	/**
-	 * Send the informations of the fetched random question. Called by
-	 * execute() right after doInBackground().
+	 * Send the informations of the fetched random question. Called by execute()
+	 * right after doInBackground().
 	 */
 	@Override
 	protected void onPostExecute(QuizQuestion result) {
@@ -65,8 +66,6 @@ public class HttpCommsBackgroundTask extends
 		if (result != null) {
 			reader.readQuestion(result);
 		}
-
-		
 
 	}
 }

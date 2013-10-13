@@ -41,10 +41,8 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show_questions);
-		
-		String[] questionRcvd = getIntent().getStringArrayExtra("questionName");
-		Debug.out(questionRcvd);
-		QuizQuestion question = new QuizQuestion(questionRcvd);
+
+		QuizQuestion question = new QuizQuestion(getIntent());
 		readQuestion(question);
 
 		View found = findViewById(R.id.answer_choices);
@@ -100,8 +98,6 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 
 		};
 		answerChoices.setOnItemClickListener(answerListener);
-
-		fetchNewQuestion();
 
 	}
 
@@ -176,8 +172,6 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 
 		if (question == null) {
 			text.setText("No question can be obtained !");
-		} else if (text == null) {
-			Debug.out("null textview");
 		} else {
 			if (text == null) {
 				Debug.out("null textview");

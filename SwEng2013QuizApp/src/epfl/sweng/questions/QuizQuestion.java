@@ -1,10 +1,12 @@
 package epfl.sweng.questions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import epfl.sweng.testing.Debug;
+import android.content.Intent;
 
 /**
  * 
@@ -16,11 +18,9 @@ public class QuizQuestion implements QuestionProvider {
 
 	private long id;
 	private String question;
-	private List<String> answers;
+	private ArrayList<String> answers;
 	private int solutionIndex;
 	private Set<String> tags;
-	private int minimumNumberParameter;
-
 	/**
 	 * Constructor of a QuizQuestion : class to modelize a quiz question at the
 	 * json format.
@@ -40,81 +40,48 @@ public class QuizQuestion implements QuestionProvider {
 			Set<String> tag) {
 		this.id = iD;
 		this.question = quest;
-		this.answers = ans;
+		this.answers = new ArrayList<String>(ans);
 		this.solutionIndex = solIndex;
 		this.tags = tag;
 	}
+
 	/**
 	 * Constructor for QuizQuestion.
 	 * 
-	 * The order must be :
-	 * 		1) id - int
-	 * 		2) question - String
-	 * 		3) number of answers - int
-	 * 		4) answers - String
-	 * 		5) solutionIndex - int
-	 * 		6) number of tags - int
-	 * 		7) tags - String
+	 * The order must be : 1) id - int 2) question - String 3) number of answers
+	 * - int 4) answers - String 5) solutionIndex - int 6) number of tags - int
+	 * 7) tags - String
 	 * 
 	 * @param tabQuestion
-	 * 			String tab with right parameters
+	 *            String tab with right parameters
 	 */
-	public QuizQuestion(String[] tabQuestion) {
-		if (tabQuestion.length >= minimumNumberParameter) {
-			int pos = 0;
-			try {
-				Debug.out("tabQuestion length : " + tabQuestion.length);
-				id = Long.parseLong(tabQuestion[pos++]);
-				Debug.out(pos);
-				question = tabQuestion[pos++];
-				Debug.out(question);
-				int answersSize = Integer.parseInt(tabQuestion[pos++]);
-				Debug.out("answersize : " + answersSize);
-				for (int i = 0; i < answersSize; i++) {
-					Debug.out(tabQuestion[pos]);
-					Debug.out(tabQuestion[pos + 1]);
-					answers.add(tabQuestion[pos++]);
-					Debug.out("pass pos" + pos);
-				}
-				solutionIndex = Integer.parseInt(tabQuestion[pos++]);
-				int tagsSize = Integer.parseInt(tabQuestion[pos++]);
-				for (int i = 0; i < tagsSize; i++) {
-					tags.add(tabQuestion[pos++]);
-				}
-			} catch (NumberFormatException e) {
-			} catch (IndexOutOfBoundsException e) {
-			}
-		} else {
-			System.out.println("This is not a valid question!");
-		}
+
+	public QuizQuestion(Intent intent) {
+		this.id = intent.getLongExtra("id", 0);
+		this.question = intent.getStringExtra("question");
+		this.answers = intent.getStringArrayListExtra("answers");
+		this.solutionIndex = intent.getIntExtra("index", 0);
+		this.tags = new HashSet<String>(Arrays.asList(intent
+				.getStringArrayExtra("tags")));
 	}
-	
+
 	/**
-	 * Takes a QuizQuestion and changes it into a String array.
+	 * Takes an Intent and adds as Extra data bundle all information related to
+	 * this QuizQuestion.
 	 * 
-	 * The elements in the new array are in the following order:
-	 * 		1) id - int
-	 * 		2) question - String
-	 * 		3) number of answers - int
-	 * 		4) answers - String
-	 * 		5) solutionIndex - int
-	 * 		6) number of tags - int
-	 * 		7) tags - String
+	 * The elements in the new bundle are mapped to their names as in the
+	 * private fields :
 	 * 
 	 * @param quizQuestion
-	 * 			the one to be transformed
+	 *            the one to be transformed
 	 * @return
 	 */
-	public String[] getTabQuestion(QuizQuestion quizQuestion) {
-		ArrayList<String> tabQuestion = new ArrayList<String>();
-		tabQuestion.add(quizQuestion.getID()+"");
-		tabQuestion.add(quizQuestion.getQuestion());
-		tabQuestion.add(quizQuestion.getAnswers().size()+"");
-		tabQuestion.addAll(quizQuestion.getAnswers());
-		tabQuestion.add(quizQuestion.getIndex()+"");
-		tabQuestion.add(quizQuestion.getSetOfTags().size()+"");
-		tabQuestion.addAll(quizQuestion.getSetOfTags());
-		return (String[]) tabQuestion.toArray(new String[tabQuestion.size()]);
+	public void addExtraDatatoIntent(Intent intent) {
+		intent.putExtra("id", this.id);
+		intent.putExtra("question", this.question);
+		intent.putStringArrayListExtra("answers", answers);
+		intent.putExtra("index", this.solutionIndex);
+		intent.putExtra("tags", this.tags.toArray(new String[0]));
 	}
 
 	@Override

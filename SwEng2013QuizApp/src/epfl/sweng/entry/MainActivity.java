@@ -83,22 +83,10 @@ public class MainActivity extends Activity implements QuestionReader {
 
 	@Override
 	public void readQuestion(QuizQuestion question) {
-		ArrayList<String> questionComponents = new ArrayList<String>();
 		if (question != null) {
-			questionComponents.add(Long.toString(question.getID()));
-			questionComponents.add(question.getQuestion());
-			questionComponents.add(Integer.toString(question.getAnswers()
-					.size()));
-			questionComponents.addAll(question.getAnswers());
-			questionComponents.add(Integer.toString(question.getIndex()));
-			questionComponents.add(Integer.toString(question.getSetOfTags()
-					.size()));
-			questionComponents.addAll(question.getSetOfTags());
 			Intent showQuestionActivityIntent = new Intent(this,
 					ShowQuestionsActivity.class);
-			showQuestionActivityIntent.putExtra("questionName",
-					(String[]) questionComponents
-							.toArray(new String[questionComponents.size()]));
+			question.addExtraDatatoIntent(showQuestionActivityIntent);
 			this.startActivity(showQuestionActivityIntent);
 		}
 
