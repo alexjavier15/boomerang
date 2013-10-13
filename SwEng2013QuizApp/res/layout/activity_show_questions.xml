@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:clickable="false"
+        android:clickable="true"
         android:onClick="askNextQuestion"
         android:text="@string/next_question" />
 

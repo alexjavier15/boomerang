@@ -41,6 +41,8 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show_questions);
 
+		((Button) findViewById(R.id.next_question)).setEnabled(false);
+		
 		View found = findViewById(R.id.answer_choices);
 		answerChoices = (ListView) found;
 		// answerChoices = (ListView) findViewById(R.id.answer_choices);
@@ -55,12 +57,10 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 			@Override
 			public void onItemClick(AdapterView<?> listAdapter, View view,
 					int selectedAnswer, long arg3) {
+
 				ListView list = (ListView) listAdapter;
 				TextView textListener = (TextView) list
 						.getChildAt(selectedAnswer);
-
-				// TRY IT
-				((Button) findViewById(R.id.next_question)).setEnabled(false);
 
 				if (lastChoice != -1) {
 					TextView lastChild = (TextView) list.getChildAt(lastChoice);
@@ -104,7 +104,6 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 	 * Launches the HTTPGET operation to display a new random question
 	 */
 	public void fetchNewQuestion() {
-		((Button) findViewById(R.id.next_question)).setEnabled(false);
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
@@ -131,9 +130,8 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 	 */
 	public void askNextQuestion(View view) {
 		answerChoices.setOnItemClickListener(answerListener);
-
+		((Button) findViewById(R.id.next_question)).setEnabled(false);
 		fetchNewQuestion();
-
 	}
 
 	/**
