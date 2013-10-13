@@ -1,11 +1,8 @@
 package epfl.sweng.entry;
 
-import java.util.ArrayList;
-
 import epfl.sweng.R;
 import epfl.sweng.editquestions.EditQuestionActivity;
 import epfl.sweng.questions.QuizQuestion;
-import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.QuestionReader;
 import epfl.sweng.showquestions.HttpCommsBackgroundTask;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
@@ -61,7 +58,7 @@ public class MainActivity extends Activity implements QuestionReader {
 			Debug.out("You are currently not connected to a network.");
 		} else {
 			Debug.out("starting fetching");
-			new HttpCommsBackgroundTask(this).execute(HttpCommunications.URL);
+			new HttpCommsBackgroundTask(this).execute();
 		}
 
 	}
