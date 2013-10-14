@@ -281,8 +281,18 @@ public class EditQuestionActivity extends Activity {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
+			
 			return responsecheck;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			((Button) findViewById(R.id.submit_button)).setEnabled(false);
+
+			TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
+			
 		}
 
 	}
