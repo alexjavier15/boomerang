@@ -235,41 +235,24 @@ public class EditQuestionActivity extends Activity {
 	 *         verified, otherwise false.
 	 */
 	public boolean isValid() {
-		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
 		int correctAnswer = 0;
-		System.out.println("Checking the question...");
 
-		if (questionText.getText().toString().trim().equals("")
-				|| adapter.getCount() < 2) {
-			System.out
-					.println("The question is empty or the list size is smaller than 2!");
-			return false;
-		}
-
-		System.out
-				.println("The question is valid!\nChecking the answers with fetch size : "
-						+ adapter.getCount());
+		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
+		assert !questionText.getText().toString().trim().equals("")
+				|| adapter.getCount() >= 2 : "The question is empty or the number of answers is smaller than 2!";
 
 		for (int i = 0; i < adapter.getCount(); i++) {
 			if (adapter
 					.getItem(i)
 					.getChecked()
 					.equals(getResources().getString(R.string.heavy_check_mark))) {
-				System.out.println("This one has the check mark!");
 				correctAnswer++;
 			}
 
-			if (adapter.getItem(i).getAnswer().trim().equals("")) {
-				System.out.println("The answer is empty!");
-
-				return false;
-			}
-
-			System.out.println("This one has the answer : "
-					+ adapter.getItem(i).getAnswer());
+			assert !adapter.getItem(i).getAnswer().trim().equals("") : "No answer can be empty!";
 		}
 
-		System.out.println("All correct!");
+		assert correctAnswer == 1 : "Only one answer should be marked as correct!";
 		return correctAnswer == 1;
 	}
 
