@@ -5,6 +5,7 @@ import android.widget.Button;
 
 import com.jayway.android.robotium.solo.Solo;
 
+import epfl.sweng.entry.MainActivity;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -16,6 +17,8 @@ public class ShowQuestionsActivityTest extends
 	private Solo solo;
 
 	public ShowQuestionsActivityTest() {
+		
+		
 		super(ShowQuestionsActivity.class);
 	}
 

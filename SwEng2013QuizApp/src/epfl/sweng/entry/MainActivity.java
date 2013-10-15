@@ -48,7 +48,7 @@ public class MainActivity extends Activity implements QuestionReader {
 	 *            The view that was clicked.
 	 */
 	public void askQuestion(View view) {
-		Toast.makeText(this, "You are on the page to show a random question!",
+		/*Toast.makeText(this, "You are on the page to show a random question!",
 				Toast.LENGTH_SHORT).show();
 
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -59,7 +59,12 @@ public class MainActivity extends Activity implements QuestionReader {
 		} else {
 			Debug.out("starting fetching");
 			new HttpCommsBackgroundTask(this).execute();
-		}
+		}*/
+		
+			Intent showQuestionActivityIntent = new Intent(this,
+					ShowQuestionsActivity.class);
+			//question.addExtraDatatoIntent(showQuestionActivityIntent);
+			this.startActivity(showQuestionActivityIntent);
 
 	}
 
@@ -83,7 +88,7 @@ public class MainActivity extends Activity implements QuestionReader {
 		if (question != null) {
 			Intent showQuestionActivityIntent = new Intent(this,
 					ShowQuestionsActivity.class);
-			question.addExtraDatatoIntent(showQuestionActivityIntent);
+			//question.addExtraDatatoIntent(showQuestionActivityIntent);
 			this.startActivity(showQuestionActivityIntent);
 		}
 
