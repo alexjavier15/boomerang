@@ -87,6 +87,8 @@ public class HttpCommunications {
 		BasicResponseHandler handler = new BasicResponseHandler();
 		String response = SwengHttpClientFactory.getInstance().execute(post,
 				handler);
+		
+		
 
 		if (response != null) {
 			return true;
