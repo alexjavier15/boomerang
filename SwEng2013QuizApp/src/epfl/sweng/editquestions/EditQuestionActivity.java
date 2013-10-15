@@ -43,6 +43,16 @@ public class EditQuestionActivity extends Activity {
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch = new ArrayList<Answer>();
 
+	private static boolean reset = false;
+
+	public static boolean isReset() {
+		return reset;
+	}
+
+	public static void setReset(boolean newStatus) {
+		reset = newStatus;
+	}
+
 	/**
 	 * Starts the window adding a modified ArrayAdapter to list the answers.
 	 * Creates the multiple Test Listeners for when text has been edited. Shows
@@ -55,8 +65,7 @@ public class EditQuestionActivity extends Activity {
 		setContentView(R.layout.activity_edit_question);
 
 		Answer firstAnswer = new Answer(getResources().getString(
-				R.string.heavy_ballot_x), "", getResources().getString(
-						R.string.hyphen_minus));
+				R.string.heavy_ballot_x), "");
 
 		fetch.add(firstAnswer);
 		adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview,
@@ -70,7 +79,7 @@ public class EditQuestionActivity extends Activity {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				if (!adapter.getReset()) {
+				if (!isReset()) {
 					TestCoordinator.check(TTChecks.QUESTION_EDITED);
 				}
 			}
@@ -120,15 +129,12 @@ public class EditQuestionActivity extends Activity {
 	 */
 	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
-				R.string.heavy_ballot_x), "", getResources().getString(
-						R.string.hyphen_minus));
-
+				R.string.heavy_ballot_x), "");
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
-		if (!adapter.getReset()) {
+		if (!isReset()) {
 			TestCoordinator.check(TTChecks.QUESTION_EDITED);
 		}
-
 	}
 
 	/**
@@ -143,9 +149,7 @@ public class EditQuestionActivity extends Activity {
 	 *            The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
-
 		if (isValid()) {
-
 			JSONObject jObject;
 			boolean responsecheck = false;
 			try {
@@ -161,15 +165,9 @@ public class EditQuestionActivity extends Activity {
 			}
 
 			if (responsecheck) {
+				reset(view);
 				Toast.makeText(this, "Your submission was successful!",
 						Toast.LENGTH_SHORT).show();
-
-				adapter.setReset(true);
-				((EditText) findViewById(R.id.edit_questionText)).setText("");
-				((EditText) findViewById(R.id.edit_tagsText)).setText("");
-				adapter.clear();
-				this.addNewSlot(view);
-				adapter.setReset(false);
 			} else {
 				Toast.makeText(
 						this,
@@ -183,7 +181,6 @@ public class EditQuestionActivity extends Activity {
 					"Your submission was NOT successful. Please check that you filled in all fields.",
 					Toast.LENGTH_SHORT).show();
 		}
-
 	}
 
 	/**
@@ -235,25 +232,20 @@ public class EditQuestionActivity extends Activity {
 	 *         verified, otherwise false.
 	 */
 	public boolean isValid() {
-		int correctAnswer = 0;
-
 		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
-		assert !questionText.getText().toString().trim().equals("")
-				|| adapter.getCount() >= 2 : "The question is empty or the number of answers is smaller than 2!";
+		return !questionText.getText().toString().trim().equals("")
+				&& adapter.getCount() >= 2
+				&& AnswerAdapter.isOneCorrectAnswer()
+				&& AnswerAdapter.isNoEmptyAnswer();
+	}
 
-		for (int i = 0; i < adapter.getCount(); i++) {
-			if (adapter
-					.getItem(i)
-					.getChecked()
-					.equals(getResources().getString(R.string.heavy_check_mark))) {
-				correctAnswer++;
-			}
-
-			assert !adapter.getItem(i).getAnswer().trim().equals("") : "No answer can be empty!";
-		}
-
-		assert correctAnswer == 1 : "Only one answer should be marked as correct!";
-		return correctAnswer == 1;
+	public void reset(View view) {
+		setReset(true);
+		((EditText) findViewById(R.id.edit_questionText)).setText("");
+		((EditText) findViewById(R.id.edit_tagsText)).setText("");
+		adapter.setDefault();
+		addNewSlot(view);
+		setReset(false);
 	}
 
 	/**
@@ -281,19 +273,16 @@ public class EditQuestionActivity extends Activity {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			return responsecheck;
 		}
 
 		@Override
 		protected void onPostExecute(Boolean result) {
-			// TODO Auto-generated method stub
 			super.onPostExecute(result);
 			((Button) findViewById(R.id.submit_button)).setEnabled(false);
 
 			TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
-			
 		}
-
 	}
 }
