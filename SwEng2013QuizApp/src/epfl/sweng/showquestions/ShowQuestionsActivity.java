@@ -1,11 +1,20 @@
 package epfl.sweng.showquestions;
 
+import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
+import org.json.JSONException;
+
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,7 +25,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
-import epfl.sweng.servercomm.QuestionReader;
+import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.HttpcommunicationsAdapter;
+import epfl.sweng.servercomm.JSONParser;
 import epfl.sweng.testing.Debug;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -26,7 +37,9 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
  * @author AlbanMarguet & LorenzoLeon
  * 
  */
-public class ShowQuestionsActivity extends Activity implements QuestionReader {
+public class ShowQuestionsActivity extends Activity implements
+		HttpcommunicationsAdapter {
+
 	private TextView text;
 	private TextView tags;
 	private ListView answerChoices;
@@ -90,22 +103,56 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 
 		};
 		answerChoices.setOnItemClickListener(answerListener);
-		fetchNewQuestion();
+		processHttpReponse(fetchFirstQuestion());
+	}
+
+	/**
+	 * Checks to see the connectivity status of the system services.
+	 * 
+	 * @return boolean - true if connected to a network false otherwise.
+	 */
+	private boolean checkNetworkConnection() {
+		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		boolean answer = networkInfo.isConnected() || networkInfo != null;
+		if (!answer) {
+			text.setText("You are currently not connected to a network.");
+		}
+		return answer;
 	}
 
 	/**
 	 * Launches the HTTPGET operation to display a new random question
 	 */
 	public void fetchNewQuestion() {
-		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-		if (networkInfo == null || !networkInfo.isConnected()) {
-			text.setText("You are currently not connected to a network.");
-		} else {
-			Debug.out("starting fetching");
+		if (checkNetworkConnection()) {
+			Debug.out("Start fetching");
 			new HttpCommsBackgroundTask(this).execute();
 		}
+
+	}
+
+	/**
+	 * Obtains a random question thru an AsyncTask but blocks the thread until
+	 * the response is received.
+	 * 
+	 * @return HttpResponse
+	 */
+
+	public HttpResponse fetchFirstQuestion() {
+		HttpResponse response = null;
+		if (checkNetworkConnection()) {
+			Debug.out("Start fetching");
+			try {
+				response = new HttpCommsBackgroundTask(this).execute().get();
+			} catch (InterruptedException e) {
+				Log.e(getLocalClassName(), "AsyncTask thread exception");
+			} catch (ExecutionException e) {
+				Log.e(getLocalClassName(), "AsyncTask thread exception");
+
+			}
+		}
+		return response;
 	}
 
 	/**
@@ -160,30 +207,42 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 	}
 
 	@Override
-	public void readQuestion(QuizQuestion question) {
-		Debug.out(question);
-
-		if (question == null) {
-			text.setText("No question can be obtained !");
+	public void processHttpReponse(HttpResponse httpResponse) {
+		Debug.out(httpResponse);
+		QuizQuestion quizQuestion = null;
+		try {
+			quizQuestion = JSONParser.parseJsonToQuiz(httpResponse);
+		} catch (HttpResponseException e) {
+			text.append("/n No question can be obtained !");
+			Log.e(getLocalClassName(), e.getMessage());
+			return;
+		}
+		if (text == null && quizQuestion != null) {
+			Debug.out("null textview");
 		} else {
-			if (text == null) {
-				Debug.out("null textview");
-			} else {
-				// We've got a satisfying question => treating it
-				currrentQuestion = question;
+			// We've got a satisfying question => treating it
+			currrentQuestion = quizQuestion;
 
-				text.setText(question.getQuestion());
-				tags.setText(displayTags(question.getSetOfTags()));
-				adapter = new ArrayAdapter<String>(this,
-						android.R.layout.simple_list_item_1,
-						question.getAnswers());
+			text.setText(quizQuestion.getQuestion());
+			tags.setText(displayTags(quizQuestion.getSetOfTags()));
+			adapter = new ArrayAdapter<String>(this,
+					android.R.layout.simple_list_item_1,
+					quizQuestion.getAnswers());
 
-				answerChoices.setAdapter(adapter);
+			answerChoices.setAdapter(adapter);
 
-				adapter.setNotifyOnChange(true);
+			adapter.setNotifyOnChange(true);
+			TestCoordinator.check(TTChecks.QUESTION_SHOWN);
 
-			}
 		}
 
 	}
+
+	@Override
+	public HttpResponse requete() throws ClientProtocolException, IOException,
+			JSONException {
+		return HttpCommunications.getHttpResponse();
+
+	}
+
 }

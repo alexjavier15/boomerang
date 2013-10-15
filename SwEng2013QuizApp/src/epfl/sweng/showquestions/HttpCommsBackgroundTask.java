@@ -6,54 +6,42 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
+import epfl.sweng.servercomm.HttpcommunicationsAdapter;
+
 import android.os.AsyncTask;
-import epfl.sweng.questions.QuizQuestion;
-import epfl.sweng.servercomm.HttpCommunications;
-import epfl.sweng.servercomm.JSONParser;
-import epfl.sweng.servercomm.QuestionReader;
-import epfl.sweng.testing.Debug;
 
-/**
- * Handle the AsyncTask before ShowQuestionActivity is created
- * 
- * @author albanMarguet & LorenzoLeon
- * 
- */
-public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, QuizQuestion> {
-	
-	private QuestionReader reader;
+public class HttpCommsBackgroundTask extends
+		AsyncTask<Void, Void, HttpResponse> {
 
-	public HttpCommsBackgroundTask(QuestionReader qreader) {
+	private HttpcommunicationsAdapter adapter;
+
+	public HttpCommsBackgroundTask(HttpcommunicationsAdapter adapter) {
 		super();
-		this.reader = qreader;
+		this.adapter = adapter;
 	}
 
 	/**
 	 * Getting the question on the server asynchronously. Called by execute().
 	 */
 	@Override
-	protected QuizQuestion doInBackground(Void... arg) {
+	protected HttpResponse doInBackground(Void... arg) {
 
 		HttpResponse response = null;
-		QuizQuestion quizQuestion = null;
 
 		try {
-
-			response = HttpCommunications.getHttpResponse();
-			if (response != null) {
-				quizQuestion = JSONParser.parseJsonToQuiz(response);
-			} else {
-				Debug.out("can't get an answer from the server");
-			}
-
+			response = adapter.requete();
 		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JSONException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return quizQuestion;
+
+		return response;
 	}
 
 	/**
@@ -61,11 +49,8 @@ public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, QuizQuestion>
 	 * right after doInBackground().
 	 */
 	@Override
-	protected void onPostExecute(QuizQuestion result) {
-		Debug.out(result);
-		if (result != null) {
-			reader.readQuestion(result);
-		}
+	protected void onPostExecute(HttpResponse result) {
+		adapter.processHttpReponse(result);
 
 	}
 }
