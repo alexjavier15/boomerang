@@ -6,10 +6,12 @@ import java.util.concurrent.ExecutionException;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
 
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.servercomm.QuestionReader;
 import epfl.sweng.showquestions.HttpCommsBackgroundTask;
 import epfl.sweng.testing.Debug;
@@ -18,7 +20,7 @@ import android.app.Activity;
 import android.view.Menu;
 import android.view.View;
 
-public class AuthenticationActivity extends Activity implements QuestionReader {
+public class AuthenticationActivity extends Activity implements HttpcommunicationsAdapter {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,7 @@ public class AuthenticationActivity extends Activity implements QuestionReader {
 
 		try {
 			reponse = new HttpCommsBackgroundTask(this).execute().get();
+			
 			Debug.out(reponse.getStatusLine());
 			for (Header h : reponse.getAllHeaders()) {
 				Debug.out(h);
@@ -59,6 +62,19 @@ public class AuthenticationActivity extends Activity implements QuestionReader {
 	public void readQuestion(QuizQuestion question) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public HttpResponse requete() throws ClientProtocolException, IOException,
+			JSONException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void processHttpReponse(HttpResponse reponse) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
