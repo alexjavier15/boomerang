@@ -19,41 +19,42 @@ import epfl.sweng.testing.Debug;
  * @author albanMarguet & LorenzoLeon
  * 
  */
-public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, QuizQuestion> {
-	
-	private QuestionReader reader;
+public class HttpCommsBackgroundTask extends
+		AsyncTask<Void, Void, HttpResponse> {
+
+	//private QuestionReader reader; Don't delete
 
 	public HttpCommsBackgroundTask(QuestionReader qreader) {
 		super();
-		this.reader = qreader;
+		//this.reader = qreader;
 	}
 
 	/**
 	 * Getting the question on the server asynchronously. Called by execute().
 	 */
 	@Override
-	protected QuizQuestion doInBackground(Void... arg) {
+	protected HttpResponse doInBackground(Void... arg) {
 
 		HttpResponse response = null;
-		QuizQuestion quizQuestion = null;
-
+		
 		try {
 
 			response = HttpCommunications.getHttpResponse();
-			if (response != null) {
-				quizQuestion = JSONParser.parseJsonToQuiz(response);
-			} else {
-				Debug.out("can't get an answer from the server");
-			}
 
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
 		}
-		return quizQuestion;
+		if (response != null) {
+
+			return response;
+			// quizQuestion = JS;ONParser.parseJsonToQuiz(response);
+		} else {
+			Debug.out("can't get an answer from the server");
+
+			return null;
+		}
 	}
 
 	/**
@@ -61,11 +62,11 @@ public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, QuizQuestion>
 	 * right after doInBackground().
 	 */
 	@Override
-	protected void onPostExecute(QuizQuestion result) {
-		Debug.out(result);
-		if (result != null) {
-			reader.readQuestion(result);
-		}
+	protected void onPostExecute(HttpResponse result) {
+		/*
+		 * Debug.out(result); if (result != null) { reader.readQuestion(result);
+		 * }
+		 */
 
 	}
 }

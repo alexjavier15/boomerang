@@ -19,13 +19,7 @@ public class ShowQuestionsActivityTest extends TestTemplate<ShowQuestionsActivit
 		assertTrue("Incorrect answer is displayed",
 				solo.searchText("Twenty-seven"));
 
-
-		
-		
-		
-		
-		
-		nextQuestionButton = solo.getButton("Next question");
+		Button nextQuestionButton = solo.getButton("Next question");
 		assertFalse("Next question button is disabled",
 				nextQuestionButton.isEnabled());
 	}
