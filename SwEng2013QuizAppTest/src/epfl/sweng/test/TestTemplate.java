@@ -1,10 +1,16 @@
 package epfl.sweng.test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.http.HttpStatus;
 
 import com.jayway.android.robotium.solo.Solo;
 
 import epfl.sweng.minimalmock.MockHttpClient;
+import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestingTransaction;
@@ -56,6 +62,16 @@ public class TestTemplate<T> extends ActivityInstrumentationTestCase2 {
 				return String.format("getActivityAndWaitFor(%s)", expected);
 			}
 		});
+	}
+	
+	protected QuizQuestion createQuestionUniverse() {
+		String question = "What is the answer to life, the universe, and everything?";
+		int sol = 0;
+		ArrayList<String> answers = new ArrayList<String>();
+		answers.add("Forty-two");
+		answers.add("Twenty-seven");
+		Set<String> tags = new HashSet<String>(Arrays.asList("h2g2", "trivia"));
+		return new QuizQuestion(-1, question, answers, sol, tags);
 	}
 
 }
