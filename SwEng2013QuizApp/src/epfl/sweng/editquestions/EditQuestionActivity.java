@@ -126,7 +126,7 @@ public class EditQuestionActivity extends Activity implements
 	 * possible answer with the hint "Type in the answer" and it is marked as
 	 * incorrect.
 	 */
-	public void addNewSlot() {
+	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "");
 		adapter.add(temp);
@@ -222,7 +222,7 @@ public class EditQuestionActivity extends Activity implements
 		((EditText) findViewById(R.id.edit_questionText)).setText("");
 		((EditText) findViewById(R.id.edit_tagsText)).setText("");
 		adapter.setDefault();
-		addNewSlot();
+		addNewSlot(null);
 		setReset(false);
 		TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
 	}

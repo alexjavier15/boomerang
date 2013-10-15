@@ -35,6 +35,6 @@
         android:layout_marginTop="64dp"
         android:gravity="center_horizontal"
         android:onClick="requete"
-        android:text="Button" />
+        android:text="@string/log_in" />
 
 </LinearLayout>

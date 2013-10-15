@@ -51,6 +51,5 @@ public class HttpCommsBackgroundTask extends
 	@Override
 	protected void onPostExecute(HttpResponse result) {
 		adapter.processHttpReponse(result);
-
 	}
 }
