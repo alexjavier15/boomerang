@@ -13,7 +13,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -97,8 +96,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
 
         };
         answerChoices.setOnItemClickListener(answerListener);
-
-        fetchFirstQuestion();
+        processHttpReponse(fetchFirstQuestion());
     }
 
     /**
@@ -122,7 +120,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     public void fetchNewQuestion() {
         if (checkNetworkConnection()) {
             Debug.out("Start fetching");
-            new HttpCommsBackgroundTask(this).execute();
+            new HttpCommsBackgroundTask(this, true).execute();
         }
 
     }
@@ -133,19 +131,20 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      * @return HttpResponse
      */
 
-    public void fetchFirstQuestion() {
-
+    public HttpResponse fetchFirstQuestion() {
+        HttpResponse response = null;
         if (checkNetworkConnection()) {
             Debug.out("Start fetching");
-            HttpCommsBackgroundTask task = new HttpCommsBackgroundTask(this);
-            task.execute();
-
-            while (task.getStatus() == AsyncTask.Status.RUNNING) {
-                Debug.out(task.getStatus());
+            try {
+                response = new HttpCommsBackgroundTask(this, false).execute().get();
+            } catch (InterruptedException e) {
+                Log.e(getLocalClassName(), "AsyncTask thread exception");
+            } catch (ExecutionException e) {
+                Log.e(getLocalClassName(), "AsyncTask thread exception");
 
             }
         }
-
+        return response;
     }
 
     /**
