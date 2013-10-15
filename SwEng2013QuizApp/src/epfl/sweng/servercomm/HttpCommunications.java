@@ -72,11 +72,7 @@ public class HttpCommunications {
 	 * @throws IOException
 	 */
 	public static boolean postQuestion(String url, JSONObject question)
-			throws JSONException, IOException {
-
-		if (question == null) {
-			throw new JSONException("This is not a valid question");
-		}
+			throws IOException, JSONException {
 
 		HttpPost post = new HttpPost(url);
 		post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));

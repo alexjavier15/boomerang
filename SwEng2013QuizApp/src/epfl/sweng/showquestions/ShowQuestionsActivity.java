@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.json.JSONException;
 
@@ -24,9 +25,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.servercomm.JSONParser;
-import epfl.sweng.servercomm.QuestionReader;
 import epfl.sweng.testing.Debug;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -101,7 +102,7 @@ public class ShowQuestionsActivity extends Activity implements
 
 		};
 		answerChoices.setOnItemClickListener(answerListener);
-		readQuestion(fetchFirstQuestion());
+		processHttpReponse(fetchFirstQuestion());
 	}
 
 	/**
@@ -230,15 +231,17 @@ public class ShowQuestionsActivity extends Activity implements
 			answerChoices.setAdapter(adapter);
 
 			adapter.setNotifyOnChange(true);
+			TestCoordinator.check(TTChecks.QUESTION_SHOWN);
 
 		}
+		
 
 	}
 
 	@Override
-	public void requete() {
-		// TODO Auto-generated method stub
-
+	public HttpResponse requete() throws ClientProtocolException, IOException,
+			JSONException {
+		return HttpCommunications.getHttpResponse();
 	}
 
 }

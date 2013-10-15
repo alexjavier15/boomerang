@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,6 +17,7 @@ import epfl.sweng.R;
 
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.servercomm.JSONParser;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -38,7 +41,7 @@ import android.widget.Toast;
  * @author CanGuzelhan & LorenzoLeon
  * 
  */
-public class EditQuestionActivity extends Activity {
+public class EditQuestionActivity extends Activity implements HttpcommunicationsAdapter{
 	private ListView listView;
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch = new ArrayList<Answer>();
@@ -290,11 +293,26 @@ public class EditQuestionActivity extends Activity {
 		protected void onPostExecute(Boolean result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
-			((Button) findViewById(R.id.submit_button)).setEnabled(false);
-
-			TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
+			
 			
 		}
 
+	}
+
+	@Override
+	public HttpResponse requete() throws ClientProtocolException, IOException,
+			JSONException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void processHttpReponse(HttpResponse reponse) {
+		//TODO
+		
+		
+		((Button) findViewById(R.id.submit_button)).setEnabled(false);
+
+		TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
 	}
 }
