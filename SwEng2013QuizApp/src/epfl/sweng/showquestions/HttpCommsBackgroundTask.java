@@ -23,9 +23,9 @@ public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, QuizQuestion>
 	
 	private QuestionReader reader;
 
-	public HttpCommsBackgroundTask(QuestionReader reader) {
+	public HttpCommsBackgroundTask(QuestionReader qreader) {
 		super();
-		this.reader = reader;
+		this.reader = qreader;
 	}
 
 	/**
