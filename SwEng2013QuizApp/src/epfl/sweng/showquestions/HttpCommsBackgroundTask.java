@@ -22,11 +22,11 @@ import epfl.sweng.testing.Debug;
 public class HttpCommsBackgroundTask extends
 		AsyncTask<Void, Void, HttpResponse> {
 
-	private QuestionReader reader;
+	//private QuestionReader reader; Don't delete
 
 	public HttpCommsBackgroundTask(QuestionReader qreader) {
 		super();
-		this.reader = qreader;
+		//this.reader = qreader;
 	}
 
 	/**
@@ -36,8 +36,7 @@ public class HttpCommsBackgroundTask extends
 	protected HttpResponse doInBackground(Void... arg) {
 
 		HttpResponse response = null;
-		// QuizQuestion quizQuestion = null;
-
+		
 		try {
 
 			response = HttpCommunications.getHttpResponse();
