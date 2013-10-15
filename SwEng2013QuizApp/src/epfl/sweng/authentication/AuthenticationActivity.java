@@ -1,17 +1,24 @@
 package epfl.sweng.authentication;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 
 import epfl.sweng.R;
+import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.QuestionReader;
+import epfl.sweng.showquestions.HttpCommsBackgroundTask;
+import epfl.sweng.testing.Debug;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
+import android.view.View;
 
-public class AuthenticationActivity extends Activity {
+public class AuthenticationActivity extends Activity implements QuestionReader {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,22 +33,31 @@ public class AuthenticationActivity extends Activity {
 		return true;
 	}
 
-	public void requete() {
+	public void requete(View view) {
 		HttpResponse reponse = null;
 
 		try {
-			reponse = HttpCommunications
-					.getHttpResponse(HttpCommunications.URL_TEQUILA);
-		} catch (ClientProtocolException e) {
+			reponse = new HttpCommsBackgroundTask(this).execute().get();
+			Debug.out(reponse.getStatusLine());
+			for (Header h : reponse.getAllHeaders()) {
+				Debug.out(h);
+			}
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if (reponse != null) {
 
 		}
+
+	}
+
+	@Override
+	public void readQuestion(QuizQuestion question) {
+		// TODO Auto-generated method stub
 
 	}
 

@@ -1,8 +1,6 @@
 package epfl.sweng.showquestions;
 
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -108,7 +106,7 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 		} else {
 			Debug.out("starting fetching");
 			try {
-				return new HttpCommsBackgroundTask(this).execute().get();
+				return null ;// new HttpCommsBackgroundTask(this).execute().get();
 			} catch (Exception e) {
 				Debug.out("AsyncTask thread exception");
 				return null;

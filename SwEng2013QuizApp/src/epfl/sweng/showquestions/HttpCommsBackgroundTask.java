@@ -4,12 +4,8 @@ import java.io.IOException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
-
 import android.os.AsyncTask;
-import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommunications;
-import epfl.sweng.servercomm.JSONParser;
 import epfl.sweng.servercomm.QuestionReader;
 import epfl.sweng.testing.Debug;
 
