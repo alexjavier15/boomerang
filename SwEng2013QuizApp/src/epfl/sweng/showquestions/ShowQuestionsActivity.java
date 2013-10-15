@@ -1,8 +1,6 @@
 package epfl.sweng.showquestions;
 
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -43,11 +41,6 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 		setContentView(R.layout.activity_show_questions);
 
 		((Button) findViewById(R.id.next_question)).setEnabled(false);
-
-		/*
-		 * View found = findViewById(R.id.answer_choices); answerChoices =
-		 * (ListView) found;
-		 */
 		answerChoices = (ListView) findViewById(R.id.answer_choices);
 
 		tags = (TextView) findViewById(R.id.show_tags);
@@ -97,29 +90,7 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 
 		};
 		answerChoices.setOnItemClickListener(answerListener);
-		// reads intent and displays the question
-		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-		if (networkInfo == null || !networkInfo.isConnected()) {
-			Debug.out("You are currently not connected to a network.");
-		} else {
-			Debug.out("starting fetching");
-
-			QuizQuestion question = null;
-			try {
-				question = new HttpCommsBackgroundTask(this).execute().get();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if (question != null) {
-				TestCoordinator.check(TTChecks.QUESTION_SHOWN);
-			}
-		}
+		fetchNewQuestion();
 	}
 
 	/**
@@ -137,9 +108,12 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 		}
 	}
 
+	/**
+	 * Inflate the menu; this adds items to the action bar if it is present.
+	 * 
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.show_questions, menu);
 		return true;
 	}
@@ -207,7 +181,6 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 				answerChoices.setAdapter(adapter);
 
 				adapter.setNotifyOnChange(true);
-				
 
 			}
 		}
