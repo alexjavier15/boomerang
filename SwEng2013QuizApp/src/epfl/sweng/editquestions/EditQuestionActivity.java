@@ -150,7 +150,7 @@ public class EditQuestionActivity extends Activity implements
 	 */
 	public void submitQuestion(View view) {
 		if (isValid()) {
-			new HttpCommsBackgroundTask(this).execute(view);
+			new HttpCommsBackgroundTask(this).execute();
 		} else {
 			Toast.makeText(
 					this,
