@@ -17,5 +17,7 @@
     <string name="hyphen_minus">-</string>
     <string name="plus_sign">+</string>
     <string name="next_question">Next question</string>
+    <string name="title_activity_authentication">AuthenticationActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

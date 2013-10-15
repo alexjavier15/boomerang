@@ -25,7 +25,7 @@ public class HttpCommunications {
 
 	public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
 	public final static String URLPUSH = "https://sweng-quiz.appspot.com/quizquestions/";
-
+	public final static String URL_TEQUILA = "https://sweng-quiz.appspot.com/login";
 	public final static int RESPONSE_CODE = 201;
 	public final static int STRING_ENTITY = 1;
 
@@ -38,7 +38,8 @@ public class HttpCommunications {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException {
+	public static HttpResponse getHttpResponse(String urlString)
+			throws ClientProtocolException, IOException {
 
 		HttpClient client = SwengHttpClientFactory.getInstance();
 		HttpGet request = new HttpGet(urlString);
@@ -53,7 +54,8 @@ public class HttpCommunications {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static HttpResponse getHttpResponse() throws ClientProtocolException, IOException {
+	public static HttpResponse getHttpResponse()
+			throws ClientProtocolException, IOException {
 		return HttpCommunications.getHttpResponse(URL);
 	}
 
@@ -69,7 +71,8 @@ public class HttpCommunications {
 	 * @throws JSONException
 	 * @throws IOException
 	 */
-	public static boolean postQuestion(String url, JSONObject question) throws JSONException, IOException {
+	public static boolean postQuestion(String url, JSONObject question)
+			throws JSONException, IOException {
 
 		if (question == null) {
 			throw new JSONException("This is not a valid question");
