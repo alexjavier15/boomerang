@@ -8,5 +8,7 @@ public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity
 		super(EditQuestionActivity.class);
 	}
 	
+	
+	
 
 }
