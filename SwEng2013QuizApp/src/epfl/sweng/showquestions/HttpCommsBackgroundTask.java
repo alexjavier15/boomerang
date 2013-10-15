@@ -10,51 +10,50 @@ import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 
 import android.os.AsyncTask;
 
-public class HttpCommsBackgroundTask extends
-		AsyncTask<Void, Void, HttpResponse> {
+public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse> {
 
-	private HttpcommunicationsAdapter adapter;
-	private Boolean onPostExecute = false;
+    private HttpcommunicationsAdapter adapter;
 
-	public HttpCommsBackgroundTask(HttpcommunicationsAdapter adapter, Boolean onPostExecute) {
-		super();
-		this.adapter = adapter;
-		this.onPostExecute=onPostExecute;
-	}
+    // private Boolean onPostExecute = true;
 
-	/**
-	 * Getting the question on the server asynchronously. Called by execute().
-	 */
-	@Override
-	protected HttpResponse doInBackground(Void... arg) {
+    public HttpCommsBackgroundTask(HttpcommunicationsAdapter adapter) {
+        super();
+        this.adapter = adapter;
+        // this.onPostExecute = onPostExecute;
+    }
 
-		HttpResponse response = null;
+    /**
+     * Getting the question on the server asynchronously. Called by execute().
+     */
+    @Override
+    protected HttpResponse doInBackground(Void... arg) {
 
-		try {
-			response = adapter.requete();
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        HttpResponse response = null;
 
-		return response;
-	}
+        try {
+            response = adapter.requete();
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-	/**
-	 * Send the informations of the fetched random question. Called by execute()
-	 * right after doInBackground().
-	 */
-	@Override
-	protected void onPostExecute(HttpResponse result) {
-	    if(onPostExecute){
-		adapter.processHttpReponse(result);
-	    }
+        return response;
+    }
 
-	}
+    /**
+     * Send the informations of the fetched random question. Called by execute() right after doInBackground().
+     */
+    @Override
+    protected void onPostExecute(HttpResponse result) {
+        // if (onPostExecute) {
+        adapter.processHttpReponse(result);
+        // }
+
+    }
 }
