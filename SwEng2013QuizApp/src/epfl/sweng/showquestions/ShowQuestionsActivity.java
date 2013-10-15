@@ -1,6 +1,8 @@
 package epfl.sweng.showquestions;
 
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -90,21 +92,27 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 
 		};
 		answerChoices.setOnItemClickListener(answerListener);
-		fetchNewQuestion();
+		readQuestion(fetchNewQuestion());
 	}
 
 	/**
 	 * Launches the HTTPGET operation to display a new random question
 	 */
-	public void fetchNewQuestion() {
+	public QuizQuestion fetchNewQuestion() {
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
 		if (networkInfo == null || !networkInfo.isConnected()) {
 			text.setText("You are currently not connected to a network.");
+			return null;
 		} else {
 			Debug.out("starting fetching");
-			new HttpCommsBackgroundTask(this).execute();
+			try {
+				return new HttpCommsBackgroundTask(this).execute().get();
+			} catch (Exception e) {
+				Debug.out("AsyncTask thread exception");
+				return null;
+			}
 		}
 	}
 
@@ -127,7 +135,7 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 	public void askNextQuestion(View view) {
 		answerChoices.setOnItemClickListener(answerListener);
 		((Button) findViewById(R.id.next_question)).setEnabled(false);
-		fetchNewQuestion();
+		readQuestion(fetchNewQuestion());
 	}
 
 	/**
@@ -164,7 +172,7 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 		Debug.out(question);
 
 		if (question == null) {
-			text.setText("No question can be obtained !");
+			text.append("/n No question can be obtained !");
 		} else {
 			if (text == null) {
 				Debug.out("null textview");

@@ -52,7 +52,6 @@ public class EditQuestionActivity extends Activity {
 	 */
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.getPreferences(MODE_ENABLE_WRITE_AHEAD_LOGGING)
 		setContentView(R.layout.activity_edit_question);
 
 		Answer firstAnswer = new Answer(getResources().getString(
