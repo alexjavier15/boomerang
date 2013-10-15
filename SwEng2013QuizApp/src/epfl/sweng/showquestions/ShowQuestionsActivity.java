@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.json.JSONException;
 
@@ -24,6 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.servercomm.JSONParser;
 import epfl.sweng.servercomm.QuestionReader;
 import epfl.sweng.testing.Debug;
@@ -35,7 +37,7 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
  * @author AlbanMarguet & LorenzoLeon
  * 
  */
-public class ShowQuestionsActivity extends Activity implements QuestionReader {
+public class ShowQuestionsActivity extends Activity implements HttpcommunicationsAdapter {
 	private TextView text;
 	private TextView tags;
 	private ListView answerChoices;
@@ -211,9 +213,6 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 			text.append("/n No question can be obtained !");
 			Log.e(getLocalClassName(), e.getMessage());
 			return;
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -238,9 +237,17 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 
 	}
 
+	
 	@Override
-	public void readQuestion(QuizQuestion question) {
+	public HttpResponse requete() throws ClientProtocolException, IOException,
+			JSONException {
 		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public void processHttpReponse(HttpResponse reponse) {
+		// TODO Auto-generated method stub
+		
 	}
 }

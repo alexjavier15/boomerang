@@ -1,6 +1,7 @@
 package epfl.sweng.servercomm;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -69,10 +70,11 @@ public class HttpCommunications {
 	 *            The question that we want to post on the server.
 	 * @return boolean true if the server has received the Question
 	 * @throws JSONException
+	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static boolean postQuestion(String url, JSONObject question)
-			throws JSONException, IOException {
+	public static HttpResponse postQuestion(String url, JSONObject question)
+			throws ClientProtocolException,IOException, JSONException  {
 
 		if (question == null) {
 			throw new JSONException("This is not a valid question");
@@ -84,16 +86,10 @@ public class HttpCommunications {
 
 		Debug.out(post); // TODO post out
 
-		BasicResponseHandler handler = new BasicResponseHandler();
-		String response = SwengHttpClientFactory.getInstance().execute(post,
-				handler);
-		
-		
+		HttpResponse response = SwengHttpClientFactory.getInstance().execute(
+				post);
 
-		if (response != null) {
-			return true;
-		}
-		return false;
+		return response;
 	}
 
 }
