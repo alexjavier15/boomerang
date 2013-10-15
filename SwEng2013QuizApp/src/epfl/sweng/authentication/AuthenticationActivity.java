@@ -58,11 +58,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
 	}
 
-	@Override
-	public void readQuestion(QuizQuestion question) {
-		// TODO Auto-generated method stub
 
-	}
 
 	@Override
 	public HttpResponse requete() throws ClientProtocolException, IOException,
