@@ -96,7 +96,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
 
         };
         answerChoices.setOnItemClickListener(answerListener);
-        processHttpReponse1(fetchFirstQuestion());
+        processHttpReponse(fetchFirstQuestion());
     }
 
     /**
@@ -120,7 +120,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     public void fetchNewQuestion() {
         if (checkNetworkConnection()) {
             Debug.out("Start fetching");
-            new HttpCommsBackgroundTask(this).execute();
+            new HttpCommsBackgroundTask(this, true).execute();
         }
 
     }
@@ -136,7 +136,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         if (checkNetworkConnection()) {
             Debug.out("Start fetching");
             try {
-                response = new HttpCommsBackgroundTask(this).execute().get();
+                response = new HttpCommsBackgroundTask(this, false).execute().get();
             } catch (InterruptedException e) {
                 Log.e(getLocalClassName(), "AsyncTask thread exception");
             } catch (ExecutionException e) {
@@ -197,8 +197,8 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         }
     }
 
-   
-    public void processHttpReponse1(HttpResponse httpResponse) {
+    @Override
+    public void processHttpReponse(HttpResponse httpResponse) {
         Debug.out(httpResponse);
         QuizQuestion quizQuestion = null;
         try {
@@ -237,12 +237,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     @Override
     public HttpResponse requete() throws ClientProtocolException, IOException, JSONException {
         return HttpCommunications.getHttpResponse();
-
-    }
-
-    @Override
-    public void processHttpReponse(HttpResponse reponse) {
-        // TODO Auto-generated method stub
 
     }
 

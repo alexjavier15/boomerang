@@ -148,14 +148,7 @@ public class EditQuestionActivity extends Activity implements
 	 *            The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
-		if (isValid()) {
-			new HttpCommsBackgroundTask(this).execute();
-		} else {
-			Toast.makeText(
-					this,
-					"Your submission was NOT successful. Please check that you filled in all fields.",
-					Toast.LENGTH_SHORT).show();
-		}
+		new HttpCommsBackgroundTask(this).execute();
 	}
 
 	/**
@@ -238,14 +231,20 @@ public class EditQuestionActivity extends Activity implements
 	public void processHttpReponse(HttpResponse reponse) {
 		if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
 			reset();
-			Toast.makeText(this, "Your submission was successful!",
-					Toast.LENGTH_SHORT).show();
-
+			printSuccess();
 		} else {
-			Toast.makeText(
-					this,
-					"Your submission was NOT successful. Please check that you filled in all fields correctly.",
-					Toast.LENGTH_SHORT).show();
+			printFail();
 		}
+	}
+
+	public void printSuccess() {
+		Toast.makeText(this, "Your submission was successful!",
+				Toast.LENGTH_SHORT).show();
+	}
+
+	public void printFail() {
+		Toast.makeText(this,
+				"Your submission was NOT successful. Please try again later.",
+				Toast.LENGTH_SHORT).show();
 	}
 }
