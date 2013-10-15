@@ -56,7 +56,13 @@ public class ShowQuestionsActivityTest extends
 		assertTrue("Incorrect answer is displayed",
 				solo.searchText("Twenty-seven"));
 
-		Button nextQuestionButton = solo.getButton("Next question");
+
+		
+		
+		
+		
+		
+		nextQuestionButton = solo.getButton("Next question");
 		assertFalse("Next question button is disabled",
 				nextQuestionButton.isEnabled());
 	}
