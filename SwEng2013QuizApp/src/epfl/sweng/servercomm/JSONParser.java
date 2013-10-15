@@ -33,8 +33,7 @@ public class JSONParser {
 	 * @throws JSONException
 	 * @throws IOException
 	 */
-	public static QuizQuestion parseJsonToQuiz(HttpResponse response)
-		throws HttpResponseException, JSONException, IOException {
+	public static QuizQuestion parseJsonToQuiz(HttpResponse response) throws HttpResponseException {
 
 		final int errorCode = 404;
 		
@@ -43,20 +42,27 @@ public class JSONParser {
 		}
 
 		BasicResponseHandler responseHandler = new BasicResponseHandler();
-		JSONObject parser = new JSONObject(
-				responseHandler.handleResponse(response));
-		int id = parser.getInt("id");
-		
-		String question = parser.getString("question");
-		String[] answers = jsonArrayToStringArray(parser
-				.getJSONArray("answers"));
-		
-		int solutionIndex = parser.getInt("solutionIndex");
-		String[] tags = jsonArrayToStringArray(parser.getJSONArray("tags"));
-		Set<String> set = new HashSet<String>(Arrays.asList(tags));
-		
-		return new QuizQuestion(id, question, Arrays.asList(answers),
-				solutionIndex, set);
+		try {
+			JSONObject parser = new JSONObject(
+					responseHandler.handleResponse(response));
+			int id = parser.getInt("id");
+			
+			String question = parser.getString("question");
+			String[] answers = jsonArrayToStringArray(parser
+					.getJSONArray("answers"));
+			
+			int solutionIndex = parser.getInt("solutionIndex");
+			String[] tags = jsonArrayToStringArray(parser.getJSONArray("tags"));
+			Set<String> set = new HashSet<String>(Arrays.asList(tags));
+			
+			return new QuizQuestion(id, question, Arrays.asList(answers),
+					solutionIndex, set);
+		}  catch (Exception e) {
+			Debug.out("JSON Exception... badly formed JsonOBJECT in HTTPResponse");
+			e.printStackTrace();
+			return null;
+			
+		}
 
 	}
 
