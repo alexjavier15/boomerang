@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+match_parentmatch_parentmatch_parent<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="app_name">SwEng2013QuizApp</string>
@@ -19,5 +19,7 @@
     <string name="next_question">Next question</string>
     <string name="title_activity_authentication">AuthenticationActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="GASPAR_username">GASPAR Username</string>
+    <string name="GASPAR_Password">GASPAR Password</string>
 
 </resources>
