@@ -59,6 +59,7 @@ public class JSONParser {
             if (parser.has(key.name())) {
 
                 jsonMap.put(key.name(), parser.get(key.name()));
+                Debug.out(parser.get(key.name()));
             } else {
                 throw new JSONException("Malformed JSONObject, key: " + key + " doesn't exist");
 
@@ -74,11 +75,11 @@ public class JSONParser {
 
         Map<String, Object> jsonMap = extractJSONMap(response, QuizKeys.values());
 
-        int id = Integer.valueOf((String) jsonMap.get(QuizKeys.id));
-        String question = (String) jsonMap.get(QuizKeys.question);
-        List<String> answers = jsonArrayToList((JSONArray) jsonMap.get(QuizKeys.answers));
-        int solutionIndex = Integer.valueOf((String) jsonMap.get(QuizKeys.solutionIndex));
-        List<String> tags = jsonArrayToList((JSONArray) jsonMap.get(QuizKeys.tags));
+        long id = ((Long) jsonMap.get(QuizKeys.id.name()));
+        String question = (String) jsonMap.get(QuizKeys.question.name());
+        List<String> answers = jsonArrayToList((JSONArray) jsonMap.get(QuizKeys.answers.name()));
+        int solutionIndex = ((Integer) jsonMap.get(QuizKeys.solutionIndex.name()));
+        List<String> tags = jsonArrayToList((JSONArray) jsonMap.get(QuizKeys.tags.name()));
 
         return new QuizQuestion(id, question, (ArrayList<String>) answers, solutionIndex, tags);
 
