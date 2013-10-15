@@ -2,13 +2,9 @@ package epfl.sweng.servercomm;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -23,111 +19,106 @@ import epfl.sweng.testing.Debug;
  * 
  * @author LorenzoLeon
  * 
- *         This class is used to parse JSON Objects to QuizQuestion and vice
- *         versa.
+ *         This class is used to parse JSON Objects to QuizQuestion and vice versa.
  * 
  */
 public class JSONParser {
 
-	static final String[] QUIZ_KEYS = { "id", "question", "answers",
-			"solutionIndex", "tags" };
-	static final String[] TOKEN_KEYS = { "token", "message" };
+    public enum QuizKeys {
+        id, question, answers, solutionIndex, tags
+    }
 
-	/**
-	 * Parses a JSONObject from an HttpResponse to a QuizQuestion
-	 * 
-	 * @param response
-	 * @return QuizQuestion
-	 * @throws JSONException
-	 * @throws IOException
-	 */
+    public enum TokenKeys {
+        token, message
+    };
 
-	private static Map<String, Object> extractJSONMap(HttpResponse response,
-			String[] keys) throws JSONException, IOException {
+    /**
+     * Parses a JSONObject from an HttpResponse to a QuizQuestion
+     * 
+     * @param response
+     * @return QuizQuestion
+     * @throws JSONException
+     * @throws IOException
+     */
 
-		Map<String, Object> jsonMap = new HashMap<String, Object>();
+    private static Map<String, Object> extractJSONMap(HttpResponse response, QuizKeys[] keys) throws JSONException,
+            IOException {
 
-		if (response == null) {
-			throw new HttpResponseException(404, "Empty response");
-		}
+        Map<String, Object> jsonMap = new HashMap<String, Object>();
 
-		BasicResponseHandler responseHandler = new BasicResponseHandler();
+        if (response == null) {
+            throw new HttpResponseException(404, "Empty response");
+        }
 
-		JSONObject parser = new JSONObject(
-				responseHandler.handleResponse(response));
+        BasicResponseHandler responseHandler = new BasicResponseHandler();
 
-		for (String key : keys) {
+        JSONObject parser = new JSONObject(responseHandler.handleResponse(response));
 
-			if (parser.has(key)) {
+        for (QuizKeys key : keys) {
 
-				jsonMap.put(key, parser.get(key));
-			} else {
-				throw new JSONException("Malformed JSONObject, key: " + key
-						+ " doesn't exist");
+            if (parser.has(key.name())) {
 
-			}
+                jsonMap.put(key.name(), parser.get(key.name()));
+            } else {
+                throw new JSONException("Malformed JSONObject, key: " + key + " doesn't exist");
 
-		}
+            }
 
-		return jsonMap;
+        }
 
-	}
+        return jsonMap;
 
-	public static QuizQuestion parseJsonToQuiz(HttpResponse response)
-			throws JSONException, IOException {
+    }
 
-		Map<String, Object> jsonMap = extractJSONMap(response, QUIZ_KEYS);
+    public static QuizQuestion parseJsonToQuiz(HttpResponse response) throws JSONException, IOException {
 
-		int id = Integer.valueOf((String) jsonMap.get(QUIZ_KEYS[0]));
-		String question = (String) jsonMap.get(QUIZ_KEYS[1]);
-		List<String> answers = jsonArrayToList((JSONArray) jsonMap
-				.get(QUIZ_KEYS[2]));
-		int solutionIndex = Integer.valueOf((String) jsonMap.get(QUIZ_KEYS[3]));
-		List<String> tags = jsonArrayToList((JSONArray) jsonMap
-				.get(QUIZ_KEYS[4]));
+        Map<String, Object> jsonMap = extractJSONMap(response, QuizKeys.values());
 
-		return new QuizQuestion(id, question, (ArrayList<String>) answers,
-				solutionIndex, tags);
+        int id = Integer.valueOf((String) jsonMap.get(QuizKeys.id));
+        String question = (String) jsonMap.get(QuizKeys.question);
+        List<String> answers = jsonArrayToList((JSONArray) jsonMap.get(QuizKeys.answers));
+        int solutionIndex = Integer.valueOf((String) jsonMap.get(QuizKeys.solutionIndex));
+        List<String> tags = jsonArrayToList((JSONArray) jsonMap.get(QuizKeys.tags));
 
-	}
+        return new QuizQuestion(id, question, (ArrayList<String>) answers, solutionIndex, tags);
 
-	/**
-	 * Parses a QuizQuestion to a JSONObject
-	 * 
-	 * @param question
-	 * @return jsonObject
-	 * @throws JSONException
-	 */
-	public static JSONObject parseQuiztoJSON(QuizQuestion question)
-			throws JSONException {
+    }
 
-		JSONObject jsonQuestion = new JSONObject();
-		jsonQuestion.put("tags", new JSONArray(question.getTags()));
-		jsonQuestion.put("solutionIndex", question.getIndex());
-		jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
-		jsonQuestion.put("question", question.getQuestion());
+    /**
+     * Parses a QuizQuestion to a JSONObject
+     * 
+     * @param question
+     * @return jsonObject
+     * @throws JSONException
+     */
+    public static JSONObject parseQuiztoJSON(QuizQuestion question) throws JSONException {
 
-		Debug.out(jsonQuestion);
+        JSONObject jsonQuestion = new JSONObject();
+        jsonQuestion.put("tags", new JSONArray(question.getTags()));
+        jsonQuestion.put("solutionIndex", question.getIndex());
+        jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
+        jsonQuestion.put("question", question.getQuestion());
 
-		return jsonQuestion;
-	}
+        Debug.out(jsonQuestion);
 
-	/**
-	 * Parses a JSONArray to a StringArray
-	 * 
-	 * @param array
-	 * @return String[]
-	 * @throws JSONException
-	 */
-	public static List<String> jsonArrayToList(JSONArray array)
-			throws JSONException {
-		int size = array.length();
-		List<String> stringList = new ArrayList<String>(size);
+        return jsonQuestion;
+    }
 
-		for (int i = 0; i < size; i++) {
-			stringList.add(array.getString(i));
-		}
+    /**
+     * Parses a JSONArray to a StringArray
+     * 
+     * @param array
+     * @return String[]
+     * @throws JSONException
+     */
+    public static List<String> jsonArrayToList(JSONArray array) throws JSONException {
+        int size = array.length();
+        List<String> stringList = new ArrayList<String>(size);
 
-		return stringList;
-	}
+        for (int i = 0; i < size; i++) {
+            stringList.add(array.getString(i));
+        }
+
+        return stringList;
+    }
 }

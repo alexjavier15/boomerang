@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
@@ -69,7 +70,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 		
 		
 		HttpResponse response = HttpCommunications.getHttpResponse(HttpCommunications.URL_TEQUILA);
-		if(response.getStatusLine().getStatusCode() == 200)
+		if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
 		{
 			//JSONParser.
 			
