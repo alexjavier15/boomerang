@@ -204,7 +204,7 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 
 	public void readQuestion(HttpResponse httpResponse) {
 		Debug.out(httpResponse);
-		QuizQuestion quizQuestion=null;
+		QuizQuestion quizQuestion = null;
 		try {
 			quizQuestion = JSONParser.parseJsonToQuiz(httpResponse);
 		} catch (HttpResponseException e) {
@@ -241,6 +241,6 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 	@Override
 	public void readQuestion(QuizQuestion question) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
