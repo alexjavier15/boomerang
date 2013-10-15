@@ -6,8 +6,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 
 import epfl.sweng.R;
-import epfl.sweng.R.layout;
-import epfl.sweng.R.menu;
 import epfl.sweng.servercomm.HttpCommunications;
 import android.os.Bundle;
 import android.app.Activity;
@@ -27,12 +25,13 @@ public class AuthenticationActivity extends Activity {
 		getMenuInflater().inflate(R.menu.authentication, menu);
 		return true;
 	}
-	
-	public void requete(){
+
+	public void requete() {
 		HttpResponse reponse = null;
-		
+
 		try {
-			reponse = HttpCommunications.getHttpResponse(HttpCommunications.URL_TEQUILA);
+			reponse = HttpCommunications
+					.getHttpResponse(HttpCommunications.URL_TEQUILA);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -40,13 +39,10 @@ public class AuthenticationActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(reponse != null){
-			
-			
-			
+		if (reponse != null) {
+
 		}
-		
-		
+
 	}
 
 }
