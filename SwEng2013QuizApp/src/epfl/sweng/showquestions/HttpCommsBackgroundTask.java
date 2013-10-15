@@ -13,13 +13,18 @@ import android.os.AsyncTask;
 public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse> {
 
     private HttpcommunicationsAdapter adapter;
+    private Boolean onPostExecute = true;
 
-    // private Boolean onPostExecute = true;
-
-    public HttpCommsBackgroundTask(HttpcommunicationsAdapter adapter) {
+    public HttpCommsBackgroundTask(HttpcommunicationsAdapter adapter, Boolean onPostExecute) {
         super();
         this.adapter = adapter;
-        // this.onPostExecute = onPostExecute;
+        this.onPostExecute = onPostExecute;
+    }
+
+    public HttpCommsBackgroundTask(HttpcommunicationsAdapter adapter) {
+
+        this(adapter, true);
+
     }
 
     /**
@@ -51,9 +56,17 @@ public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse>
      */
     @Override
     protected void onPostExecute(HttpResponse result) {
+<<<<<<< HEAD
         // if (onPostExecute) {
         adapter.processHttpReponse(result);
         // }
 
     }
+=======
+        if (onPostExecute) {
+            adapter.processHttpReponse(result);
+        }
+
+    }
+>>>>>>> ddb27e00db94f42482518eb1d8dd0d09f065509a
 }

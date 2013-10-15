@@ -126,7 +126,7 @@ public class EditQuestionActivity extends Activity implements
 	 * possible answer with the hint "Type in the answer" and it is marked as
 	 * incorrect.
 	 */
-	public void addNewSlot() {
+	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "");
 		adapter.add(temp);
@@ -148,14 +148,7 @@ public class EditQuestionActivity extends Activity implements
 	 *            The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
-		if (isValid()) {
-			new HttpCommsBackgroundTask(this).execute();
-		} else {
-			Toast.makeText(
-					this,
-					"Your submission was NOT successful. Please check that you filled in all fields.",
-					Toast.LENGTH_SHORT).show();
-		}
+		new HttpCommsBackgroundTask(this).execute();
 	}
 
 	/**
@@ -222,7 +215,7 @@ public class EditQuestionActivity extends Activity implements
 		((EditText) findViewById(R.id.edit_questionText)).setText("");
 		((EditText) findViewById(R.id.edit_tagsText)).setText("");
 		adapter.setDefault();
-		addNewSlot();
+		addNewSlot(null);
 		setReset(false);
 		TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
 	}
@@ -238,14 +231,20 @@ public class EditQuestionActivity extends Activity implements
 	public void processHttpReponse(HttpResponse reponse) {
 		if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
 			reset();
-			Toast.makeText(this, "Your submission was successful!",
-					Toast.LENGTH_SHORT).show();
-
+			printSuccess();
 		} else {
-			Toast.makeText(
-					this,
-					"Your submission was NOT successful. Please check that you filled in all fields correctly.",
-					Toast.LENGTH_SHORT).show();
+			printFail();
 		}
+	}
+
+	public void printSuccess() {
+		Toast.makeText(this, "Your submission was successful!",
+				Toast.LENGTH_SHORT).show();
+	}
+
+	public void printFail() {
+		Toast.makeText(this,
+				"Your submission was NOT successful. Please try again later.",
+				Toast.LENGTH_SHORT).show();
 	}
 }
