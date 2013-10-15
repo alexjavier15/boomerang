@@ -5,13 +5,16 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
+import epfl.sweng.servercomm.JSONParser;
 import epfl.sweng.servercomm.QuestionReader;
 import epfl.sweng.showquestions.HttpCommsBackgroundTask;
 import epfl.sweng.testing.Debug;
@@ -63,7 +66,15 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 	@Override
 	public HttpResponse requete() throws ClientProtocolException, IOException,
 			JSONException {
-		// TODO Auto-generated method stub
+		
+		
+		HttpResponse response = HttpCommunications.getHttpResponse(HttpCommunications.URL_TEQUILA);
+		if(response.getStatusLine().getStatusCode() == 200)
+		{
+			//JSONParser.
+			
+		}
+		
 		return null;
 	}
 

@@ -3,16 +3,11 @@ package epfl.sweng.editquestions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
-import org.json.JSONObject;
-
 import epfl.sweng.R;
 
 import epfl.sweng.questions.QuizQuestion;
@@ -23,7 +18,6 @@ import epfl.sweng.showquestions.HttpCommsBackgroundTask;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.text.Editable;
@@ -191,8 +185,7 @@ public class EditQuestionActivity extends Activity implements
 				.getText().toString().replace(",", " ").split("\\s+");
 		// split("\\s*([a-zA-Z]+)[\\s.,]*");
 
-		HashSet<String> tags = new HashSet<String>(
-				Arrays.asList(arrayStringTags));
+		List<String> tags = Arrays.asList(arrayStringTags);
 		tags.removeAll(Arrays.asList("", null));
 		return new QuizQuestion(-1, questionString, answers, solIndex, tags);
 	}
@@ -250,7 +243,7 @@ public class EditQuestionActivity extends Activity implements
 			((EditText) findViewById(R.id.edit_tagsText)).setText("");
 			adapter.clear();
 			this.addNewSlot(this.getCurrentFocus());
-			adapter.setReset(false);			
+			adapter.setReset(false);
 			((Button) findViewById(R.id.submit_button)).setEnabled(false);
 			TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
 		} else {

@@ -1,6 +1,7 @@
 package epfl.sweng.showquestions;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -180,19 +181,19 @@ public class ShowQuestionsActivity extends Activity implements
 	/**
 	 * Get the tags of the question to display them on the screen
 	 * 
-	 * @param setTags
+	 * @param list
 	 *            : set of Strings
 	 * @return the tags
 	 */
-	private String displayTags(Set<String> setTags) {
-		if (setTags.size() > 0) {
+	private String displayTags(List<String> list) {
+		if (list.size() > 0) {
 			System.out.println("Va afficher les tags");
 			String tagsInString = "";
 			int counter = 0;
 
-			for (String s : setTags) {
+			for (String s : list) {
 				counter++;
-				if (counter == setTags.size()) {
+				if (counter == list.size()) {
 					tagsInString += s;
 				} else {
 					tagsInString += s + ", ";
@@ -216,6 +217,12 @@ public class ShowQuestionsActivity extends Activity implements
 			text.append("/n No question can be obtained !");
 			Log.e(getLocalClassName(), e.getMessage());
 			return;
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		if (text == null && quizQuestion != null) {
 			Debug.out("null textview");
@@ -224,7 +231,7 @@ public class ShowQuestionsActivity extends Activity implements
 			currrentQuestion = quizQuestion;
 
 			text.setText(quizQuestion.getQuestion());
-			tags.setText(displayTags(quizQuestion.getSetOfTags()));
+			tags.setText(displayTags(quizQuestion.getTags()));
 			adapter = new ArrayAdapter<String>(this,
 					android.R.layout.simple_list_item_1,
 					quizQuestion.getAnswers());

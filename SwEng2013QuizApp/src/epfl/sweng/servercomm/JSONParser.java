@@ -1,8 +1,12 @@
 package epfl.sweng.servercomm;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.http.HttpResponse;
@@ -19,50 +23,71 @@ import epfl.sweng.testing.Debug;
  * 
  * @author LorenzoLeon
  * 
- * 			This class is used to parse JSON Objects to QuizQuestion and vice versa.
- *
+ *         This class is used to parse JSON Objects to QuizQuestion and vice
+ *         versa.
+ * 
  */
 public class JSONParser {
+
+	static final String[] QUIZ_KEYS = { "id", "question", "answers",
+			"solutionIndex", "tags" };
+	static final String[] TOKEN_KEYS = { "token", "message" };
 
 	/**
 	 * Parses a JSONObject from an HttpResponse to a QuizQuestion
 	 * 
 	 * @param response
 	 * @return QuizQuestion
-	 * @throws HttpResponseException
 	 * @throws JSONException
 	 * @throws IOException
 	 */
-	public static QuizQuestion parseJsonToQuiz(HttpResponse response) throws HttpResponseException {
 
-		final int errorCode = 404;
-		
+	private static Map<String, Object> extractJSONMap(HttpResponse response,
+			String[] keys) throws JSONException, IOException {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+
 		if (response == null) {
-			throw new HttpResponseException(errorCode, "Empty response");
+			throw new HttpResponseException(404, "Empty response");
 		}
 
 		BasicResponseHandler responseHandler = new BasicResponseHandler();
-		try {
-			JSONObject parser = new JSONObject(
-					responseHandler.handleResponse(response));
-			int id = parser.getInt("id");
-			
-			String question = parser.getString("question");
-			String[] answers = jsonArrayToStringArray(parser
-					.getJSONArray("answers"));
-			
-			int solutionIndex = parser.getInt("solutionIndex");
-			String[] tags = jsonArrayToStringArray(parser.getJSONArray("tags"));
-			Set<String> set = new HashSet<String>(Arrays.asList(tags));
-			
-			return new QuizQuestion(id, question, Arrays.asList(answers),
-					solutionIndex, set);
-		}  catch (Exception e) {
-			Debug.out("JSON Exception... badly formed JsonOBJECT in HTTPResponse");
-			e.printStackTrace();
-			return null;
-			
+
+		JSONObject parser = new JSONObject(
+				responseHandler.handleResponse(response));
+
+		for (String key : keys) {
+
+			if (parser.has(key)) {
+
+				jsonMap.put(key, parser.get(key));
+			} else {
+				throw new JSONException("Malformed JSONObject, key: " + key
+						+ " doesn't exist");
+
+			}
+
 		}
+
+		return jsonMap;
+
+	}
+
+	public static QuizQuestion parseJsonToQuiz(HttpResponse response)
+			throws JSONException, IOException {
+
+		Map<String, Object> jsonMap = extractJSONMap(response, QUIZ_KEYS);
+
+		int id = Integer.valueOf((String) jsonMap.get(QUIZ_KEYS[0]));
+		String question = (String) jsonMap.get(QUIZ_KEYS[1]);
+		List<String> answers = jsonArrayToList((JSONArray) jsonMap
+				.get(QUIZ_KEYS[2]));
+		int solutionIndex = Integer.valueOf((String) jsonMap.get(QUIZ_KEYS[3]));
+		List<String> tags = jsonArrayToList((JSONArray) jsonMap
+				.get(QUIZ_KEYS[4]));
+
+		return new QuizQuestion(id, question, (ArrayList<String>) answers,
+				solutionIndex, tags);
 
 	}
 
@@ -70,18 +95,18 @@ public class JSONParser {
 	 * Parses a QuizQuestion to a JSONObject
 	 * 
 	 * @param question
-     * @return jsonObject
+	 * @return jsonObject
 	 * @throws JSONException
 	 */
 	public static JSONObject parseQuiztoJSON(QuizQuestion question)
-		throws JSONException {
-		
+			throws JSONException {
+
 		JSONObject jsonQuestion = new JSONObject();
-		jsonQuestion.put("tags", new JSONArray(question.getSetOfTags()));
+		jsonQuestion.put("tags", new JSONArray(question.getTags()));
 		jsonQuestion.put("solutionIndex", question.getIndex());
 		jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
-		jsonQuestion.put("question", question.getQuestion());		
-		
+		jsonQuestion.put("question", question.getQuestion());
+
 		Debug.out(jsonQuestion);
 
 		return jsonQuestion;
@@ -94,16 +119,15 @@ public class JSONParser {
 	 * @return String[]
 	 * @throws JSONException
 	 */
-	private static String[] jsonArrayToStringArray(JSONArray array)
-		throws JSONException {
-		
-		int numAnswers = array.length();
-		String[] newStringArray = new String[numAnswers];
-		
-		for (int i = 0; i < numAnswers; i++) {
-			newStringArray[i] = array.getString(i);
+	public static List<String> jsonArrayToList(JSONArray array)
+			throws JSONException {
+		int size = array.length();
+		List<String> stringList = new ArrayList<String>(size);
+
+		for (int i = 0; i < size; i++) {
+			stringList.add(array.getString(i));
 		}
-		
-		return newStringArray;
+
+		return stringList;
 	}
 }
