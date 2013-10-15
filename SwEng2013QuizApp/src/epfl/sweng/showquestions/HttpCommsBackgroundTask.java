@@ -14,10 +14,12 @@ public class HttpCommsBackgroundTask extends
 		AsyncTask<Void, Void, HttpResponse> {
 
 	private HttpcommunicationsAdapter adapter;
+	private Boolean onPostExecute = false;
 
-	public HttpCommsBackgroundTask(HttpcommunicationsAdapter adapter) {
+	public HttpCommsBackgroundTask(HttpcommunicationsAdapter adapter, Boolean onPostExecute) {
 		super();
 		this.adapter = adapter;
+		this.onPostExecute=onPostExecute;
 	}
 
 	/**
@@ -50,7 +52,9 @@ public class HttpCommsBackgroundTask extends
 	 */
 	@Override
 	protected void onPostExecute(HttpResponse result) {
+	    if(onPostExecute){
 		adapter.processHttpReponse(result);
+	    }
 
 	}
 }
