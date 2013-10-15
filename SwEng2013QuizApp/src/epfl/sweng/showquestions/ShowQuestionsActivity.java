@@ -24,6 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.servercomm.JSONParser;
 import epfl.sweng.servercomm.QuestionReader;
 import epfl.sweng.testing.Debug;
@@ -35,7 +36,8 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
  * @author AlbanMarguet & LorenzoLeon
  * 
  */
-public class ShowQuestionsActivity extends Activity implements QuestionReader {
+public class ShowQuestionsActivity extends Activity implements
+		HttpcommunicationsAdapter {
 	private TextView text;
 	private TextView tags;
 	private ListView answerChoices;
@@ -202,21 +204,16 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 		}
 	}
 
-	public void readQuestion(HttpResponse httpResponse) {
+	@Override
+	public void processHttpReponse(HttpResponse httpResponse) {
 		Debug.out(httpResponse);
-		QuizQuestion quizQuestion=null;
+		QuizQuestion quizQuestion = null;
 		try {
 			quizQuestion = JSONParser.parseJsonToQuiz(httpResponse);
 		} catch (HttpResponseException e) {
 			text.append("/n No question can be obtained !");
 			Log.e(getLocalClassName(), e.getMessage());
 			return;
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		if (text == null && quizQuestion != null) {
 			Debug.out("null textview");
@@ -239,8 +236,9 @@ public class ShowQuestionsActivity extends Activity implements QuestionReader {
 	}
 
 	@Override
-	public void readQuestion(QuizQuestion question) {
+	public void requete() {
 		// TODO Auto-generated method stub
-		
+
 	}
+
 }
