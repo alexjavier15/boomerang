@@ -19,6 +19,7 @@ import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.servercomm.JSONParser;
+import epfl.sweng.showquestions.HttpCommsBackgroundTask;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
@@ -41,7 +42,8 @@ import android.widget.Toast;
  * @author CanGuzelhan & LorenzoLeon
  * 
  */
-public class EditQuestionActivity extends Activity implements HttpcommunicationsAdapter{
+public class EditQuestionActivity extends Activity implements
+		HttpcommunicationsAdapter {
 	private ListView listView;
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch = new ArrayList<Answer>();
@@ -60,7 +62,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 
 		Answer firstAnswer = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
-						R.string.hyphen_minus));
+				R.string.hyphen_minus));
 
 		fetch.add(firstAnswer);
 		adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview,
@@ -125,7 +127,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "", getResources().getString(
-						R.string.hyphen_minus));
+				R.string.hyphen_minus));
 
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
@@ -147,40 +149,8 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 	 *            The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
-
 		if (isValid()) {
-
-			JSONObject jObject;
-			boolean responsecheck = false;
-			try {
-				jObject = JSONParser.parseQuiztoJSON(createQuestion());
-				responsecheck = new HttpCommsBackgroundTask().execute(jObject)
-						.get();
-			} catch (JSONException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			}
-
-			if (responsecheck) {
-				Toast.makeText(this, "Your submission was successful!",
-						Toast.LENGTH_SHORT).show();
-
-				adapter.setReset(true);
-				((EditText) findViewById(R.id.edit_questionText)).setText("");
-				((EditText) findViewById(R.id.edit_tagsText)).setText("");
-				adapter.clear();
-				this.addNewSlot(view);
-				adapter.setReset(false);
-			} else {
-				Toast.makeText(
-						this,
-						"Your submission was NOT successful. Please check that you filled in all fields.",
-						Toast.LENGTH_SHORT).show();
-			}
-
+			new HttpCommsBackgroundTask(this).execute(view);
 		} else {
 			Toast.makeText(
 					this,
@@ -260,59 +230,35 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 		return correctAnswer == 1;
 	}
 
-	/**
-	 * This Class creates a background task that establishes a HTTP connection
-	 * and posts the created question into the server
-	 * 
-	 * @author LorenzoLeon
-	 * 
-	 */
-	private class HttpCommsBackgroundTask extends
-			AsyncTask<JSONObject, Void, Boolean> {
-
-		/**
-		 * Getting the question on the server asynchronously. Called by
-		 * execute().
-		 */
-		@Override
-		protected Boolean doInBackground(JSONObject... params) {
-			boolean responsecheck = false;
-			try {
-				responsecheck = HttpCommunications.postQuestion(
-						HttpCommunications.URLPUSH, params[0]);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			return responsecheck;
-		}
-
-		@Override
-		protected void onPostExecute(Boolean result) {
-			// TODO Auto-generated method stub
-			super.onPostExecute(result);
-			
-			
-		}
-
-	}
-
 	@Override
 	public HttpResponse requete() throws ClientProtocolException, IOException,
 			JSONException {
-		// TODO Auto-generated method stub
-		return null;
+		return HttpCommunications.postQuestion(HttpCommunications.URLPUSH,
+				JSONParser.parseQuiztoJSON(createQuestion()));
+
 	}
 
 	@Override
 	public void processHttpReponse(HttpResponse reponse) {
-		//TODO
-		
-		
-		((Button) findViewById(R.id.submit_button)).setEnabled(false);
 
-		TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
+		if (reponse.getStatusLine().getStatusCode() == 201) {
+			Toast.makeText(this, "Your submission was successful!",
+					Toast.LENGTH_SHORT).show();
+
+			adapter.setReset(true);
+			((EditText) findViewById(R.id.edit_questionText)).setText("");
+			((EditText) findViewById(R.id.edit_tagsText)).setText("");
+			adapter.clear();
+			this.addNewSlot(this.getCurrentFocus());
+			adapter.setReset(false);			
+			((Button) findViewById(R.id.submit_button)).setEnabled(false);
+			TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
+		} else {
+			Toast.makeText(
+					this,
+					"Your submission was NOT successful. Please check that you filled in all fields correctly.",
+					Toast.LENGTH_SHORT).show();
+		}
+
 	}
 }

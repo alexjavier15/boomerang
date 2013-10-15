@@ -39,6 +39,7 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
  */
 public class ShowQuestionsActivity extends Activity implements
 		HttpcommunicationsAdapter {
+
 	private TextView text;
 	private TextView tags;
 	private ListView answerChoices;
@@ -234,7 +235,6 @@ public class ShowQuestionsActivity extends Activity implements
 			TestCoordinator.check(TTChecks.QUESTION_SHOWN);
 
 		}
-		
 
 	}
 
@@ -242,6 +242,7 @@ public class ShowQuestionsActivity extends Activity implements
 	public HttpResponse requete() throws ClientProtocolException, IOException,
 			JSONException {
 		return HttpCommunications.getHttpResponse();
+
 	}
 
 }
