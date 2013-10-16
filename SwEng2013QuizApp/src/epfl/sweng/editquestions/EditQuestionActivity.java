@@ -143,7 +143,7 @@ public class EditQuestionActivity extends Activity implements
 	@Override
 	public HttpResponse requete() throws ClientProtocolException, IOException,
 			JSONException {
-		return HttpComms.getHttpComs().postQuestion(HttpComms.URLPUSH,
+		return HttpComms.getInstance().postQuestion(HttpComms.URLPUSH,
 				JSONParser.parseQuiztoJSON(createQuestion()));
 	}
 

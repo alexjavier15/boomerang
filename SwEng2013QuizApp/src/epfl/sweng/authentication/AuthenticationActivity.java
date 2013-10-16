@@ -112,7 +112,7 @@ public class AuthenticationActivity extends Activity implements
 
 	public HttpResponse stateMachine(HttpResponse response) throws ClientProtocolException, 
 			IOException, JSONException {
-		if (failedCount >= MAX_NUMBER_OF_FAILS) {
+		if (failedCount > MAX_NUMBER_OF_FAILS) {
 			// too many fails! reset fields!
 			state = ERROR_OVERLOAD;
 			return null;
@@ -141,7 +141,7 @@ public class AuthenticationActivity extends Activity implements
 
 	private HttpResponse requestAuthToken(HttpResponse starter)
 		throws ClientProtocolException, IOException {
-		HttpResponse response = HttpComms.getHttpComs().getHttpResponse(
+		HttpResponse response = HttpComms.getInstance().getHttpResponse(
 				HttpComms.URL_SWENG_SWERVER_LOGIN);
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			state = TOKEN;
@@ -167,7 +167,7 @@ public class AuthenticationActivity extends Activity implements
 		UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(
 				Arrays.asList(namList));
 		state = TEQUILA;
-		return HttpComms.getHttpComs().postEntity(HttpComms.URL_TEQUILA,
+		return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA,
 				urlEntity);
 
 	}
@@ -187,7 +187,7 @@ public class AuthenticationActivity extends Activity implements
 
 	private HttpResponse confirm(HttpResponse response)
 		throws ClientProtocolException, IOException, JSONException {
-		response = HttpComms.getHttpComs().postQuestion(
+		response = HttpComms.getInstance().postQuestion(
 				HttpComms.URL_SWENG_SWERVER_LOGIN,
 				JSONParser.parseTokentoJSON(JSONParser.parseJsonGetKey(
 						response, "token")));
@@ -206,7 +206,7 @@ public class AuthenticationActivity extends Activity implements
 	public void processHttpReponse(HttpResponse response) {
 		try {
 			String sessionID = JSONParser.parseJsonGetKey(response, "session");
-			SavedPreferences.getSavedPreferences(this).setSessionID(sessionID);
+			SavedPreferences.getInstance(this).setSessionID(sessionID);
 			this.finish();
 		} catch (NullPointerException e) {
 			failedAuthenReset();

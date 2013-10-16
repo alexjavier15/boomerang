@@ -249,7 +249,7 @@ public class ShowQuestionsActivity extends Activity implements
 	@Override
 	public HttpResponse requete() throws ClientProtocolException, IOException,
 			JSONException {
-		return HttpComms.getHttpComs().getHttpResponse();
+		return HttpComms.getInstance().getHttpResponse();
 
 	}
 

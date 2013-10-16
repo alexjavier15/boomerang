@@ -35,7 +35,7 @@ public final class HttpComms {
 	private HttpComms() {
 	}
 
-	public static HttpComms getHttpComs() {
+	public static HttpComms getInstance() {
 		if (singleHTTPComs == null) {
 			singleHTTPComs = new HttpComms();
 		}

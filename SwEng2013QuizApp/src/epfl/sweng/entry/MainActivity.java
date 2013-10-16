@@ -31,8 +31,8 @@ public class MainActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		SavedPreferences.getSavedPreferences(this).setListener(this);
-		String newValue = SavedPreferences.getSavedPreferences(this)
+		SavedPreferences.getInstance(this).setListener(this);
+		String newValue = SavedPreferences.getInstance(this)
 				.getSessionID();
 		checkStatus(newValue);
 		TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
@@ -81,7 +81,7 @@ public class MainActivity extends Activity implements
 	public void logInOut(View view) {
 		if (authenticated) {
 			// this means you are logging out!
-			SavedPreferences.getSavedPreferences(this).removeSessionID();
+			SavedPreferences.getInstance(this).removeSessionID();
 			TestCoordinator.check(TTChecks.LOGGED_OUT);
 		} else {
 			Intent loginActivityIntent = new Intent(this,
@@ -107,14 +107,14 @@ public class MainActivity extends Activity implements
 	private void checkStatus(String newValue) {
 		if (newValue.equals("")) {
 			Log.i("Session Id has been removed: logged out", newValue);
-			HttpComms.getHttpComs().setSessionID(null);
+			HttpComms.getInstance().setSessionID(null);
 			setAthenticated(false);
 			((Button) findViewById(R.id.log_inout))
 					.setText("Log in using Tequila");
 		} else {
 			Log.i("New session Id is: ", newValue);
 			//set new header
-			HttpComms.getHttpComs().setSessionID("Tequila " + newValue);
+			HttpComms.getInstance().setSessionID("Tequila " + newValue);
 			setAthenticated(true);
 			((Button) findViewById(R.id.log_inout)).setText("Log out");
 		}
