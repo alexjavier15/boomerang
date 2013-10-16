@@ -11,14 +11,14 @@
     tools:context=".AuthenticationActivity" >
 
     <EditText
-        android:id="@+id/textView2"
+        android:id="@+id/GASPAR_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/GASPAR_username" >
     </EditText>
 
     <EditText
-        android:id="@+id/editText1"
+        android:id="@+id/GASPAR_Password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"

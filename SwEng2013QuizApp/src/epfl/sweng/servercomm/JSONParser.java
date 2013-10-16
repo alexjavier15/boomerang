@@ -5,12 +5,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.text.Html;
 
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.testing.Debug;
@@ -24,12 +30,25 @@ import epfl.sweng.testing.Debug;
  */
 public class JSONParser {
 
-    public enum QuizKeys {
+    public interface Keys {
+        public String name();
+
+    }
+
+    public enum QuizKeys implements Keys {
         id, question, answers, solutionIndex, tags
     }
 
-    public enum TokenKeys {
+    public enum TokenKeys implements Keys {
         token, message
+    };
+
+    public enum SessionKeys implements Keys {
+        session, message
+    };
+
+    public enum Tequila {
+        token, session
     };
 
     /**
@@ -41,7 +60,7 @@ public class JSONParser {
      * @throws IOException
      */
 
-    private static Map<String, Object> extractJSONMap(HttpResponse response, QuizKeys[] keys) throws JSONException,
+    private static Map<String, Object> extractJSONMap(HttpResponse response, Keys[] keys) throws JSONException,
             IOException {
 
         Map<String, Object> jsonMap = new HashMap<String, Object>();
@@ -52,9 +71,10 @@ public class JSONParser {
 
         BasicResponseHandler responseHandler = new BasicResponseHandler();
 
+        // Debug.out(response.getEntity().getContent().toString());
         JSONObject parser = new JSONObject(responseHandler.handleResponse(response));
 
-        for (QuizKeys key : keys) {
+        for (Keys key : keys) {
 
             if (parser.has(key.name())) {
 
@@ -82,6 +102,43 @@ public class JSONParser {
         List<String> tags = jsonArrayToList((JSONArray) jsonMap.get(QuizKeys.tags.name()));
 
         return new QuizQuestion(id, question, (ArrayList<String>) answers, solutionIndex, tags);
+
+    }
+
+    public static HashMap<String, String> parseJsonTequila(HttpResponse response, Tequila option) throws JSONException,
+            IOException {
+
+        HashMap<String, String> tequilaMap = new HashMap<String, String>(2);
+        Map<String, Object> jsonMap = null;
+
+        switch (option) {
+
+            case token:
+
+                jsonMap = extractJSONMap(response, TokenKeys.values());
+                for (TokenKeys key : TokenKeys.values()) {
+                    if (jsonMap.containsKey(key.name())) {
+
+                        tequilaMap.put(key.name(), (String) jsonMap.get(key.name()));
+                    }
+
+                }
+
+                return tequilaMap;
+            case session:
+                jsonMap = extractJSONMap(response, SessionKeys.values());
+                for (SessionKeys key : SessionKeys.values()) {
+                    if (jsonMap.containsKey(key.name())) {
+
+                        tequilaMap.put(key.name(), (String) jsonMap.get(key.name()));
+                    }
+
+                }
+
+                return tequilaMap;
+            default:
+                return null;
+        }
 
     }
 
