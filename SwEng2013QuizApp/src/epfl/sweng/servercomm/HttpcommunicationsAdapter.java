@@ -7,9 +7,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
 public interface HttpcommunicationsAdapter {
-	
-	public HttpResponse requete() throws ClientProtocolException, IOException, JSONException;
-	
-	public void processHttpReponse(HttpResponse reponse);
+
+    HttpResponse requete() throws ClientProtocolException, IOException, JSONException;
+
+    void processHttpReponse(HttpResponse reponse);
 
 }
