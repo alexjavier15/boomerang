@@ -11,22 +11,14 @@
     tools:context=".AuthenticationActivity" >
 
     <EditText
-<<<<<<< HEAD
-        android:id="@+id/GASPAR_username"
-=======
         android:id="@+id/GasparUsername_EditText"
->>>>>>> 93a6ac63a6ea9dff740ce92ab3447eda045c22fd
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/GASPAR_username" >
     </EditText>
 
     <EditText
-<<<<<<< HEAD
-        android:id="@+id/GASPAR_Password"
-=======
         android:id="@+id/GasparPassword_EditText"
->>>>>>> 93a6ac63a6ea9dff740ce92ab3447eda045c22fd
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"

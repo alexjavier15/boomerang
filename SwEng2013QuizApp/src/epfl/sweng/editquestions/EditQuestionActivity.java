@@ -8,13 +8,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.http.HttpResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import epfl.sweng.R;
 
 import epfl.sweng.questions.QuizQuestion;
-import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.JSONParser;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -217,10 +218,9 @@ public class EditQuestionActivity extends Activity {
 				.getText().toString().replace(",", " ").split("\\s+");
 		// split("\\s*([a-zA-Z]+)[\\s.,]*");
 
-		HashSet<String> tags = new HashSet<String>(
-				Arrays.asList(arrayStringTags));
+		List <String> tags = Arrays.asList(arrayStringTags);
 		tags.removeAll(Arrays.asList("", null));
-		return new QuizQuestion(-1, questionString, answers, solIndex, tags);
+		return new QuizQuestion(-1, questionString, answers, solIndex,tags);
 	}
 
 	/**
@@ -272,17 +272,17 @@ public class EditQuestionActivity extends Activity {
 		 */
 		@Override
 		protected Boolean doInBackground(JSONObject... params) {
-			boolean responsecheck = false;
+			HttpResponse responsecheck =null;
 			try {
-				responsecheck = HttpCommunications.postQuestion(
-						HttpCommunications.URLPUSH, params[0]);
+				responsecheck = HttpComms.getInstance().postQuestion(
+						HttpComms.URLPUSH, params[0]);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
-			return responsecheck;
+			return responsecheck!=null;
 		}
 
 		@Override

@@ -12,68 +12,69 @@ import java.util.Set;
  */
 public class QuizQuestion implements QuestionProvider {
 
-	private long id;
-	private String question;
-	private ArrayList<String> answers;
-	private int solutionIndex;
-	private Set<String> tags;
-	/**
-	 * Constructor of a QuizQuestion : class to modelize a quiz question at the
-	 * json format.
-	 * 
-	 * @param iD
-	 *            of the question
-	 * @param quest
-	 *            String
-	 * @param ans
-	 *            List of String
-	 * @param solIndex
-	 *            int
-	 * @param tag
-	 *            themas of the question
-	 */
-	public QuizQuestion(long iD, String quest, List<String> ans, int solIndex,
-			Set<String> tag) {
-		this.id = iD;
-		this.question = quest;
-		this.answers = new ArrayList<String>(ans);
-		this.solutionIndex = solIndex;
-		this.tags = tag;
-	}
+    private long id;
+    private String question;
+    private ArrayList<String> answers = new ArrayList<String>();
+    private int solutionIndex;
+    private List<String> tags = new ArrayList<String>();
 
-	@Override
-	public String getQuestion() {
-		return question;
-	}
+    /**
+     * Constructor of a QuizQuestion : class to modelize a quiz question at the
+     * json format.
+     * 
+     * @param iD
+     *            of the question
+     * @param quest
+     *            String
+     * @param ans
+     *            List of String
+     * @param solIndex
+     *            int
+     * @param tags
+     *            themas of the question
+     */
+    public QuizQuestion(long iD, String quest, List<String> ans, int solIndex,
+            List<String> tag) {
+        this.id = iD;
+        this.question = quest;
+        this.answers = new ArrayList<String>(ans);
+        this.solutionIndex = solIndex;
+        this.tags = tag;
+    }
 
-	@Override
-	public String getCorrectAnswer() {
-		return answers.get(solutionIndex);
-	}
+    public String getQuestion() {
+        return question;
+    }
 
-	@Override
-	public List<String> getAnswers() {
-		return answers;
-	}
+    public String getCorrectAnswer() {
+        return answers.get(solutionIndex);
+    }
 
-	@Override
-	public boolean checkAnswer(int sol) {
-		return sol == solutionIndex;
-	}
+    public List<String> getAnswers() {
+        return answers;
+    }
 
-	@Override
-	public long getID() {
-		return id;
-	}
+    @Override
+    public boolean checkAnswer(int sol) {
+        return sol == solutionIndex;
+    }
 
-	@Override
-	public int getIndex() {
-		return solutionIndex;
-	}
+    public long getID() {
+        return id;
+    }
 
-	@Override
-	public Set<String> getSetOfTags() {
-		return tags;
-	}
+    public int getIndex() {
+        return solutionIndex;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    @Override
+    public Set<String> getSetOfTags() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

@@ -8,7 +8,7 @@ import org.json.JSONException;
 
 import android.os.AsyncTask;
 import epfl.sweng.questions.QuizQuestion;
-import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.JSONParser;
 import epfl.sweng.servercomm.QuestionReader;
 import epfl.sweng.testing.Debug;
@@ -39,7 +39,7 @@ public class HttpCommsBackgroundTask extends
 		
 		try {
 
-			response = HttpCommunications.getHttpResponse();
+			response = HttpComms.getInstance().getHttpResponse();
 
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();

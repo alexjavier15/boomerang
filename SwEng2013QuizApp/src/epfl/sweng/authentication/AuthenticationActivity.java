@@ -6,7 +6,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 
 import epfl.sweng.R;
-import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.HttpComms;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -30,8 +30,7 @@ public class AuthenticationActivity extends Activity {
 		HttpResponse reponse = null;
 
 		try {
-			reponse = HttpCommunications
-					.getHttpResponse(HttpCommunications.URL_TEQUILA);
+			reponse = HttpComms.getInstance().getHttpResponse(HttpComms.URL_TEQUILA);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
