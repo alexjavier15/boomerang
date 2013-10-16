@@ -3,6 +3,7 @@ package epfl.sweng.entry;
 import epfl.sweng.R;
 import epfl.sweng.authentication.AuthenticationActivity;
 import epfl.sweng.editquestions.EditQuestionActivity;
+import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -111,6 +112,8 @@ public class MainActivity extends Activity implements
 					.setText("Log in using Tequila");
 		} else {
 			Log.i("New session Id is: ", newValue);
+			//set new header
+			HttpComms.getHttpComs().setSessionID("Tequila " + newValue);
 			setAthenticated(true);
 			((Button) findViewById(R.id.log_inout)).setText("Log out");
 		}

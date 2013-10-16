@@ -10,7 +10,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import epfl.sweng.R;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
-import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.testing.Debug;
 import epfl.sweng.testing.TestCoordinator;
@@ -85,8 +85,7 @@ public class AuthenticationActivity extends Activity implements
 	public HttpResponse requete() throws ClientProtocolException, IOException,
 			JSONException {
 
-		HttpResponse response = HttpCommunications
-				.getHttpResponse(HttpCommunications.URL_SWENG_SWERVER_LOGIN);
+		HttpResponse response = HttpComms.getHttpComs().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			// JSONParser.
 

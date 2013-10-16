@@ -14,7 +14,7 @@ import org.json.JSONException;
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
-import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -143,7 +143,7 @@ public class EditQuestionActivity extends Activity implements
 	@Override
 	public HttpResponse requete() throws ClientProtocolException, IOException,
 			JSONException {
-		return HttpCommunications.postQuestion(HttpCommunications.URLPUSH,
+		return HttpComms.getHttpComs().postQuestion(HttpComms.URLPUSH,
 				JSONParser.parseQuiztoJSON(createQuestion()));
 	}
 
