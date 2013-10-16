@@ -1,5 +1,7 @@
 package epfl.sweng.questions;
 
+import java.util.List;
+import java.util.Set;
 
 /**
  * 
@@ -8,8 +10,18 @@ package epfl.sweng.questions;
  */
 public interface QuestionProvider {
 
+	long getID();
+
+	String getQuestion();
+
 	String getCorrectAnswer();
 
+	int getIndex();
+
+	List<String> getAnswers();
+
 	boolean checkAnswer(int sol);
+
+	Set<String> getSetOfTags();
 
 }

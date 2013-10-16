@@ -6,6 +6,7 @@ import epfl.sweng.R;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 import android.app.Activity;
+import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -23,33 +24,39 @@ import android.widget.Toast;
  * 
  */
 public class AnswerAdapter extends ArrayAdapter<Answer> {
-	private Activity activity;
+	private Context activity;
 	private int isChecked;
+	private boolean reset;
 
-	private static boolean oneCorrectAnswer = false;
-	private static boolean noEmptyAnswer = false;
-
-	public AnswerAdapter(Activity context, int resourceId,
+	public AnswerAdapter(Context context, int resourceId,
 			ArrayList<Answer> entries) {
 		super(context, resourceId, entries);
 		this.activity = context;
-		this.isChecked = -1;
+		this.isChecked = 0;
+		this.reset = false;
 	}
 
-	public static boolean isOneCorrectAnswer() {
-		return oneCorrectAnswer;
+	public boolean getReset() {
+		return reset;
 	}
 
-	public static boolean isNoEmptyAnswer() {
-		return noEmptyAnswer;
+	public void setReset(boolean newStatus) {
+		this.reset = newStatus;
 	}
 
+	public int getWhoIsChecked() {
+		return isChecked;
+	}
+	
+	
+
+	
 	@Override
 	public View getView(final int position, View view, ViewGroup parent) {
 		final AnswerHolder holder;
 		View newView = null;
 		if (view == null) {
-			LayoutInflater inflater = activity.getLayoutInflater();
+			LayoutInflater inflater = ((Activity) activity).getLayoutInflater();
 			newView = inflater.inflate(R.layout.activity_answer_slot, null);
 			holder = new AnswerHolder();
 			holder.setCheckButton((Button) newView
@@ -68,19 +75,9 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 				@Override
 				public void onTextChanged(CharSequence s, int start,
 						int before, int count) {
-					if (((EditQuestionActivity) activity).isReset()) {
+					if (!reset) {
 						((Answer) holder.getAnswerText().getTag()).setAnswer(s
 								.toString());
-						// We need to check if an answer is written in each
-						// slot and in that case we set noEmptyAnswer to true.
-						for (int i = 0; i < getCount(); i++) {
-							if (getItem(i).getAnswer().trim().equals("")) {
-								noEmptyAnswer = false;
-								break;
-							} else if (i == getCount()) {
-								noEmptyAnswer = true;
-							}
-						}
 					}
 				}
 
@@ -91,12 +88,6 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
 				@Override
 				public void afterTextChanged(Editable s) {
-					/*
-					 * We need to check if the quiz question is valid and if so
-					 * we must enable the submit button. The problem here is
-					 * currently there is no way to access the submit button
-					 * from here.
-					 */
 				}
 			});
 
@@ -104,17 +95,14 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
 				@Override
 				public void onClick(View v) {
-					if (isChecked >= 0) {
-						getItem(isChecked).setChecked(
-								activity.getResources().getString(
-										R.string.heavy_ballot_x));
-					}
-					isChecked = position;
-					getItem(position).setChecked(
+					AnswerAdapter.this.getItem(isChecked).setChecked(
+							activity.getResources().getString(
+									R.string.heavy_ballot_x));
+					AnswerAdapter.this.isChecked = position;
+					AnswerAdapter.this.getItem(position).setChecked(
 							activity.getResources().getString(
 									R.string.heavy_check_mark));
-					oneCorrectAnswer = true;
-					notifyDataSetChanged();
+					AnswerAdapter.this.notifyDataSetChanged();
 					TestCoordinator.check(TTChecks.QUESTION_EDITED);
 				}
 			});
@@ -124,10 +112,6 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 				@Override
 				public void onClick(View v) {
 					if (AnswerAdapter.this.getCount() > 1) {
-						if (isChecked == position) {
-							isChecked = -1;
-							oneCorrectAnswer = false;
-						}
 						AnswerAdapter.this.remove(AnswerAdapter.this
 								.getItem(position));
 						AnswerAdapter.this.notifyDataSetChanged();
@@ -157,12 +141,5 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 				AnswerAdapter.this.getItem(position).getChecked());
 
 		return newView;
-	}
-
-	public void setDefault() {
-		isChecked = -1;
-		oneCorrectAnswer = false;
-		noEmptyAnswer = false;
-		clear();
 	}
 }

@@ -3,25 +3,25 @@ package epfl.sweng.editquestions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import epfl.sweng.R;
+
 import epfl.sweng.questions.QuizQuestion;
-import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpCommunications;
-import epfl.sweng.servercomm.HttpcommunicationsAdapter;
+import epfl.sweng.servercomm.JSONParser;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
-import epfl.sweng.tools.JSONParser;
 
-import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.app.Activity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -38,12 +38,10 @@ import android.widget.Toast;
  * @author CanGuzelhan & LorenzoLeon
  * 
  */
-public class EditQuestionActivity extends Activity implements
-		HttpcommunicationsAdapter {
+public class EditQuestionActivity extends Activity {
 	private ListView listView;
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch = new ArrayList<Answer>();
-	private boolean reset = false;
 
 	/**
 	 * Starts the window adding a modified ArrayAdapter to list the answers.
@@ -52,19 +50,18 @@ public class EditQuestionActivity extends Activity implements
 	 * 
 	 * @param savedInstanceState
 	 */
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_question);
 
 		Answer firstAnswer = new Answer(getResources().getString(
-				R.string.heavy_ballot_x), "");
-		fetch.add(firstAnswer);
+				R.string.heavy_ballot_x), "", getResources().getString(
+						R.string.hyphen_minus));
 
+		fetch.add(firstAnswer);
 		adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview,
 				fetch);
 		adapter.setNotifyOnChange(true);
-
 		listView = (ListView) findViewById(R.id.listview);
 		listView.setAdapter(adapter);
 
@@ -73,7 +70,7 @@ public class EditQuestionActivity extends Activity implements
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				if (!isReset()) {
+				if (!adapter.getReset()) {
 					TestCoordinator.check(TTChecks.QUESTION_EDITED);
 				}
 			}
@@ -106,19 +103,32 @@ public class EditQuestionActivity extends Activity implements
 		TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.edit_question, menu);
+		return true;
+	}
+
 	/**
 	 * Whenever the button with the plus sign (+) is clicked, it adds a new
 	 * possible answer with the hint "Type in the answer" and it is marked as
 	 * incorrect.
+	 * 
+	 * @param view
+	 *            The view that was clicked.
 	 */
-	private void addNewSlot(View view) {
+	public void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
-				R.string.heavy_ballot_x), "");
+				R.string.heavy_ballot_x), "", getResources().getString(
+						R.string.hyphen_minus));
+
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
-		if (!isReset()) {
+		if (!adapter.getReset()) {
 			TestCoordinator.check(TTChecks.QUESTION_EDITED);
 		}
+
 	}
 
 	/**
@@ -133,31 +143,47 @@ public class EditQuestionActivity extends Activity implements
 	 *            The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
-		new HttpCommsBackgroundTask(this).execute();
-	}
 
-	/**
-	 * This is called in the doInBackground method on the
-	 * HttpCommsBackgroundTask.
-	 */
-	@Override
-	public HttpResponse requete() throws ClientProtocolException, IOException,
-			JSONException {
-		return HttpCommunications.postQuestion(HttpCommunications.URLPUSH,
-				JSONParser.parseQuiztoJSON(createQuestion()));
-	}
+		if (isValid()) {
 
-	/**
-	 * This is called in the postExecute method on the HttpCommsBackgroundTask.
-	 */
-	@Override
-	public void processHttpReponse(HttpResponse reponse) {
-		if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
-			reset();
-			printSuccess();
+			JSONObject jObject;
+			boolean responsecheck = false;
+			try {
+				jObject = JSONParser.parseQuiztoJSON(createQuestion());
+				responsecheck = new HttpCommsBackgroundTask().execute(jObject)
+						.get();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+
+			if (responsecheck) {
+				Toast.makeText(this, "Your submission was successful!",
+						Toast.LENGTH_SHORT).show();
+
+				adapter.setReset(true);
+				((EditText) findViewById(R.id.edit_questionText)).setText("");
+				((EditText) findViewById(R.id.edit_tagsText)).setText("");
+				adapter.clear();
+				this.addNewSlot(view);
+				adapter.setReset(false);
+			} else {
+				Toast.makeText(
+						this,
+						"Your submission was NOT successful. Please check that you filled in all fields.",
+						Toast.LENGTH_SHORT).show();
+			}
+
 		} else {
-			printFail();
+			Toast.makeText(
+					this,
+					"Your submission was NOT successful. Please check that you filled in all fields.",
+					Toast.LENGTH_SHORT).show();
 		}
+
 	}
 
 	/**
@@ -191,7 +217,8 @@ public class EditQuestionActivity extends Activity implements
 				.getText().toString().replace(",", " ").split("\\s+");
 		// split("\\s*([a-zA-Z]+)[\\s.,]*");
 
-		List<String> tags = Arrays.asList(arrayStringTags);
+		HashSet<String> tags = new HashSet<String>(
+				Arrays.asList(arrayStringTags));
 		tags.removeAll(Arrays.asList("", null));
 		return new QuizQuestion(-1, questionString, answers, solIndex, tags);
 	}
@@ -207,51 +234,66 @@ public class EditQuestionActivity extends Activity implements
 	 * @return True if all requirements defining a valid quiz question are
 	 *         verified, otherwise false.
 	 */
-	private boolean isValid() {
+	public boolean isValid() {
+		int correctAnswer = 0;
+
 		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
-		return !questionText.getText().toString().trim().equals("")
-				&& adapter.getCount() >= 2
-				&& AnswerAdapter.isOneCorrectAnswer()
-				&& AnswerAdapter.isNoEmptyAnswer();
+		assert !questionText.getText().toString().trim().equals("")
+				|| adapter.getCount() >= 2 : "The question is empty or the number of answers is smaller than 2!";
+
+		for (int i = 0; i < adapter.getCount(); i++) {
+			if (adapter
+					.getItem(i)
+					.getChecked()
+					.equals(getResources().getString(R.string.heavy_check_mark))) {
+				correctAnswer++;
+			}
+
+			assert !adapter.getItem(i).getAnswer().trim().equals("") : "No answer can be empty!";
+		}
+
+		assert correctAnswer == 1 : "Only one answer should be marked as correct!";
+		return correctAnswer == 1;
 	}
 
 	/**
-	 * After a successful submission of a quiz question,
-	 * EditQuestionActivity‘s UI is reinitialized.
+	 * This Class creates a background task that establishes a HTTP connection
+	 * and posts the created question into the server
+	 * 
+	 * @author LorenzoLeon
+	 * 
 	 */
-	private void reset() {
-		setReset(true);
-		((EditText) findViewById(R.id.edit_questionText)).setText("");
-		((EditText) findViewById(R.id.edit_tagsText)).setText("");
-		adapter.setDefault();
-		addNewSlot(null);
-		setReset(false);
-		TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
-	}
+	private class HttpCommsBackgroundTask extends
+			AsyncTask<JSONObject, Void, Boolean> {
 
-	private void printSuccess() {
-		Toast.makeText(this, "Your submission was successful!",
-				Toast.LENGTH_SHORT).show();
-	}
+		/**
+		 * Getting the question on the server asynchronously. Called by
+		 * execute().
+		 */
+		@Override
+		protected Boolean doInBackground(JSONObject... params) {
+			boolean responsecheck = false;
+			try {
+				responsecheck = HttpCommunications.postQuestion(
+						HttpCommunications.URLPUSH, params[0]);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			return responsecheck;
+		}
 
-	private void printFail() {
-		Toast.makeText(this,
-				"Your submission was NOT successful. Please try again later.",
-				Toast.LENGTH_SHORT).show();
-	}
+		@Override
+		protected void onPostExecute(Boolean result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			((Button) findViewById(R.id.submit_button)).setEnabled(false);
 
-	public boolean isReset() {
-		return reset;
-	}
+			TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
+			
+		}
 
-	public void setReset(boolean newStatus) {
-		reset = newStatus;
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.edit_question, menu);
-		return true;
 	}
 }

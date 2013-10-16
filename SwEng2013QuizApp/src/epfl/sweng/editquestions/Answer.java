@@ -3,6 +3,7 @@ package epfl.sweng.editquestions;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
+
 /**
  * 
  * @author CanGuzelhan
@@ -13,6 +14,7 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
 public class Answer {
 	private String checked;
 	private String answer;
+	private String removed;
 
 	/**
 	 * Each answer the user types is represented by an Object of type Answer.
@@ -24,11 +26,15 @@ public class Answer {
 	 *            or incorrect (✘).
 	 * @param answerText
 	 *            The text of the answer that the user can enter.
+	 * @param remove
+	 *            The String value of the hyphen minus symbol (-) the button to
+	 *            remove this particular answer has.
 	 */
-	public Answer(String check, String answerText) {
+	public Answer(String check, String answerText, String remove) {
 		super();
 		this.checked = check;
 		this.answer = answerText;
+		this.removed = remove;
 	}
 
 	public String getChecked() {
@@ -50,9 +56,21 @@ public class Answer {
 		}
 	}
 
-	// For test only
+	public String getRemoved() {
+		return removed;
+	}
+
+	public void setRemoved(String receivedRemoved) {
+		this.removed = receivedRemoved;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
-		return "Answer: \nchecked -> " + checked + " \nanswer -> " + answer;
+		// TODO Auto-generated method stub
+		return "checked : " + checked + " answer : " + answer; 
 	}
+	
 }
