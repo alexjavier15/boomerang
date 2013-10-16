@@ -47,6 +47,7 @@ public class AuthenticationActivity extends Activity implements
 	private static final int MAX_NUMBER_OF_FAILS = 3;
 	private int state;
 	private int failedCount;
+	private String token;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +156,7 @@ public class AuthenticationActivity extends Activity implements
 
 	private HttpResponse postTequilaToken(HttpResponse tokenResponse)
         throws JSONException, IOException {
-		String token = JSONParser.parseJsonGetKey(tokenResponse, "token");
+		token = JSONParser.parseJsonGetKey(tokenResponse, "token");
 		String username = ((EditText) findViewById(R.id.GasparUsername_EditText))
 				.getText().toString();
 		String password = ((EditText) findViewById(R.id.GasparPassword_EditText))
@@ -189,8 +190,7 @@ public class AuthenticationActivity extends Activity implements
 		throws ClientProtocolException, IOException, JSONException {
 		response = HttpComms.getInstance().postQuestion(
 				HttpComms.URL_SWENG_SWERVER_LOGIN,
-				JSONParser.parseTokentoJSON(JSONParser.parseJsonGetKey(
-						response, "token")));
+				JSONParser.parseTokentoJSON(token));
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			state = AUTHENTICATED;
 			return response;
