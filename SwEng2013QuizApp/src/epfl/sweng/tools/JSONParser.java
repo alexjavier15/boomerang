@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.testing.Debug;
 
@@ -81,8 +83,8 @@ public class JSONParser {
 
 		Map<String, Object> jsonMap = extractJSONMap(response,
 				QuizKeys.values());
-
-		long id = (Long) jsonMap.get(QuizKeys.id.name());
+		
+		long id = 4;
 		String question = (String) jsonMap.get(QuizKeys.question.name());
 		List<String> answers = jsonArrayToList((JSONArray) jsonMap
 				.get(QuizKeys.answers.name()));
