@@ -63,15 +63,5 @@ public class TestTemplate<T> extends ActivityInstrumentationTestCase2 {
 			}
 		});
 	}
-	
-	protected QuizQuestion createQuestionUniverse() {
-		String question = "What is the answer to life, the universe, and everything?";
-		int sol = 0;
-		ArrayList<String> answers = new ArrayList<String>();
-		answers.add("Forty-two");
-		answers.add("Twenty-seven");
-		Set<String> tags = new HashSet<String>(Arrays.asList("h2g2", "trivia"));
-		return new QuizQuestion(-1, question, answers, sol, tags);
-	}
 
 }
