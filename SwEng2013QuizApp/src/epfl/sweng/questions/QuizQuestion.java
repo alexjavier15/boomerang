@@ -33,12 +33,12 @@ public class QuizQuestion implements QuestionProvider {
 	 *            themas of the question
 	 */
 	public QuizQuestion(long iD, String quest, List<String> ans, int solIndex,
-			List<String> tags) {
+			List<String> tag) {
 		this.id = iD;
 		this.question = quest;
 		this.answers = new ArrayList<String>(ans);
 		this.solutionIndex = solIndex;
-		this.tags = tags;
+		this.tags = tag;
 	}
 
 	public String getQuestion() {

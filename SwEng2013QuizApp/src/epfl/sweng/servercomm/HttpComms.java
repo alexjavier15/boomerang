@@ -2,11 +2,9 @@ package epfl.sweng.servercomm;
 
 import java.io.IOException;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -22,7 +20,7 @@ import epfl.sweng.testing.Debug;
  *         This class is used to communicate with the server
  * 
  */
-public class HttpComms {
+public final class HttpComms {
 
 	public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
 	public final static String URLPUSH = "https://sweng-quiz.appspot.com/quizquestions/";
@@ -38,8 +36,9 @@ public class HttpComms {
 	}
 
 	public static HttpComms getHttpComs() {
-		if (singleHTTPComs == null)
+		if (singleHTTPComs == null) {
 			singleHTTPComs = new HttpComms();
+		}
 		return singleHTTPComs;
 	}
 
@@ -57,7 +56,7 @@ public class HttpComms {
 	 * @throws IOException
 	 */
 	public HttpResponse getHttpResponse(String urlString)
-			throws ClientProtocolException, IOException {
+		throws ClientProtocolException, IOException {
 		HttpGet request = new HttpGet(urlString);
 		return execute(request);
 	}
@@ -87,9 +86,9 @@ public class HttpComms {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-//TODO
+	// TODO do so no code is repeated
 	public HttpResponse postQuestion(String url, JSONObject question)
-			throws ClientProtocolException, IOException, JSONException {
+		throws ClientProtocolException, IOException, JSONException {
 
 		HttpPost post = new HttpPost(url);
 		post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
@@ -100,7 +99,7 @@ public class HttpComms {
 	}
 
 	public HttpResponse postEntity(String url, HttpEntity entity)
-			throws ClientProtocolException, IOException {
+		throws ClientProtocolException, IOException {
 		HttpPost post = new HttpPost(url);
 		post.setEntity(entity);
 		return execute(post);
@@ -108,9 +107,10 @@ public class HttpComms {
 	}
 
 	public HttpResponse execute(HttpUriRequest request)
-			throws ClientProtocolException, IOException {
-		if (authenticationValue != null)
+		throws ClientProtocolException, IOException {
+		if (authenticationValue != null) {
 			request.addHeader(HEADER, authenticationValue);
+		}
 		Debug.out(request);
 		return SwengHttpClientFactory.getInstance().execute(request);
 
