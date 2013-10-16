@@ -3,14 +3,15 @@ package epfl.sweng.editquestions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
-import epfl.sweng.R;
 
+import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
@@ -19,8 +20,8 @@ import epfl.sweng.showquestions.HttpCommsBackgroundTask;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
-import android.os.Bundle;
 import android.app.Activity;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -42,6 +43,7 @@ public class EditQuestionActivity extends Activity implements
 	private ListView listView;
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch = new ArrayList<Answer>();
+	private static boolean reset = false;
 
 	/**
 	 * Starts the window adding a modified ArrayAdapter to list the answers.
@@ -56,13 +58,13 @@ public class EditQuestionActivity extends Activity implements
 		setContentView(R.layout.activity_edit_question);
 
 		Answer firstAnswer = new Answer(getResources().getString(
-				R.string.heavy_ballot_x), "", getResources().getString(
-				R.string.hyphen_minus));
-
+				R.string.heavy_ballot_x), "");
 		fetch.add(firstAnswer);
+
 		adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview,
 				fetch);
 		adapter.setNotifyOnChange(true);
+
 		listView = (ListView) findViewById(R.id.listview);
 		listView.setAdapter(adapter);
 
@@ -71,7 +73,7 @@ public class EditQuestionActivity extends Activity implements
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				if (!adapter.getReset()) {
+				if (!isReset()) {
 					TestCoordinator.check(TTChecks.QUESTION_EDITED);
 				}
 			}
@@ -104,32 +106,19 @@ public class EditQuestionActivity extends Activity implements
 		TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.edit_question, menu);
-		return true;
-	}
-
 	/**
 	 * Whenever the button with the plus sign (+) is clicked, it adds a new
 	 * possible answer with the hint "Type in the answer" and it is marked as
 	 * incorrect.
-	 * 
-	 * @param view
-	 *            The view that was clicked.
 	 */
-	public void addNewSlot(View view) {
+	private void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
-				R.string.heavy_ballot_x), "", getResources().getString(
-				R.string.hyphen_minus));
-
+				R.string.heavy_ballot_x), "");
 		adapter.add(temp);
 		adapter.notifyDataSetChanged();
-		if (!adapter.getReset()) {
+		if (!isReset()) {
 			TestCoordinator.check(TTChecks.QUESTION_EDITED);
 		}
-
 	}
 
 	/**
@@ -144,15 +133,24 @@ public class EditQuestionActivity extends Activity implements
 	 *            The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
-		if (isValid()) {
-			new HttpCommsBackgroundTask(this).execute();
-		} else {
-			Toast.makeText(
-					this,
-					"Your submission was NOT successful. Please check that you filled in all fields.",
-					Toast.LENGTH_SHORT).show();
-		}
+		new HttpCommsBackgroundTask(this).execute();
+	}
 
+	@Override
+	public HttpResponse requete() throws ClientProtocolException, IOException,
+			JSONException {
+		return HttpCommunications.postQuestion(HttpCommunications.URLPUSH,
+				JSONParser.parseQuiztoJSON(createQuestion()));
+	}
+
+	@Override
+	public void processHttpReponse(HttpResponse reponse) {
+		if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
+			reset();
+			printSuccess();
+		} else {
+			printFail();
+		}
 	}
 
 	/**
@@ -186,8 +184,7 @@ public class EditQuestionActivity extends Activity implements
 				.getText().toString().replace(",", " ").split("\\s+");
 		// split("\\s*([a-zA-Z]+)[\\s.,]*");
 
-		HashSet<String> tags = new HashSet<String>(
-				Arrays.asList(arrayStringTags));
+		List<String> tags = Arrays.asList(arrayStringTags);
 		tags.removeAll(Arrays.asList("", null));
 		return new QuizQuestion(-1, questionString, answers, solIndex, tags);
 	}
@@ -203,57 +200,51 @@ public class EditQuestionActivity extends Activity implements
 	 * @return True if all requirements defining a valid quiz question are
 	 *         verified, otherwise false.
 	 */
-	public boolean isValid() {
-		int correctAnswer = 0;
-
+	private boolean isValid() {
 		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
-		assert !questionText.getText().toString().trim().equals("")
-				|| adapter.getCount() >= 2 : "The question is empty or the number of answers is smaller than 2!";
+		return !questionText.getText().toString().trim().equals("")
+				&& adapter.getCount() >= 2
+				&& AnswerAdapter.isOneCorrectAnswer()
+				&& AnswerAdapter.isNoEmptyAnswer();
+	}
 
-		for (int i = 0; i < adapter.getCount(); i++) {
-			if (adapter
-					.getItem(i)
-					.getChecked()
-					.equals(getResources().getString(R.string.heavy_check_mark))) {
-				correctAnswer++;
-			}
+	/**
+	 * After a successful submission of a quiz question,
+	 * EditQuestionActivity‘s UI is reinitialized.
+	 */
+	private void reset() {
+		setReset(true);
+		((EditText) findViewById(R.id.edit_questionText)).setText("");
+		((EditText) findViewById(R.id.edit_tagsText)).setText("");
+		adapter.setDefault();
+		addNewSlot(null);
+		setReset(false);
+		TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
+	}
 
-			assert !adapter.getItem(i).getAnswer().trim().equals("") : "No answer can be empty!";
-		}
+	private void printSuccess() {
+		Toast.makeText(this, "Your submission was successful!",
+				Toast.LENGTH_SHORT).show();
+	}
 
-		assert correctAnswer == 1 : "Only one answer should be marked as correct!";
-		return correctAnswer == 1;
+	private void printFail() {
+		Toast.makeText(this,
+				"Your submission was NOT successful. Please try again later.",
+				Toast.LENGTH_SHORT).show();
+	}
+
+	public static boolean isReset() {
+		return reset;
+	}
+
+	public static void setReset(boolean newStatus) {
+		reset = newStatus;
 	}
 
 	@Override
-	public HttpResponse requete() throws ClientProtocolException, IOException,
-			JSONException {
-		return HttpCommunications.postQuestion(HttpCommunications.URLPUSH,
-				JSONParser.parseQuiztoJSON(createQuestion()));
-
-	}
-
-	@Override
-	public void processHttpReponse(HttpResponse reponse) {
-
-		if (reponse.getStatusLine().getStatusCode() == 201) {
-			Toast.makeText(this, "Your submission was successful!",
-					Toast.LENGTH_SHORT).show();
-
-			adapter.setReset(true);
-			((EditText) findViewById(R.id.edit_questionText)).setText("");
-			((EditText) findViewById(R.id.edit_tagsText)).setText("");
-			adapter.clear();
-			this.addNewSlot(this.getCurrentFocus());
-			adapter.setReset(false);			
-			((Button) findViewById(R.id.submit_button)).setEnabled(false);
-			TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
-		} else {
-			Toast.makeText(
-					this,
-					"Your submission was NOT successful. Please check that you filled in all fields correctly.",
-					Toast.LENGTH_SHORT).show();
-		}
-
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.edit_question, menu);
+		return true;
 	}
 }

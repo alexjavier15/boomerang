@@ -2,7 +2,6 @@ package epfl.sweng.questions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 
@@ -14,9 +13,10 @@ public class QuizQuestion implements QuestionProvider {
 
 	private long id;
 	private String question;
-	private ArrayList<String> answers;
+	private ArrayList<String> answers = new ArrayList<String>();
 	private int solutionIndex;
-	private Set<String> tags;
+	private List<String> tags = new ArrayList<String>();
+
 	/**
 	 * Constructor of a QuizQuestion : class to modelize a quiz question at the
 	 * json format.
@@ -29,29 +29,26 @@ public class QuizQuestion implements QuestionProvider {
 	 *            List of String
 	 * @param solIndex
 	 *            int
-	 * @param tag
+	 * @param tags
 	 *            themas of the question
 	 */
 	public QuizQuestion(long iD, String quest, List<String> ans, int solIndex,
-			Set<String> tag) {
+			List<String> tags) {
 		this.id = iD;
 		this.question = quest;
 		this.answers = new ArrayList<String>(ans);
 		this.solutionIndex = solIndex;
-		this.tags = tag;
+		this.tags = tags;
 	}
 
-	@Override
 	public String getQuestion() {
 		return question;
 	}
 
-	@Override
 	public String getCorrectAnswer() {
 		return answers.get(solutionIndex);
 	}
 
-	@Override
 	public List<String> getAnswers() {
 		return answers;
 	}
@@ -61,18 +58,15 @@ public class QuizQuestion implements QuestionProvider {
 		return sol == solutionIndex;
 	}
 
-	@Override
 	public long getID() {
 		return id;
 	}
 
-	@Override
 	public int getIndex() {
 		return solutionIndex;
 	}
 
-	@Override
-	public Set<String> getSetOfTags() {
+	public List<String> getTags() {
 		return tags;
 	}
 
