@@ -6,7 +6,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
-
 import android.os.AsyncTask;
 
 public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse> {

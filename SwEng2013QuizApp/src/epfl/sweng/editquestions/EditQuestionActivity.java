@@ -3,7 +3,6 @@ package epfl.sweng.editquestions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -51,7 +50,8 @@ public class EditQuestionActivity extends Activity {
 	 * 
 	 * @param savedInstanceState
 	 */
-	protected void onCreate(Bundle savedInstanceState) {
+	@Override
+    protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_question);
 

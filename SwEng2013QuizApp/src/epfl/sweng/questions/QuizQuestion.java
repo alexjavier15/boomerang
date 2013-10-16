@@ -42,14 +42,17 @@ public class QuizQuestion implements QuestionProvider {
         this.tags = tag;
     }
 
+    @Override
     public String getQuestion() {
         return question;
     }
 
+    @Override
     public String getCorrectAnswer() {
         return answers.get(solutionIndex);
     }
 
+    @Override
     public List<String> getAnswers() {
         return answers;
     }
@@ -59,10 +62,12 @@ public class QuizQuestion implements QuestionProvider {
         return sol == solutionIndex;
     }
 
+    @Override
     public long getID() {
         return id;
     }
 
+    @Override
     public int getIndex() {
         return solutionIndex;
     }

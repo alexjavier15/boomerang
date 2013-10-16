@@ -2,9 +2,6 @@ package epfl.sweng.authentication;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
-
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -16,7 +13,6 @@ import epfl.sweng.R;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
-import epfl.sweng.testing.Debug;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 import epfl.sweng.tools.JSONParser;
