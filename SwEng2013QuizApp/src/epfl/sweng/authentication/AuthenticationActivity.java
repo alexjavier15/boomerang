@@ -6,25 +6,27 @@ import java.util.concurrent.ExecutionException;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
-import org.json.JSONObject;
-
 import epfl.sweng.R;
-import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
-import epfl.sweng.servercomm.JSONParser;
-import epfl.sweng.servercomm.QuestionReader;
-import epfl.sweng.showquestions.HttpCommsBackgroundTask;
 import epfl.sweng.testing.Debug;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 import android.view.View;
 
-public class AuthenticationActivity extends Activity implements HttpcommunicationsAdapter {
+/**
+ * This Activity allows the user to login with his Gaspar account using Tequila
+ * server to authenticate the request.
+ * 
+ * @author AlexRivas
+ * 
+ */
+public class AuthenticationActivity extends Activity implements
+		HttpcommunicationsAdapter {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +46,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
 		try {
 			reponse = new HttpCommsBackgroundTask(this).execute().get();
-			
+
 			Debug.out(reponse.getStatusLine());
 			for (Header h : reponse.getAllHeaders()) {
 				Debug.out(h);
@@ -62,27 +64,24 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
 	}
 
-
-
 	@Override
 	public HttpResponse requete() throws ClientProtocolException, IOException,
 			JSONException {
-		
-		
-		HttpResponse response = HttpCommunications.getHttpResponse(HttpCommunications.URL_TEQUILA);
-		if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
-		{
-			//JSONParser.
-			
+
+		HttpResponse response = HttpCommunications
+				.getHttpResponse(HttpCommunications.URL_TEQUILA);
+		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			// JSONParser.
+
 		}
-		
+
 		return null;
 	}
 
 	@Override
 	public void processHttpReponse(HttpResponse reponse) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

@@ -34,8 +34,7 @@ public class HttpCommunications {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static HttpResponse getHttpResponse(String urlString)
-			throws ClientProtocolException, IOException {
+	public static HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException {
 
 		HttpClient client = SwengHttpClientFactory.getInstance();
 		HttpGet request = new HttpGet(urlString);
@@ -50,8 +49,7 @@ public class HttpCommunications {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static HttpResponse getHttpResponse()
-			throws ClientProtocolException, IOException {
+	public static HttpResponse getHttpResponse() throws ClientProtocolException, IOException {
 		return HttpCommunications.getHttpResponse(URL);
 	}
 
@@ -69,15 +67,14 @@ public class HttpCommunications {
 	 * @throws IOException
 	 */
 
-	public static HttpResponse postQuestion(String url, JSONObject question)
-			throws ClientProtocolException,IOException, JSONException  {
-
+	public static HttpResponse postQuestion(String url, JSONObject question) throws ClientProtocolException, 
+			IOException, JSONException {
 
 		HttpPost post = new HttpPost(url);
 		post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
 		post.setHeader("Content-type", "application/json");
 
-		Debug.out(post); // TODO post out
+		Debug.out(post);
 
 		HttpResponse response = SwengHttpClientFactory.getInstance().execute(
 				post);

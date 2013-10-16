@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import epfl.sweng.R;
 import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.servercomm.JSONParser;
