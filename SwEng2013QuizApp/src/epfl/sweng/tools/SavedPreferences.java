@@ -1,9 +1,9 @@
 package epfl.sweng.tools;
 
-import epfl.sweng.entry.MainActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.util.Log;
 
 /**
@@ -49,7 +49,7 @@ public final class SavedPreferences {
 		return getPreferences().edit().remove(id).commit();
 	}
 
-	public void setListener(MainActivity listener) {
+	public void setListener(OnSharedPreferenceChangeListener listener) {
 		Log.i("SavedPreferences", "register listener");
 		getPreferences().registerOnSharedPreferenceChangeListener(listener);
 
