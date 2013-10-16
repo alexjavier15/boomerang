@@ -6,23 +6,26 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
-import android.os.AsyncTask;
 
+import android.os.AsyncTask;
+/**
+ * 
+ * @author LorenzoLeon
+ *
+ */
 public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse> {
 
     private HttpcommunicationsAdapter adapter;
-    private Boolean onPostExecute = true;
+    private Boolean doPostExecute = true;
 
-    public HttpCommsBackgroundTask(HttpcommunicationsAdapter adapter, Boolean onPostExecute) {
+    public HttpCommsBackgroundTask(HttpcommunicationsAdapter adapt, Boolean doPost) {
         super();
-        this.adapter = adapter;
-        this.onPostExecute = onPostExecute;
+        this.adapter = adapt;
+        this.doPostExecute = doPost;
     }
 
-    public HttpCommsBackgroundTask(HttpcommunicationsAdapter adapter) {
-
-        this(adapter, true);
-
+    public HttpCommsBackgroundTask(HttpcommunicationsAdapter adapt) {
+        this(adapt, true);
     }
 
     /**
@@ -55,7 +58,7 @@ public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse>
     @Override
     protected void onPostExecute(HttpResponse result) {
 
-        if (onPostExecute) {
+        if (doPostExecute) {
             adapter.processHttpReponse(result);
         }
 
