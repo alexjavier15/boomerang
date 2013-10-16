@@ -35,7 +35,8 @@ public final class CredentialManager {
 
         if (globalPreferences != null) {
 
-            globalPreferences.edit().putString(name, value);
+            globalPreferences.edit().putString(name, value).commit();
+            
 
         }
     }
@@ -43,7 +44,7 @@ public final class CredentialManager {
     public void removePreference(String name) {
         if (globalPreferences != null) {
 
-            globalPreferences.edit().remove(name);
+            globalPreferences.edit().remove(name).commit();
 
         }
 

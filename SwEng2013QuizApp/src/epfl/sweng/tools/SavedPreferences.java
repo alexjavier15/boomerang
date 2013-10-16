@@ -26,7 +26,7 @@ public final class SavedPreferences {
 		context.getSharedPreferences(user, Context.MODE_PRIVATE).edit().clear().commit();
 	}
 
-	public static SavedPreferences getSavedPreferences(Context cont) {
+	public static SavedPreferences getInstance(Context cont) {
 		if (singletonObject == null) {
 			singletonObject = new SavedPreferences(cont);
 		}
