@@ -26,6 +26,7 @@ import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
+import epfl.sweng.testing.Debug;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 import epfl.sweng.tools.JSONParser;
@@ -41,7 +42,7 @@ import epfl.sweng.tools.JSONParser;
 public class EditQuestionActivity extends Activity implements HttpcommunicationsAdapter {
     private ListView listView;
     private AnswerAdapter adapter;
-    private ArrayList<Answer> fetch = new ArrayList<Answer>();
+    // private ArrayList<Answer> fetch = new ArrayList<Answer>();
 
     private static boolean reset = false;
 
@@ -64,15 +65,15 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_question);
 
-        Answer firstAnswer = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
-        fetch.add(firstAnswer);
+       // Answer firstAnswer = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
+        // fetch.add(firstAnswer);
 
-        adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview, fetch);
+        adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview, new ArrayList<Answer>());
         adapter.setNotifyOnChange(true);
 
         listView = (ListView) findViewById(R.id.listview);
         listView.setAdapter(adapter);
-
+        addNewSlot(null);
         TextWatcher watcher = new TextWatcher() {
 
             @Override
@@ -121,6 +122,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     public void addNewSlot(View view) {
         Answer temp = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
         adapter.add(temp);
+        Debug.out(temp);
         adapter.notifyDataSetChanged();
         if (!isReset()) {
             TestCoordinator.check(TTChecks.QUESTION_EDITED);

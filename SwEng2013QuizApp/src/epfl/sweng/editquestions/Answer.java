@@ -53,6 +53,6 @@ public class Answer {
 	// For test only
 	@Override
 	public String toString() {
-		return "Answer: \nchecked -> " + checked + " \nanswer -> " + answer;
+		return "Answer: \nchecked -> " + checked + " \nanswer -> " + answer+ " \n" + this.hashCode() ;
 	}
 }
