@@ -28,6 +28,8 @@ public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse>
      */
     @Override
     protected HttpResponse doInBackground(Void... arg) {
+        
+        
 
         HttpResponse response = null;
 

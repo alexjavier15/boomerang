@@ -9,6 +9,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,6 +19,7 @@ import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import epfl.sweng.testing.Debug;
 
@@ -35,11 +39,16 @@ public final class HttpComms {
     public final static String HEADER = "Authentication";
     private static HttpComms singleHTTPComs = null;
     private Context mcontext = null;
+    private int mSoTimeout = 4000;
 
     private String authenticationValue;
 
     private HttpComms(Context context) {
         mcontext = context;
+        HttpParams httpParam = new BasicHttpParams();
+        HttpConnectionParams.setSoTimeout(httpParam, mSoTimeout);
+
+        SwengHttpClientFactory.getInstance().setParams(httpParam);
     }
 
     public static HttpComms getInstance(Context context) {
@@ -78,7 +87,7 @@ public final class HttpComms {
      * @return The HttpResponse from the server.
      * @throws ClientProtocolException
      * @throws IOException
-     * @throws NetworkErrorException 
+     * @throws NetworkErrorException
      */
     public HttpResponse getHttpResponse() throws ClientProtocolException, IOException, NetworkErrorException {
         return getHttpResponse(URL);
@@ -117,9 +126,10 @@ public final class HttpComms {
 
     }
 
-    private boolean isConnected() {
+    public boolean isConnected() {
         ConnectivityManager connMgr = (ConnectivityManager) mcontext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
         return networkInfo != null && networkInfo.isConnected();
 
     }
@@ -133,7 +143,7 @@ public final class HttpComms {
             Debug.out(request);
             return SwengHttpClientFactory.getInstance().execute(request);
         } else {
-            throw new NetworkErrorException("Network connection not avaible!");
+            throw new NetworkErrorException("A network error has ocurred when trying to contact the server");
 
         }
     }
