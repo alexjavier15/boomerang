@@ -16,9 +16,9 @@ import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
-import epfl.sweng.servercomm.JSONParser;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
+import epfl.sweng.tools.JSONParser;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -43,7 +43,7 @@ public class EditQuestionActivity extends Activity implements
 	private ListView listView;
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch = new ArrayList<Answer>();
-	private static boolean reset = false;
+	private boolean reset = false;
 
 	/**
 	 * Starts the window adding a modified ArrayAdapter to list the answers.
@@ -136,6 +136,10 @@ public class EditQuestionActivity extends Activity implements
 		new HttpCommsBackgroundTask(this).execute();
 	}
 
+	/**
+	 * This is called in the doInBackground method on the
+	 * HttpCommsBackgroundTask.
+	 */
 	@Override
 	public HttpResponse requete() throws ClientProtocolException, IOException,
 			JSONException {
@@ -143,6 +147,9 @@ public class EditQuestionActivity extends Activity implements
 				JSONParser.parseQuiztoJSON(createQuestion()));
 	}
 
+	/**
+	 * This is called in the postExecute method on the HttpCommsBackgroundTask.
+	 */
 	@Override
 	public void processHttpReponse(HttpResponse reponse) {
 		if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
@@ -233,11 +240,11 @@ public class EditQuestionActivity extends Activity implements
 				Toast.LENGTH_SHORT).show();
 	}
 
-	public static boolean isReset() {
+	public boolean isReset() {
 		return reset;
 	}
 
-	public static void setReset(boolean newStatus) {
+	public void setReset(boolean newStatus) {
 		reset = newStatus;
 	}
 

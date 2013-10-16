@@ -13,10 +13,17 @@ import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.testing.Debug;
+import epfl.sweng.testing.TestCoordinator;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
+import epfl.sweng.tools.JSONParser;
+import epfl.sweng.tools.SavedPreferences;
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * This Activity allows the user to login with his Gaspar account using Tequila
@@ -32,6 +39,16 @@ public class AuthenticationActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_authentication);
+		TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
+	}
+
+	private void failedAuthenReset() {
+		Toast.makeText(this,
+				"Login was NOT successful. Please check your account info.",
+				Toast.LENGTH_SHORT).show();
+		((EditText) findViewById(R.id.GasparUsername_EditText)).setText("");
+		((EditText) findViewById(R.id.GasparPassword_EditText)).setText("");
+		TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
 	}
 
 	@Override
@@ -69,7 +86,7 @@ public class AuthenticationActivity extends Activity implements
 			JSONException {
 
 		HttpResponse response = HttpCommunications
-				.getHttpResponse(HttpCommunications.URL_TEQUILA);
+				.getHttpResponse(HttpCommunications.URL_SWENG_SWERVER_LOGIN);
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			// JSONParser.
 
@@ -79,8 +96,21 @@ public class AuthenticationActivity extends Activity implements
 	}
 
 	@Override
-	public void processHttpReponse(HttpResponse reponse) {
-		// TODO Auto-generated method stub
+	public void processHttpReponse(HttpResponse response) {
+		try {
+			@SuppressWarnings("unused")
+			String sessionID = JSONParser.parseJsonGetKey(response, "session");
+			//SavedPreferences.getSavedPreferences(this).setSessionID(sessionID);
+			SavedPreferences.getSavedPreferences(this).setSessionID("piadjpidajpiajd");
+			this.finish();
+		} catch (JSONException e) {
+			failedAuthenReset();
+			Log.e(getLocalClassName(), e.getMessage());
+		} catch (IOException e) {
+			failedAuthenReset();
+			Log.e(getLocalClassName(), e.getMessage());
+		}
+		
 
 	}
 

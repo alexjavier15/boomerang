@@ -22,7 +22,7 @@ public class HttpCommunications {
 
 	public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
 	public final static String URLPUSH = "https://sweng-quiz.appspot.com/quizquestions/";
-	public final static String URL_TEQUILA = "https://sweng-quiz.appspot.com/login";
+	public final static String URL_SWENG_SWERVER_LOGIN = "https://sweng-quiz.appspot.com/login";
 	public final static int STRING_ENTITY = 1;
 
 	/**
