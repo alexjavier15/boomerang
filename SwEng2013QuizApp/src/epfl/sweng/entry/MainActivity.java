@@ -107,6 +107,7 @@ public class MainActivity extends Activity implements
 	private void checkStatus(String newValue) {
 		if (newValue.equals("")) {
 			Log.i("Session Id has been removed: logged out", newValue);
+			HttpComms.getHttpComs().setSessionID(null);
 			setAthenticated(false);
 			((Button) findViewById(R.id.log_inout))
 					.setText("Log in using Tequila");
