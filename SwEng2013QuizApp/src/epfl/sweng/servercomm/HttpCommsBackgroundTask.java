@@ -42,6 +42,9 @@ public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse>
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
         return response;

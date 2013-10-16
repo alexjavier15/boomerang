@@ -30,14 +30,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 /**
- * This Activity allows the user to login with his Gaspar account using Tequila
- * server to authenticate the request.
+ * This Activity allows the user to login with his Gaspar account using Tequila server to authenticate the request.
  * 
  * @author AlexRivas
  * 
  */
-public class AuthenticationActivity extends Activity implements
-        HttpcommunicationsAdapter {
+public class AuthenticationActivity extends Activity implements HttpcommunicationsAdapter {
     private static final int UNAUTHENTICATED = 0;
     private static final int TOKEN = 1;
     private static final int TEQUILA = 2;
@@ -58,9 +56,7 @@ public class AuthenticationActivity extends Activity implements
     }
 
     private void failedAuthenReset() {
-        Toast.makeText(this,
-                "Login was NOT successful. Please check your account info.",
-                Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Login was NOT successful. Please check your account info.", Toast.LENGTH_SHORT).show();
         ((EditText) findViewById(R.id.GasparUsername_EditText)).setText("");
         ((EditText) findViewById(R.id.GasparPassword_EditText)).setText("");
         state = UNAUTHENTICATED;
@@ -76,42 +72,24 @@ public class AuthenticationActivity extends Activity implements
     }
 
     public void logIn(View view) {
-        HttpResponse reponse = null;
+        
+        //verify if user is logged
 
-        try {
-            reponse = new HttpCommsBackgroundTask(this).execute().get();
-
-            Debug.out(reponse.getStatusLine());
-            for (Header h : reponse.getAllHeaders()) {
-                Debug.out(h);
-            }
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        if (reponse != null) {
-
-        }
+        new HttpCommsBackgroundTask(this).execute();
 
     }
 
     @Override
-    public HttpResponse requete() throws ClientProtocolException, IOException,
-            JSONException {
+    public HttpResponse requete() throws ClientProtocolException, IOException, JSONException {
         /*
-         * check state before start of machine... check number of fails if
-         * applicable or reset to zero. unless reset? Check savedPreferences too
-         * just in case or else all communications even with Tequila will have
-         * faulty header (session ID)
+         * check state before start of machine... check number of fails if applicable or reset to zero. unless reset?
+         * Check savedPreferences too just in case or else all communications even with Tequila will have faulty header
+         * (session ID)
          */
         return stateMachine(null);
     }
 
-    public HttpResponse stateMachine(HttpResponse response) throws ClientProtocolException, 
-            IOException, JSONException {
+    public HttpResponse stateMachine(HttpResponse response) throws ClientProtocolException, IOException, JSONException {
         if (failedCount > MAX_NUMBER_OF_FAILS) {
             // too many fails! reset fields!
             state = ERROR_OVERLOAD;
@@ -139,10 +117,8 @@ public class AuthenticationActivity extends Activity implements
         }
     }
 
-    private HttpResponse requestAuthToken(HttpResponse starter)
-        throws ClientProtocolException, IOException {
-        HttpResponse response = HttpComms.getInstance().getHttpResponse(
-                HttpComms.URL_SWENG_SWERVER_LOGIN);
+    private HttpResponse requestAuthToken(HttpResponse starter) throws ClientProtocolException, IOException {
+        HttpResponse response = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             state = TOKEN;
             return response;
@@ -153,22 +129,15 @@ public class AuthenticationActivity extends Activity implements
         }
     }
 
-    private HttpResponse postTequilaToken(HttpResponse tokenResponse)
-        throws JSONException, IOException {
+    private HttpResponse postTequilaToken(HttpResponse tokenResponse) throws JSONException, IOException {
         String token = JSONParser.parseJsonGetKey(tokenResponse, "token");
-        String username = ((EditText) findViewById(R.id.GasparUsername_EditText))
-                .getText().toString();
-        String password = ((EditText) findViewById(R.id.GasparPassword_EditText))
-                .getText().toString();
-        NameValuePair[] namList = {
-            new BasicNameValuePair("requestkey", token),
-            new BasicNameValuePair("username", username),
-            new BasicNameValuePair("password", password) };
-        UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(
-                Arrays.asList(namList));
+        String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
+        String password = ((EditText) findViewById(R.id.GasparPassword_EditText)).getText().toString();
+        NameValuePair[] namList = { new BasicNameValuePair("requestkey", token),
+                new BasicNameValuePair("username", username), new BasicNameValuePair("password", password) };
+        UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(Arrays.asList(namList));
         state = TEQUILA;
-        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA,
-                urlEntity);
+        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA, urlEntity);
 
     }
 
@@ -185,12 +154,9 @@ public class AuthenticationActivity extends Activity implements
 
     }
 
-    private HttpResponse confirm(HttpResponse response)
-        throws ClientProtocolException, IOException, JSONException {
-        response = HttpComms.getInstance().postQuestion(
-                HttpComms.URL_SWENG_SWERVER_LOGIN,
-                JSONParser.parseTokentoJSON(JSONParser.parseJsonGetKey(
-                        response, "token")));
+    private HttpResponse confirm(HttpResponse response) throws ClientProtocolException, IOException, JSONException {
+        response = HttpComms.getInstance().postQuestion(HttpComms.URL_SWENG_SWERVER_LOGIN,
+                JSONParser.parseTokentoJSON(JSONParser.parseJsonGetKey(response, "token")));
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             state = AUTHENTICATED;
             return response;
