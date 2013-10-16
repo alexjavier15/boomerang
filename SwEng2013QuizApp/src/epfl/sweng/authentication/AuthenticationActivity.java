@@ -58,11 +58,12 @@ public class AuthenticationActivity extends Activity implements
 		return true;
 	}
 
-	public void requete(View view) {
+	public void logIn(View view) {
+		@SuppressWarnings("unused")
 		HttpResponse reponse = null;
 
-		try {
-			reponse = new HttpCommsBackgroundTask(this).execute().get();
+		/*try {
+			reponse = */new HttpCommsBackgroundTask(this).execute();/*.get();
 
 			Debug.out(reponse.getStatusLine());
 			for (Header h : reponse.getAllHeaders()) {
@@ -77,39 +78,38 @@ public class AuthenticationActivity extends Activity implements
 		}
 		if (reponse != null) {
 
-		}
+		}*/
 
 	}
 
 	@Override
 	public HttpResponse requete() throws ClientProtocolException, IOException,
 			JSONException {
-
+/*
 		HttpResponse response = HttpCommunications
 				.getHttpResponse(HttpCommunications.URL_SWENG_SWERVER_LOGIN);
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			// JSONParser.
 
-		}
+		}*/
 
 		return null;
 	}
 
 	@Override
 	public void processHttpReponse(HttpResponse response) {
-		try {
-			@SuppressWarnings("unused")
+		/*try {
 			String sessionID = JSONParser.parseJsonGetKey(response, "session");
-			//SavedPreferences.getSavedPreferences(this).setSessionID(sessionID);
-			SavedPreferences.getSavedPreferences(this).setSessionID("piadjpidajpiajd");
+			SavedPreferences.getSavedPreferences(this).setSessionID(sessionID);
+			*/SavedPreferences.getSavedPreferences(this).setSessionID("piadjpidajpiajd");
 			this.finish();
-		} catch (JSONException e) {
+		/*} catch (JSONException e) {
 			failedAuthenReset();
 			Log.e(getLocalClassName(), e.getMessage());
 		} catch (IOException e) {
 			failedAuthenReset();
 			Log.e(getLocalClassName(), e.getMessage());
-		}
+		}*/
 		
 
 	}

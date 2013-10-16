@@ -4,6 +4,7 @@ import epfl.sweng.entry.MainActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 /**
  * SavedPreferences is a singleton class which creates an object where all
@@ -22,8 +23,7 @@ public final class SavedPreferences {
 
 	private SavedPreferences(Context cont) {
 		context = cont;
-		context.getSharedPreferences(user, Context.MODE_PRIVATE).edit()
-				.putString("initialize", "initialized").commit();
+		context.getSharedPreferences(user, Context.MODE_PRIVATE).edit().clear().commit();
 	}
 
 	public static SavedPreferences getSavedPreferences(Context cont) {
@@ -41,15 +41,16 @@ public final class SavedPreferences {
 		return getPreferences().getString(id, "");
 	}
 
-	public void setSessionID(String string) {
-		getPreferences().edit().putString(id, string).commit();
+	public boolean setSessionID(String string) {
+		return getPreferences().edit().putString(id, string).commit();
 	}
 
-	public void removeSessionID() {
-		getPreferences().edit().remove(id).commit();
+	public boolean removeSessionID() {
+		return getPreferences().edit().remove(id).commit();
 	}
 
 	public void setListener(MainActivity listener) {
+		Log.i("SavedPreferences", "register listener");
 		getPreferences().registerOnSharedPreferenceChangeListener(listener);
 
 	}

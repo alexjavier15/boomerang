@@ -7,7 +7,6 @@ import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 import epfl.sweng.tools.SavedPreferences;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,8 +30,10 @@ public class MainActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		SavedPreferences.getSavedPreferences(this);
 		SavedPreferences.getSavedPreferences(this).setListener(this);
+		String newValue = SavedPreferences.getSavedPreferences(this)
+				.getSessionID();
+		checkStatus(newValue);
 		TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
 	}
 
@@ -76,8 +77,7 @@ public class MainActivity extends Activity implements
 		startActivity(submitActivityIntent);
 	}
 
-	@SuppressLint("CommitPrefEdits")
-	public void logInOUT() {
+	public void logInOut(View view) {
 		if (authenticated) {
 			// this means you are logging out!
 			SavedPreferences.getSavedPreferences(this).removeSessionID();
@@ -93,6 +93,7 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public void onResume() {
+		super.onResume();
 		TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
 	}
 
@@ -102,20 +103,25 @@ public class MainActivity extends Activity implements
 		((Button) findViewById(R.id.SubmitQuestionButton)).setEnabled(newState);
 	}
 
+	private void checkStatus(String newValue) {
+		if (newValue.equals("")) {
+			Log.i("Session Id has been removed: logged out", newValue);
+			setAthenticated(false);
+			((Button) findViewById(R.id.log_inout))
+					.setText("Log in using Tequila");
+		} else {
+			Log.i("New session Id is: ", newValue);
+			setAthenticated(true);
+			((Button) findViewById(R.id.log_inout)).setText("Log out");
+		}
+	}
+
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
 		if (key.equals("SESSION_ID")) {
 			String newValue = pref.getString(key, "");
-			if (newValue.equals("")) {
-				Log.i("Session Id has been removed: logged out", newValue);
-				setAthenticated(false);
-				((Button) findViewById(R.id.log_inout)).setText("Log out");
-			} else {
-				Log.i("New session Id is: ", newValue);
-				setAthenticated(true);
-				((Button) findViewById(R.id.log_inout))
-						.setText("Log in using Tequila");
-			}
+			Log.i("MainActivity Listener new key value session id : ", newValue);
+			checkStatus(newValue);
 		}
 	}
 }
