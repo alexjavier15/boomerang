@@ -1,17 +1,12 @@
 package epfl.sweng.servercomm;
 
-import java.io.IOException;
-
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
-
-
 import android.os.AsyncTask;
+
 /**
  * 
  * @author LorenzoLeon
- *
+ * 
  */
 public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse> {
 
@@ -36,18 +31,7 @@ public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse>
 
         HttpResponse response = null;
 
-        try {
-            response = adapter.requete();
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        response = adapter.requete();
 
         return response;
     }
