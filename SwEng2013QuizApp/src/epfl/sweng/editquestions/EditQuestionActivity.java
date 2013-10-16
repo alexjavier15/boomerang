@@ -11,6 +11,10 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
+<<<<<<< HEAD
+=======
+import android.accounts.NetworkErrorException;
+>>>>>>> authenticate
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -37,6 +41,7 @@ import epfl.sweng.tools.JSONParser;
  * @author CanGuzelhan & LorenzoLeon
  * 
  */
+<<<<<<< HEAD
 public class EditQuestionActivity extends Activity implements
 		HttpcommunicationsAdapter {
 	private ListView listView;
@@ -220,12 +225,27 @@ public class EditQuestionActivity extends Activity implements
 		TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
 	}
 
-	@Override
-	public HttpResponse requete() throws ClientProtocolException, IOException,
-			JSONException {
-		return HttpComms.getInstance().postQuestion(HttpComms.URLPUSH,
-				JSONParser.parseQuiztoJSON(createQuestion()));
-	}
+	 @Override
+	    public HttpResponse requete() {
+	        HttpResponse response = null;
+	        try {
+	            response = HttpComms.getInstance(this).postQuestion(HttpComms.URLPUSH,
+	                    JSONParser.parseQuiztoJSON(createQuestion()));
+	        } catch (ClientProtocolException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+	        } catch (NetworkErrorException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+	        } catch (IOException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+	        } catch (JSONException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+	        }
+	        return response;
+	    }
 
 	@Override
 	public void processHttpReponse(HttpResponse reponse) {

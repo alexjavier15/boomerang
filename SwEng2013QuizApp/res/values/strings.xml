@@ -20,7 +20,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="GASPAR_username">GASPAR Username</string>
     <string name="GASPAR_Password">GASPAR Password</string>
-    <string name="log_in">Sign in</string>
-    <string name="log_in_button_text">Log in using Tequila</string>
+    <string name="log_in">Log in using Tequila</string>
 
 </resources>

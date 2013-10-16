@@ -1,23 +1,17 @@
 package epfl.sweng.servercomm;
 
-import java.io.IOException;
-
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
 
 /**
- * This interface states the methods for the visitor pattern to be used in an
- * AsyncTask implementation.
+ * This interface states the methods for the visitor pattern to be used in an AsyncTask implementation.
  * 
  * @author LorenzoLeon
  * 
  */
 public interface HttpcommunicationsAdapter {
 
-	HttpResponse requete() throws ClientProtocolException, IOException,
-			JSONException;
+    HttpResponse requete();
 
-	void processHttpReponse(HttpResponse reponse);
+    void processHttpReponse(HttpResponse reponse);
 
 }

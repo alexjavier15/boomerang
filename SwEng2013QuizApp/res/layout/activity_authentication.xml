@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/LinearLayout1"
@@ -37,4 +38,39 @@
         android:onClick="logIn"
         android:text="@string/log_in" />
 
+=======
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".AuthenticationActivity" >
+
+    <EditText
+        android:id="@+id/GasparUsername_EditText"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:hint="@string/GASPAR_username" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/GasparPassword_EditText"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:hint="@string/GASPAR_Password"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/Login_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:gravity="center"
+        android:onClick="logIn"
+        android:text="@string/log_in" />
+
+>>>>>>> authenticate
 </LinearLayout>

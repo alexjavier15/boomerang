@@ -8,6 +8,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
+import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -37,220 +38,205 @@ import epfl.sweng.tools.JSONParser;
  * @author AlbanMarguet & LorenzoLeon
  * 
  */
-public class ShowQuestionsActivity extends Activity implements
-		HttpcommunicationsAdapter {
 
-	private TextView text;
-	private TextView tags;
-	private ListView answerChoices;
-	private ArrayAdapter<String> adapter;
-	private QuizQuestion currrentQuestion;
-	private int lastChoice = -1;
-	private OnItemClickListener answerListener = null;
+public class ShowQuestionsActivity extends Activity implements HttpcommunicationsAdapter {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_show_questions);
+    private TextView text;
+    private TextView tags;
+    private ListView answerChoices;
+    private ArrayAdapter<String> adapter;
+    private QuizQuestion currrentQuestion;
+    private int lastChoice = -1;
+    private OnItemClickListener answerListener = null;
 
-		((Button) findViewById(R.id.next_question)).setEnabled(false);
-		answerChoices = (ListView) findViewById(R.id.answer_choices);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_show_questions);
 
-		tags = (TextView) findViewById(R.id.show_tags);
+        ((Button) findViewById(R.id.next_question)).setEnabled(false);
+        answerChoices = (ListView) findViewById(R.id.answer_choices);
 
-		text = (TextView) findViewById(R.id.show_question);
-		Debug.out(text);
+        tags = (TextView) findViewById(R.id.show_tags);
 
-		answerListener = new OnItemClickListener() {
+        text = (TextView) findViewById(R.id.show_question);
+        Debug.out(text);
 
-			@Override
-			public void onItemClick(AdapterView<?> listAdapter, View view,
-					int selectedAnswer, long arg3) {
+        answerListener = new OnItemClickListener() {
 
-				ListView list = (ListView) listAdapter;
-				TextView textListener = (TextView) list
-						.getChildAt(selectedAnswer);
+            @Override
+            public void onItemClick(AdapterView<?> listAdapter, View view, int selectedAnswer, long arg3) {
 
-				if (lastChoice != -1) {
-					TextView lastChild = (TextView) list.getChildAt(lastChoice);
-					if (lastChild != null) {
-						String lastAnswer = lastChild.getText().toString();
-						lastAnswer = lastAnswer.substring(0,
-								lastAnswer.length() - 1);
-						lastChild.setText(lastAnswer);
-					}
-				}
+                ListView list = (ListView) listAdapter;
+                TextView textListener = (TextView) list.getChildAt(selectedAnswer);
 
-				String question = getResources().getString(
-						R.string.heavy_ballot_x);
+                if (lastChoice != -1) {
+                    TextView lastChild = (TextView) list.getChildAt(lastChoice);
+                    if (lastChild != null) {
+                        String lastAnswer = lastChild.getText().toString();
+                        lastAnswer = lastAnswer.substring(0, lastAnswer.length() - 1);
+                        lastChild.setText(lastAnswer);
+                    }
+                }
 
-				if (currrentQuestion.checkAnswer(selectedAnswer)) {
-					question = getResources().getString(
-							R.string.heavy_check_mark);
-					((Button) findViewById(R.id.next_question))
-							.setEnabled(true);
-					list.setOnItemClickListener(null);
-					// answerChoices.setOnClickListener(null);
+                String question = getResources().getString(R.string.heavy_ballot_x);
 
-				}
+                if (currrentQuestion.checkAnswer(selectedAnswer)) {
+                    question = getResources().getString(R.string.heavy_check_mark);
+                    ((Button) findViewById(R.id.next_question)).setEnabled(true);
+                    list.setOnItemClickListener(null);
+                    // answerChoices.setOnClickListener(null);
 
-				String newText = textListener.getText().toString() + question;
-				textListener.setText(newText);
-				lastChoice = selectedAnswer;
+                }
 
-				TestCoordinator.check(TTChecks.ANSWER_SELECTED);
-			}
+                String newText = textListener.getText().toString() + question;
+                textListener.setText(newText);
+                lastChoice = selectedAnswer;
 
-		};
-		answerChoices.setOnItemClickListener(answerListener);
-		processHttpReponse(fetchFirstQuestion());
-	}
+                TestCoordinator.check(TTChecks.ANSWER_SELECTED);
+            }
 
-	/**
-	 * Checks to see the connectivity status of the system services.
-	 * 
-	 * @return boolean - true if connected to a network false otherwise.
-	 */
-	private boolean checkNetworkConnection() {
-		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-		boolean answer = networkInfo.isConnected() || networkInfo != null;
-		if (!answer) {
-			text.setText("You are currently not connected to a network.");
-		}
-		return answer;
-	}
+        };
+        answerChoices.setOnItemClickListener(answerListener);
+        processHttpReponse(fetchFirstQuestion());
+    }
 
-	/**
-	 * Launches the HTTPGET operation to display a new random question
-	 */
-	public void fetchNewQuestion() {
-		if (checkNetworkConnection()) {
-			Debug.out("Start fetching");
-			new HttpCommsBackgroundTask(this, true).execute();
-		}
+    /**
+     * Launches the HTTPGET operation to display a new random question
+     */
+    public void fetchNewQuestion() {
 
-	}
+        new HttpCommsBackgroundTask(this, true).execute();
 
-	/**
-	 * Obtains a random question thru an AsyncTask but blocks the thread until
-	 * the response is received.
-	 * 
-	 * @return HttpResponse
-	 */
+    }
 
-	public HttpResponse fetchFirstQuestion() {
-		HttpResponse response = null;
-		if (checkNetworkConnection()) {
-			Debug.out("Start fetching");
-			try {
-				response = new HttpCommsBackgroundTask(this, false).execute()
-						.get();
-			} catch (InterruptedException e) {
-				Log.e(getLocalClassName(), "AsyncTask thread exception");
-			} catch (ExecutionException e) {
-				Log.e(getLocalClassName(), "AsyncTask thread exception");
+    /**
+     * Obtains a random question thru an AsyncTask but blocks the thread until the response is received.
+     * 
+     * @return HttpResponse
+     */
 
-			}
-		}
-		return response;
-	}
+    public HttpResponse fetchFirstQuestion() {
+        HttpResponse response = null;
 
-	/**
-	 * Inflate the menu; this adds items to the action bar if it is present.
-	 * 
-	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.show_questions, menu);
-		return true;
-	}
+        Debug.out("Start fetching");
+        try {
+            response = new HttpCommsBackgroundTask(this, false).execute().get();
+        } catch (InterruptedException e) {
+            Log.e(getLocalClassName(), "AsyncTask thread exception");
+        } catch (ExecutionException e) {
+            Log.e(getLocalClassName(), "AsyncTask thread exception");
 
-	/**
-	 * Launches fetchNewQuestion() when clicking on the button labeled
-	 * "Next Question"
-	 * 
-	 * @param view
-	 */
-	public void askNextQuestion(View view) {
-		answerChoices.setOnItemClickListener(answerListener);
-		((Button) findViewById(R.id.next_question)).setEnabled(false);
-		fetchNewQuestion();
-	}
+        }
 
-	/**
-	 * Get the tags of the question to display them on the screen
-	 * 
-	 * @param list
-	 *            : set of Strings
-	 * @return the tags
-	 */
-	private String displayTags(List<String> list) {
-		if (list.size() > 0) {
-			System.out.println("Va afficher les tags");
-			String tagsInString = "";
-			int counter = 0;
+        return response;
+    }
 
-			for (String s : list) {
-				counter++;
-				if (counter == list.size()) {
-					tagsInString += s;
-				} else {
-					tagsInString += s + ", ";
-				}
-			}
+    /**
+     * Inflate the menu; this adds items to the action bar if it is present.
+     * 
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.show_questions, menu);
+        return true;
+    }
 
-			return tagsInString;
-		} else {
+    /**
+     * Launches fetchNewQuestion() when clicking on the button labeled "Next Question"
+     * 
+     * @param view
+     */
+    public void askNextQuestion(View view) {
+        answerChoices.setOnItemClickListener(answerListener);
+        ((Button) findViewById(R.id.next_question)).setEnabled(false);
+        fetchNewQuestion();
+    }
 
-			return "No tags for this question";
-		}
-	}
+    /**
+     * Get the tags of the question to display them on the screen
+     * 
+     * @param list
+     *            : set of Strings
+     * @return the tags
+     */
+    private String displayTags(List<String> list) {
+        if (list.size() > 0) {
+            System.out.println("Va afficher les tags");
+            String tagsInString = "";
+            int counter = 0;
 
-	@Override
-	public void processHttpReponse(HttpResponse httpResponse) {
-		Debug.out(httpResponse);
-		QuizQuestion quizQuestion = null;
+            for (String s : list) {
+                counter++;
+                if (counter == list.size()) {
+                    tagsInString += s;
+                } else {
+                    tagsInString += s + ", ";
+                }
+            }
 
-		try {
-			quizQuestion = JSONParser.parseJsonToQuiz(httpResponse);
-			Debug.out(quizQuestion);
-		} catch (JSONException e) {
-			text.append("/n No question can be obtained !");
-			Log.e(getLocalClassName(), e.getMessage());
-			return;
-		} catch (IOException e) {
-			text.append("/n No question can be obtained !");
-			Log.e(getLocalClassName(), e.getMessage());
-			return;
-		}
+            return tagsInString;
+        } else {
 
-		if (text == null && quizQuestion != null) {
-			Debug.out("null textview");
-		} else {
-			// We've got a satisfying question => treating it
-			currrentQuestion = quizQuestion;
+            return "No tags for this question";
+        }
+    }
 
-			text.setText(quizQuestion.getQuestion());
-			tags.setText(displayTags(quizQuestion.getTags()));
-			adapter = new ArrayAdapter<String>(this,
-					android.R.layout.simple_list_item_1,
-					quizQuestion.getAnswers());
+    @Override
+    public void processHttpReponse(HttpResponse httpResponse) {
+        Debug.out(httpResponse);
+        QuizQuestion quizQuestion = null;
 
-			answerChoices.setAdapter(adapter);
+        try {
+            quizQuestion = JSONParser.parseJsonToQuiz(httpResponse);
+            Debug.out(quizQuestion);
+        } catch (JSONException e) {
+            text.append("/n No question can be obtained !");
+            Log.e(getLocalClassName(), e.getMessage());
+            return;
+        } catch (IOException e) {
+            text.append("/n No question can be obtained !");
+            Log.e(getLocalClassName(), e.getMessage());
+            return;
+        }
 
-			adapter.setNotifyOnChange(true);
-			TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+        if (text == null && quizQuestion != null) {
+            Debug.out("null textview");
+        } else {
+            // We've got a satisfying question => treating it
+            currrentQuestion = quizQuestion;
 
-		}
+            text.setText(quizQuestion.getQuestion());
+            tags.setText(displayTags(quizQuestion.getTags()));
+            adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
 
-	}
+            answerChoices.setAdapter(adapter);
 
-	@Override
-	public HttpResponse requete() throws ClientProtocolException, IOException,
-			JSONException {
-		return HttpComms.getInstance().getHttpResponse();
+            adapter.setNotifyOnChange(true);
+            TestCoordinator.check(TTChecks.QUESTION_SHOWN);
 
-	}
+        }
+
+    }
+
+    @Override
+    public HttpResponse requete() {
+        HttpResponse response = null;
+
+        try {
+            response = HttpComms.getInstance(this).getHttpResponse();
+        } catch (NetworkErrorException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return response;
+
+    }
 
 }
