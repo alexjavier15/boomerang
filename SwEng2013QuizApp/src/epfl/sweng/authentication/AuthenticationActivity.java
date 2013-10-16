@@ -1,12 +1,16 @@
 package epfl.sweng.authentication;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import epfl.sweng.R;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
@@ -85,13 +89,46 @@ public class AuthenticationActivity extends Activity implements
 	public HttpResponse requete() throws ClientProtocolException, IOException,
 			JSONException {
 
-		HttpResponse response = HttpComms.getHttpComs().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
+		HttpResponse response = HttpComms.getHttpComs().getHttpResponse(
+				HttpComms.URL_SWENG_SWERVER_LOGIN);
+
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			// JSONParser.
+
+			String token = JSONParser.parseJsonGetKey(response, "token");
+			String username = ((EditText) findViewById(R.id.GasparUsername_EditText))
+					.getText().toString();
+			String password = ((EditText) findViewById(R.id.GasparPassword_EditText))
+					.getText().toString();
+			NameValuePair[] namList = {
+					new BasicNameValuePair("requestkey", token),
+					new BasicNameValuePair("username", username),
+					new BasicNameValuePair("password", password) };
+			UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(
+					Arrays.asList(namList));
+			response = HttpComms.getHttpComs().postEntity(
+					HttpComms.URL_TEQUILA, urlEntity);
+
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
+				response = HttpComms.getHttpComs().postQuestion(
+						HttpComms.URL_SWENG_SWERVER_LOGIN,
+						JSONParser.parseTokentoJSON(token));
+				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+					return response;
+				} else {
+					fail();
+				}
+			} else {
+				fail();
+			}
 
 		}
 
 		return null;
+	}
+
+	private void fail() {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -107,7 +144,6 @@ public class AuthenticationActivity extends Activity implements
 			failedAuthenReset();
 			Log.e(getLocalClassName(), e.getMessage());
 		}
-		
 
 	}
 

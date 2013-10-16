@@ -44,8 +44,8 @@ public class JSONParser {
 	 * @throws IOException
 	 */
 
-	private static Map<String, Object> extractJSONMap(HttpResponse response,
-			QuizKeys[] keys) throws JSONException, IOException {
+	public static Map<String, Object> extractJSONMap(HttpResponse response,
+			Enum<?>[] keys) throws JSONException, IOException {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 
@@ -58,7 +58,7 @@ public class JSONParser {
 		JSONObject parser = new JSONObject(
 				responseHandler.handleResponse(response));
 
-		for (QuizKeys key : keys) {
+		for (Enum<?> key : keys) {
 
 			if (parser.has(key.name())) {
 
@@ -105,6 +105,12 @@ public class JSONParser {
 		JSONObject parser = new JSONObject(
 				responseHandler.handleResponse(response));
 		return parser.getString(key);
+	}
+	
+	public static JSONObject parseTokentoJSON(String token) throws JSONException{
+		JSONObject jsontoken = new JSONObject();
+		jsontoken.put("token", token);
+		return jsontoken;
 	}
 
 	/**

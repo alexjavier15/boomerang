@@ -3,6 +3,7 @@ package epfl.sweng.servercomm;
 import java.io.IOException;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -26,10 +27,11 @@ public class HttpComms {
 	public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
 	public final static String URLPUSH = "https://sweng-quiz.appspot.com/quizquestions/";
 	public final static String URL_SWENG_SWERVER_LOGIN = "https://sweng-quiz.appspot.com/login";
+	public final static String URL_TEQUILA = "https://tequila.epfl.ch/cgi-bin/tequila/login";
 	public final static int STRING_ENTITY = 1;
 	public final static String HEADER = "Authentication";
 	private static HttpComms singleHTTPComs = null;
-	
+
 	private String authenticationValue;
 
 	private HttpComms() {
@@ -85,7 +87,7 @@ public class HttpComms {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-
+//TODO
 	public HttpResponse postQuestion(String url, JSONObject question)
 			throws ClientProtocolException, IOException, JSONException {
 
@@ -95,6 +97,14 @@ public class HttpComms {
 		HttpResponse response = execute(post);
 
 		return response;
+	}
+
+	public HttpResponse postEntity(String url, HttpEntity entity)
+			throws ClientProtocolException, IOException {
+		HttpPost post = new HttpPost(url);
+		post.setEntity(entity);
+		return execute(post);
+
 	}
 
 	public HttpResponse execute(HttpUriRequest request)
