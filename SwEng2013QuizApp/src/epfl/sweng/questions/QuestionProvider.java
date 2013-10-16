@@ -1,6 +1,5 @@
 package epfl.sweng.questions;
 
-
 /**
  * 
  * @author Noortch
@@ -8,8 +7,8 @@ package epfl.sweng.questions;
  */
 public interface QuestionProvider {
 
-	String getCorrectAnswer();
-
 	boolean checkAnswer(int sol);
+
+	String getCorrectAnswer();
 
 }

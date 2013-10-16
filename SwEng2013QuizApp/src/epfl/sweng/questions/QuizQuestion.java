@@ -18,35 +18,30 @@ public class QuizQuestion implements QuestionProvider {
 	private List<String> tags = new ArrayList<String>();
 
 	/**
-	 * Constructor of a QuizQuestion : class to modelize a quiz question at the
-	 * json format.
+	 * Constructor of a QuizQuestion : class to modelize a quiz question at the json format.
 	 * 
 	 * @param iD
-	 *            of the question
+	 *                of the question
 	 * @param quest
-	 *            String
+	 *                String
 	 * @param ans
-	 *            List of String
+	 *                List of String
 	 * @param solIndex
-	 *            int
+	 *                int
 	 * @param tags
-	 *            themas of the question
+	 *                themas of the question
 	 */
-	public QuizQuestion(long iD, String quest, List<String> ans, int solIndex,
-			List<String> tag) {
-		this.id = iD;
-		this.question = quest;
-		this.answers = new ArrayList<String>(ans);
-		this.solutionIndex = solIndex;
-		this.tags = tag;
+	public QuizQuestion(long iD, String quest, List<String> ans, int solIndex, List<String> tag) {
+		id = iD;
+		question = quest;
+		answers = new ArrayList<String>(ans);
+		solutionIndex = solIndex;
+		tags = tag;
 	}
 
-	public String getQuestion() {
-		return question;
-	}
-
-	public String getCorrectAnswer() {
-		return answers.get(solutionIndex);
+	@Override
+	public boolean checkAnswer(int sol) {
+		return sol == solutionIndex;
 	}
 
 	public List<String> getAnswers() {
@@ -54,8 +49,8 @@ public class QuizQuestion implements QuestionProvider {
 	}
 
 	@Override
-	public boolean checkAnswer(int sol) {
-		return sol == solutionIndex;
+	public String getCorrectAnswer() {
+		return answers.get(solutionIndex);
 	}
 
 	public long getID() {
@@ -64,6 +59,10 @@ public class QuizQuestion implements QuestionProvider {
 
 	public int getIndex() {
 		return solutionIndex;
+	}
+
+	public String getQuestion() {
+		return question;
 	}
 
 	public List<String> getTags() {

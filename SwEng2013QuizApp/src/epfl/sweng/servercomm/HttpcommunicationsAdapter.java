@@ -10,8 +10,8 @@ import org.apache.http.HttpResponse;
  */
 public interface HttpcommunicationsAdapter {
 
-    HttpResponse requete();
+	void processHttpReponse(HttpResponse reponse);
 
-    void processHttpReponse(HttpResponse reponse);
+	HttpResponse requete();
 
 }

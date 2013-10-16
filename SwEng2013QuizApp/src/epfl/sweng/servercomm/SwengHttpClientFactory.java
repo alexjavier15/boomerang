@@ -26,8 +26,7 @@ import org.apache.http.protocol.HttpContext;
 import android.util.Log;
 
 /**
- * This factory creates HttpClients. It also allows to inject custom HttpClients
- * for testing.
+ * This factory creates HttpClients. It also allows to inject custom HttpClients for testing.
  */
 public class SwengHttpClientFactory {
 
@@ -35,29 +34,16 @@ public class SwengHttpClientFactory {
 	private static final int HTTP_PORT = 80;
 	private final static int HTTPS_PORT = 443;
 
-	public static synchronized AbstractHttpClient getInstance() {
-		if (httpClient == null) {
-			httpClient = create();
-		}
-
-		return httpClient;
-	}
-
-	public static synchronized void setInstance(AbstractHttpClient instance) {
-		httpClient = instance;
-	}
-
 	final private static RedirectHandler REDIRECT_NO_FOLLOW = new RedirectHandler() {
-		@Override
-		public boolean isRedirectRequested(HttpResponse response,
-				HttpContext context) {
-			return false;
-		}
-
 		@Override
 		public URI getLocationURI(HttpResponse response, HttpContext context)
 			throws org.apache.http.ProtocolException {
 			return null;
+		}
+
+		@Override
+		public boolean isRedirectRequested(HttpResponse response, HttpContext context) {
+			return false;
 		}
 	};
 
@@ -97,19 +83,28 @@ public class SwengHttpClientFactory {
 
 	private static AbstractHttpClient create() {
 		SchemeRegistry schemeRegistry = new SchemeRegistry();
-		schemeRegistry.register(new Scheme("http", PlainSocketFactory
-				.getSocketFactory(), HTTP_PORT));
-		schemeRegistry.register(new Scheme("https", SSLSocketFactory
-				.getSocketFactory(), HTTPS_PORT));
+		schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), HTTP_PORT));
+		schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), HTTPS_PORT));
 		HttpParams params = new BasicHttpParams();
-		ThreadSafeClientConnManager connManager = new ThreadSafeClientConnManager(
-				params, schemeRegistry);
+		ThreadSafeClientConnManager connManager = new ThreadSafeClientConnManager(params, schemeRegistry);
 		AbstractHttpClient result = new DefaultHttpClient(connManager, params);
 		result.setRedirectHandler(REDIRECT_NO_FOLLOW);
 		result.setCookieStore(COOKIE_MONSTER);
 		result.addRequestInterceptor(LOGGING_REQUEST_INTERCEPTOR);
 		result.addResponseInterceptor(LOGGING_RESPONSE_INTERCEPTOR);
 		return result;
+	}
+
+	public static synchronized AbstractHttpClient getInstance() {
+		if (httpClient == null) {
+			httpClient = create();
+		}
+
+		return httpClient;
+	}
+
+	public static synchronized void setInstance(AbstractHttpClient instance) {
+		httpClient = instance;
 	}
 
 }

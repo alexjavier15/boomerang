@@ -15,44 +15,43 @@ public class Answer {
 	private String answer;
 
 	/**
-	 * Each answer the user types is represented by an Object of type Answer.
-	 * The user can modify the text and choose whether this answer is the
-	 * correct one or not.
+	 * Each answer the user types is represented by an Object of type Answer. The user can modify the text and
+	 * choose
+	 * whether this answer is the correct one or not.
 	 * 
 	 * @param check
-	 *            The property of the answer: it might be marked as correct (✔)
-	 *            or incorrect (✘).
+	 *                The property of the answer: it might be marked as correct (✔) or incorrect (✘).
 	 * @param answerText
-	 *            The text of the answer that the user can enter.
+	 *                The text of the answer that the user can enter.
 	 */
 	public Answer(String check, String answerText) {
 		super();
-		this.checked = check;
-		this.answer = answerText;
-	}
-
-	public String getChecked() {
-		return checked;
-	}
-
-	public void setChecked(String receivedChecked) {
-		this.checked = receivedChecked;
+		checked = check;
+		answer = answerText;
 	}
 
 	public String getAnswer() {
 		return answer;
 	}
 
+	public String getChecked() {
+		return checked;
+	}
+
 	public void setAnswer(String receivedAnswer) {
-		if (!receivedAnswer.equals(this.answer)) {
+		if (!receivedAnswer.equals(answer)) {
 			TestCoordinator.check(TTChecks.QUESTION_EDITED);
-			this.answer = receivedAnswer;
+			answer = receivedAnswer;
 		}
+	}
+
+	public void setChecked(String receivedChecked) {
+		checked = receivedChecked;
 	}
 
 	// For test only
 	@Override
 	public String toString() {
-		return "Answer: \nchecked -> " + checked + " \nanswer -> " + answer+ " \n" + this.hashCode() ;
+		return "Answer: \nchecked -> " + checked + " \nanswer -> " + answer + " \n" + this.hashCode();
 	}
 }

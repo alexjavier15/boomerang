@@ -9,32 +9,32 @@ import android.widget.EditText;
  * 
  */
 public class AnswerHolder {
-    private Button checkButton;
-    private EditText answerText;
-    private Button removeButton;
+	private Button checkButton;
+	private EditText answerText;
+	private Button removeButton;
 
-    public Button getCheckButton() {
-        return checkButton;
-    }
+	public EditText getAnswerText() {
+		return answerText;
+	}
 
-    public void setCheckButton(Button button) {
-        checkButton = button;
-    }
+	public Button getCheckButton() {
+		return checkButton;
+	}
 
-    public EditText getAnswerText() {
-        return answerText;
-    }
+	public Button getRemoveButton() {
+		return removeButton;
+	}
 
-    public void setAnswerText(EditText text) {
-        answerText = text;
-    }
+	public void setAnswerText(EditText text) {
+		answerText = text;
+	}
 
-    public Button getRemoveButton() {
-        return removeButton;
-    }
+	public void setCheckButton(Button button) {
+		checkButton = button;
+	}
 
-    public void setRemoveButton(Button button) {
-        removeButton = button;
-    }
+	public void setRemoveButton(Button button) {
+		removeButton = button;
+	}
 
 }
