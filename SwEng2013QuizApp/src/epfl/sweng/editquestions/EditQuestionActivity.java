@@ -11,6 +11,15 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
+import epfl.sweng.R;
+import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.servercomm.HttpCommsBackgroundTask;
+import epfl.sweng.servercomm.HttpCommunications;
+import epfl.sweng.servercomm.HttpcommunicationsAdapter;
+import epfl.sweng.testing.TestCoordinator;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
+import epfl.sweng.tools.JSONParser;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -21,14 +30,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-import epfl.sweng.R;
-import epfl.sweng.questions.QuizQuestion;
-import epfl.sweng.servercomm.HttpCommunications;
-import epfl.sweng.servercomm.HttpcommunicationsAdapter;
-import epfl.sweng.servercomm.JSONParser;
-import epfl.sweng.showquestions.HttpCommsBackgroundTask;
-import epfl.sweng.testing.TestCoordinator;
-import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 /**
  * 
@@ -42,16 +43,7 @@ public class EditQuestionActivity extends Activity implements
 	private ListView listView;
 	private AnswerAdapter adapter;
 	private ArrayList<Answer> fetch = new ArrayList<Answer>();
-
-	private static boolean reset = false;
-
-	public static boolean isReset() {
-		return reset;
-	}
-
-	public static void setReset(boolean newStatus) {
-		reset = newStatus;
-	}
+	private boolean reset = false;
 
 	/**
 	 * Starts the window adding a modified ArrayAdapter to list the answers.
@@ -114,19 +106,12 @@ public class EditQuestionActivity extends Activity implements
 		TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.edit_question, menu);
-		return true;
-	}
-
 	/**
 	 * Whenever the button with the plus sign (+) is clicked, it adds a new
 	 * possible answer with the hint "Type in the answer" and it is marked as
 	 * incorrect.
 	 */
-	public void addNewSlot(View view) {
+	private void addNewSlot(View view) {
 		Answer temp = new Answer(getResources().getString(
 				R.string.heavy_ballot_x), "");
 		adapter.add(temp);
@@ -149,6 +134,30 @@ public class EditQuestionActivity extends Activity implements
 	 */
 	public void submitQuestion(View view) {
 		new HttpCommsBackgroundTask(this).execute();
+	}
+
+	/**
+	 * This is called in the doInBackground method on the
+	 * HttpCommsBackgroundTask.
+	 */
+	@Override
+	public HttpResponse requete() throws ClientProtocolException, IOException,
+			JSONException {
+		return HttpCommunications.postQuestion(HttpCommunications.URLPUSH,
+				JSONParser.parseQuiztoJSON(createQuestion()));
+	}
+
+	/**
+	 * This is called in the postExecute method on the HttpCommsBackgroundTask.
+	 */
+	@Override
+	public void processHttpReponse(HttpResponse reponse) {
+		if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
+			reset();
+			printSuccess();
+		} else {
+			printFail();
+		}
 	}
 
 	/**
@@ -198,7 +207,7 @@ public class EditQuestionActivity extends Activity implements
 	 * @return True if all requirements defining a valid quiz question are
 	 *         verified, otherwise false.
 	 */
-	public boolean isValid() {
+	private boolean isValid() {
 		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
 		return !questionText.getText().toString().trim().equals("")
 				&& adapter.getCount() >= 2
@@ -207,10 +216,10 @@ public class EditQuestionActivity extends Activity implements
 	}
 
 	/**
-	 * After a successful submission of a quiz question, EditQuestionActivity‘s
-	 * UI is reinitialized.
+	 * After a successful submission of a quiz question,
+	 * EditQuestionActivity‘s UI is reinitialized.
 	 */
-	public void reset() {
+	private void reset() {
 		setReset(true);
 		((EditText) findViewById(R.id.edit_questionText)).setText("");
 		((EditText) findViewById(R.id.edit_tagsText)).setText("");
@@ -220,31 +229,29 @@ public class EditQuestionActivity extends Activity implements
 		TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
 	}
 
-	@Override
-	public HttpResponse requete() throws ClientProtocolException, IOException,
-			JSONException {
-		return HttpCommunications.postQuestion(HttpCommunications.URLPUSH,
-				JSONParser.parseQuiztoJSON(createQuestion()));
-	}
-
-	@Override
-	public void processHttpReponse(HttpResponse reponse) {
-		if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
-			reset();
-			printSuccess();
-		} else {
-			printFail();
-		}
-	}
-
-	public void printSuccess() {
+	private void printSuccess() {
 		Toast.makeText(this, "Your submission was successful!",
 				Toast.LENGTH_SHORT).show();
 	}
 
-	public void printFail() {
+	private void printFail() {
 		Toast.makeText(this,
 				"Your submission was NOT successful. Please try again later.",
 				Toast.LENGTH_SHORT).show();
+	}
+
+	public boolean isReset() {
+		return reset;
+	}
+
+	public void setReset(boolean newStatus) {
+		reset = newStatus;
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.edit_question, menu);
+		return true;
 	}
 }

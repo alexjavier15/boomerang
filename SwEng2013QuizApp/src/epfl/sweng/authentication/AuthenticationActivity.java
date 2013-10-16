@@ -9,28 +9,43 @@ import java.util.concurrent.ExecutionException;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
-import org.json.JSONObject;
-
 import epfl.sweng.R;
-import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpCommunications;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
-import epfl.sweng.servercomm.JSONParser;
-import epfl.sweng.servercomm.QuestionReader;
-import epfl.sweng.showquestions.HttpCommsBackgroundTask;
 import epfl.sweng.testing.Debug;
+import epfl.sweng.testing.TestCoordinator;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
+import epfl.sweng.tools.JSONParser;
+import epfl.sweng.tools.SavedPreferences;
 import android.os.Bundle;
 import android.app.Activity;
+<<<<<<< HEAD
 import android.content.SharedPreferences;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
+=======
+import android.util.Log;
+import android.view.Menu;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+>>>>>>> 93a6ac63a6ea9dff740ce92ab3447eda045c22fd
 
-public class AuthenticationActivity extends Activity implements HttpcommunicationsAdapter {
+/**
+ * This Activity allows the user to login with his Gaspar account using Tequila
+ * server to authenticate the request.
+ * 
+ * @author AlexRivas
+ * 
+ */
+public class AuthenticationActivity extends Activity implements
+		HttpcommunicationsAdapter {
 
+<<<<<<< HEAD
     public static final String PREFS_NAME = "user_session";
 
     @Override
@@ -139,5 +154,85 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         // TODO Auto-generated method stub
 
     }
+=======
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_authentication);
+		TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
+	}
+
+	private void failedAuthenReset() {
+		Toast.makeText(this,
+				"Login was NOT successful. Please check your account info.",
+				Toast.LENGTH_SHORT).show();
+		((EditText) findViewById(R.id.GasparUsername_EditText)).setText("");
+		((EditText) findViewById(R.id.GasparPassword_EditText)).setText("");
+		TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.authentication, menu);
+		return true;
+	}
+
+	public void logIn(View view) {
+		@SuppressWarnings("unused")
+		HttpResponse reponse = null;
+
+		/*try {
+			reponse = */new HttpCommsBackgroundTask(this).execute();/*.get();
+
+			Debug.out(reponse.getStatusLine());
+			for (Header h : reponse.getAllHeaders()) {
+				Debug.out(h);
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (reponse != null) {
+
+		}*/
+
+	}
+
+	@Override
+	public HttpResponse requete() throws ClientProtocolException, IOException,
+			JSONException {
+/*
+		HttpResponse response = HttpCommunications
+				.getHttpResponse(HttpCommunications.URL_SWENG_SWERVER_LOGIN);
+		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			// JSONParser.
+
+		}*/
+
+		return null;
+	}
+
+	@Override
+	public void processHttpReponse(HttpResponse response) {
+		/*try {
+			String sessionID = JSONParser.parseJsonGetKey(response, "session");
+			SavedPreferences.getSavedPreferences(this).setSessionID(sessionID);
+			*/SavedPreferences.getSavedPreferences(this).setSessionID("piadjpidajpiajd");
+			this.finish();
+		/*} catch (JSONException e) {
+			failedAuthenReset();
+			Log.e(getLocalClassName(), e.getMessage());
+		} catch (IOException e) {
+			failedAuthenReset();
+			Log.e(getLocalClassName(), e.getMessage());
+		}*/
+		
+
+	}
+>>>>>>> 93a6ac63a6ea9dff740ce92ab3447eda045c22fd
 
 }

@@ -68,7 +68,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 				@Override
 				public void onTextChanged(CharSequence s, int start,
 						int before, int count) {
-					if (!EditQuestionActivity.isReset()) {
+					if (((EditQuestionActivity) activity).isReset()) {
 						((Answer) holder.getAnswerText().getTag()).setAnswer(s
 								.toString());
 						// We need to check if an answer is written in each
