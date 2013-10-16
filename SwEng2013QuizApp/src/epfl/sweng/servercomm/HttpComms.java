@@ -12,6 +12,11 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.accounts.NetworkErrorException;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import epfl.sweng.testing.Debug;
 
 /**
@@ -22,98 +27,114 @@ import epfl.sweng.testing.Debug;
  */
 public final class HttpComms {
 
-	public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
-	public final static String URLPUSH = "https://sweng-quiz.appspot.com/quizquestions/";
-	public final static String URL_SWENG_SWERVER_LOGIN = "https://sweng-quiz.appspot.com/login";
-	public final static String URL_TEQUILA = "https://tequila.epfl.ch/cgi-bin/tequila/login";
-	public final static int STRING_ENTITY = 1;
-	public final static String HEADER = "Authentication";
-	private static HttpComms singleHTTPComs = null;
+    public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
+    public final static String URLPUSH = "https://sweng-quiz.appspot.com/quizquestions/";
+    public final static String URL_SWENG_SWERVER_LOGIN = "https://sweng-quiz.appspot.com/login";
+    public final static String URL_TEQUILA = "https://tequila.epfl.ch/cgi-bin/tequila/login";
+    public final static int STRING_ENTITY = 1;
+    public final static String HEADER = "Authentication";
+    private static HttpComms singleHTTPComs = null;
+    private Context mcontext = null;
 
-	private String authenticationValue;
+    private String authenticationValue;
 
-	private HttpComms() {
-	}
+    private HttpComms(Context context) {
+        mcontext = context;
+    }
 
-	public static HttpComms getInstance() {
-		if (singleHTTPComs == null) {
-			singleHTTPComs = new HttpComms();
-		}
-		return singleHTTPComs;
-	}
+    public static HttpComms getInstance(Context context) {
+        if (singleHTTPComs == null) {
+            singleHTTPComs = new HttpComms(context);
 
-	public void setSessionID(String value) {
-		authenticationValue = value;
-	}
+        }
+        return singleHTTPComs;
+    }
 
-	/**
-	 * Gets an HttpResponse from the server in parameter
-	 * 
-	 * @param urlString
-	 *            The URL of the server on which we want to connect to.
-	 * @return The HttpResponse from the server.
-	 * @throws ClientProtocolException
-	 * @throws IOException
-	 */
-	public HttpResponse getHttpResponse(String urlString)
-		throws ClientProtocolException, IOException {
-		HttpGet request = new HttpGet(urlString);
-		return execute(request);
-	}
+    public void setSessionID(String value) {
+        authenticationValue = value;
+    }
 
-	/**
-	 * Gets an HttpResponse from the quiz server.
-	 * 
-	 * @return The HttpResponse from the server.
-	 * @throws ClientProtocolException
-	 * @throws IOException
-	 */
-	public HttpResponse getHttpResponse() throws ClientProtocolException,
-			IOException {
-		return getHttpResponse(URL);
-	}
+    /**
+     * Gets an HttpResponse from the server in parameter
+     * 
+     * @param urlString
+     *            The URL of the server on which we want to connect to.
+     * @return The HttpResponse from the server.
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws NetworkErrorException
+     */
+    public HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException,
+            NetworkErrorException {
+        HttpGet request = new HttpGet(urlString);
 
-	/**
-	 * Posts a JSONObject question on the server in parameter Returns true if
-	 * the question is valid, false if not
-	 * 
-	 * @param url
-	 *            URL of the server on which we want to post the question.
-	 * @param question
-	 *            The question that we want to post on the server.
-	 * @return boolean true if the server has received the Question
-	 * @throws JSONException
-	 * @throws ClientProtocolException
-	 * @throws IOException
-	 */
-	// TODO do so no code is repeated
-	public HttpResponse postQuestion(String url, JSONObject question)
-		throws ClientProtocolException, IOException, JSONException {
+        return execute(request);
 
-		HttpPost post = new HttpPost(url);
-		post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
-		post.setHeader("Content-type", "application/json");
-		HttpResponse response = execute(post);
+    }
 
-		return response;
-	}
+    /**
+     * Gets an HttpResponse from the quiz server.
+     * 
+     * @return The HttpResponse from the server.
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws NetworkErrorException 
+     */
+    public HttpResponse getHttpResponse() throws ClientProtocolException, IOException, NetworkErrorException {
+        return getHttpResponse(URL);
+    }
 
-	public HttpResponse postEntity(String url, HttpEntity entity)
-		throws ClientProtocolException, IOException {
-		HttpPost post = new HttpPost(url);
-		post.setEntity(entity);
-		return execute(post);
+    /**
+     * Posts a JSONObject question on the server in parameter Returns true if the question is valid, false if not
+     * 
+     * @param url
+     *            URL of the server on which we want to post the question.
+     * @param question
+     *            The question that we want to post on the server.
+     * @return boolean true if the server has received the Question
+     * @throws JSONException
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws NetworkErrorException
+     */
+    // TODO do so no code is repeated
+    public HttpResponse postQuestion(String url, JSONObject question) throws ClientProtocolException, IOException,
+            JSONException, NetworkErrorException {
 
-	}
+        HttpPost post = new HttpPost(url);
+        post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
+        post.setHeader("Content-type", "application/json");
+        HttpResponse response = execute(post);
 
-	public HttpResponse execute(HttpUriRequest request)
-		throws ClientProtocolException, IOException {
-		if (authenticationValue != null) {
-			request.addHeader(HEADER, authenticationValue);
-		}
-		Debug.out(request);
-		return SwengHttpClientFactory.getInstance().execute(request);
+        return response;
+    }
 
-	}
+    public HttpResponse postEntity(String url, HttpEntity entity) throws ClientProtocolException, IOException,
+            NetworkErrorException {
+        HttpPost post = new HttpPost(url);
+        post.setEntity(entity);
+        return execute(post);
 
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager connMgr = (ConnectivityManager) mcontext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+
+    }
+
+    public HttpResponse execute(HttpUriRequest request) throws ClientProtocolException, IOException,
+            NetworkErrorException {
+        if (isConnected()) {
+            if (authenticationValue != null) {
+                request.addHeader(HEADER, authenticationValue);
+            }
+            Debug.out(request);
+            return SwengHttpClientFactory.getInstance().execute(request);
+        } else {
+            throw new NetworkErrorException("Network connection not avaible!");
+
+        }
+    }
 }
