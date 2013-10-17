@@ -80,11 +80,11 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 					if (s.toString().trim().equals("")) {
 						((EditQuestionActivity) AnswerAdapter.this.getContext())
 							.updateEmptyText();
-						mEmptyAnswers.add(((Answer) holder.getAnswerText().getTag()));
+						mEmptyAnswers.add((Answer) holder.getAnswerText().getTag());
 						Debug.out("empty ans : " + mEmptyAnswers.size());
 
 					} else {
-						mEmptyAnswers.remove((holder.getAnswerText().getTag()));
+						mEmptyAnswers.remove(holder.getAnswerText().getTag());
 						Debug.out("empty ans : " + mEmptyAnswers.size());
 
 						((EditQuestionActivity) AnswerAdapter.this.getContext())
