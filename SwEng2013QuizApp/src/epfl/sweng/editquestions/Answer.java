@@ -47,10 +47,9 @@ public class Answer {
 	}
 
 	public void setAnswer(String receivedAnswer) {
-		if (!receivedAnswer.equals(answer)) {
-			TestCoordinator.check(TTChecks.QUESTION_EDITED);
+		
 			answer = receivedAnswer;
-		}
+		
 	}
 
 	public boolean isCorrect() {

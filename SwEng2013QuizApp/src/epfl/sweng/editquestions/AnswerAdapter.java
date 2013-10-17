@@ -28,7 +28,6 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class AnswerAdapter extends ArrayAdapter<Answer> {
     private Answer mAnswerChecked = null;
-    private boolean mOneCorrectAnswer = false;
     private Set<Answer> mEmptyAnswers = new HashSet<Answer>();
 
     public AnswerAdapter(Activity context, int resourceId, ArrayList<Answer> entries) {
@@ -44,6 +43,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
      */
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
+        ((EditQuestionActivity) this.getContext()).setReset(true);
         final AnswerHolder holder;
         View newView = null;
         if (view == null) {
@@ -81,11 +81,12 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
         holder.getAnswerText().setText(AnswerAdapter.this.getItem(position).getAnswer());
         holder.getCheckButton().setText(AnswerAdapter.this.getItem(position).getChecked());
+        ((EditQuestionActivity) this.getContext()).setReset(false);
         return newView;
     }
 
     /**
-     * Set the {@ TextWatcher}  listener to the corresponding answer {@link EditText} button.
+     * Set the @ TextWatcher} listener to the corresponding answer {@link EditText} button.
      * 
      * @param ansEditText
      */
@@ -99,16 +100,15 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
                 }
                 if (s.toString().trim().equals("")) {
-                    ((EditQuestionActivity) AnswerAdapter.this.getContext()).updateEmptyText();
+
                     mEmptyAnswers.add((Answer) ansEditText.getTag());
-                    Debug.out("empty ans : " + mEmptyAnswers.size());
 
                 } else {
                     mEmptyAnswers.remove((Answer) ansEditText.getTag());
-                    Debug.out("empty ans : " + mEmptyAnswers.size());
 
-                    ((EditQuestionActivity) AnswerAdapter.this.getContext()).updateTextchanged();
                 }
+
+                ((EditQuestionActivity) AnswerAdapter.this.getContext()).updateTextchanged();
             }
 
             @Override
@@ -125,7 +125,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
     }
 
     /**
-     * Set the {@ android.content.DialogInterface.OnClickListener} to the corresponding remove {@link Button}
+     * Set the @ android.content.DialogInterface.OnClickListener} to the corresponding remove {@link Button}
      * 
      * @param removeButton
      */
@@ -136,17 +136,18 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
             public void onClick(View v) {
                 if (AnswerAdapter.this.getCount() > 0) {
                     if (((Answer) v.getTag()).isCorrect() || AnswerAdapter.this.getCount() < 2) {
-                        mOneCorrectAnswer = false;
-                        ((EditQuestionActivity) AnswerAdapter.this.getContext()).updateEmptyText();
+                        mAnswerChecked = null;
+
                     }
                     mEmptyAnswers.remove(v.getTag());
                     AnswerAdapter.this.remove((Answer) v.getTag());
                     AnswerAdapter.this.notifyDataSetChanged();
-                    TestCoordinator.check(TTChecks.QUESTION_EDITED);
+
                 } else {
                     Toast.makeText(AnswerAdapter.this.getContext(),
                         "A question without an answer is useless, isn't it?", Toast.LENGTH_SHORT).show();
                 }
+                ((EditQuestionActivity) AnswerAdapter.this.getContext()).updateTextchanged();
             }
 
         });
@@ -154,7 +155,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
     }
 
     /**
-     * Set the {@ android.content.DialogInterface.OnClickListener} to the corresponding check {@link Button}.
+     * Set the @ android.content.DialogInterface.OnClickListener} to the corresponding check {@link Button}.
      * 
      * @param checkButton
      */
@@ -171,9 +172,9 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
                 ((Answer) v.getTag()).setChecked(getContext().getResources().getString(R.string.heavy_check_mark));
                 ((Answer) v.getTag()).setCorrect(true);
                 mAnswerChecked = (Answer) v.getTag();
-                mOneCorrectAnswer = true;
                 notifyDataSetChanged();
-                TestCoordinator.check(TTChecks.QUESTION_EDITED);
+                ((EditQuestionActivity) AnswerAdapter.this.getContext()).updateTextchanged();
+
             }
         });
     }
@@ -197,7 +198,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
     public void setDefault() {
         mAnswerChecked = null;
-        mOneCorrectAnswer = false;
+        mEmptyAnswers = new HashSet<Answer>();
 
         clear();
     }
@@ -218,6 +219,6 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
      * @return
      */
     public boolean hasOneCorrectAnswer() {
-        return mOneCorrectAnswer;
+        return mAnswerChecked != null;
     }
 }

@@ -3,8 +3,13 @@ package epfl.sweng.editquestions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
@@ -39,31 +44,12 @@ import epfl.sweng.tools.JSONParser;
  * 
  */
 
-/**
- * @author alex
- *
- */
-/**
- * @author alex
- *
- */
-/**
- * @author alex
- *
- */
-/**
- * @author alex
- *
- */
-/**
- * @author alex
- *
- */
 public class EditQuestionActivity extends Activity implements HttpcommunicationsAdapter {
 
     private AnswerAdapter mAdapter;
     private ListView mListView;
-    private boolean mReset = false;
+    private boolean mReset = true;
+    private Pattern mPatternTags = Pattern.compile("([A-Za-z0-9]+)");
 
     /**
      * Starts the window adding a modified ArrayAdapter to list the answers. Creates the multiple Test Listeners for
@@ -87,12 +73,10 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             @Override
             public void afterTextChanged(Editable s) {
 
-                if (s.toString().trim().equals("")) {
-                    updateEmptyText();
-                } else {
-
+                if (!isReset()) {
                     updateTextchanged();
                 }
+
             }
 
             @Override
@@ -101,9 +85,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!isReset()) {
-                    TestCoordinator.check(TTChecks.QUESTION_EDITED);
-                }
+
             }
         };
         mAdapter = new AnswerAdapter(this, R.id.listview, new ArrayList<Answer>());
@@ -114,12 +96,10 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         addNewSlot(null);
         EditText questionText = (EditText) findViewById(R.id.edit_questionText);
         questionText.addTextChangedListener(watcher);
-        questionText.setTag(null);
 
         EditText tagsText = (EditText) findViewById(R.id.edit_tagsText);
         tagsText.addTextChangedListener(watcher);
-        questionText.setTag(null);
-
+        mReset = false;
         TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
     }
 
@@ -133,7 +113,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     /**
      * Whenever the button with the plus sign (+) is clicked, it adds a new possible answer with the hint
      * "Type in the answer" and it is marked as incorrect.
-     *    
+     * 
      * @param view
      */
     public void addNewSlot(View view) {
@@ -204,13 +184,16 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             }
         }
 
-        String[] arrayStringTags = ((EditText) findViewById(R.id.edit_tagsText)).getText().toString().replace(",", " ")
-            .split("\\s+");
-        // split("\\s*([a-zA-Z]+)[\\s.,]*");
+        EditText tagsEditText = (EditText) findViewById(R.id.edit_tagsText);
+        Pattern patternTags = Pattern.compile("([A-Za-z0-9]+)");
+        Set<String> tags = new HashSet<String>();
 
-        List<String> tags = Arrays.asList(arrayStringTags);
-        tags.removeAll(Arrays.asList("", null));
-        return new QuizQuestion(-1, questionString, answers, solIndex, tags);
+        Matcher matcher = patternTags.matcher(tagsEditText.getText().toString());
+        while (matcher.find()) {
+            tags.add(matcher.group(1));
+        }
+
+        return new QuizQuestion(-1, questionString, answers, solIndex, Arrays.asList(tags.toArray(new String[1])));
     }
 
     /**
@@ -228,12 +211,10 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     public void submitQuestion(View view) {
         new HttpCommsBackgroundTask(this).execute();
     }
-    
 
-   
-
-    /**Return the the reset status of {@link EditQuestionActivity}
-     *
+    /**
+     * Return the the reset status of {@link EditQuestionActivity}
+     * 
      * @return the reset
      */
     public boolean isReset() {
@@ -241,8 +222,18 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     }
 
     /**
+     * Set the reset value. Used for avoid TTchecks during updates in the ListView
+     * 
+     * @param reset
+     *            the reset to set
+     */
+    public void setReset(boolean reset) {
+        mReset = reset;
+    }
+
+    /**
      * When the user clicks on the submission button, this method is triggered to verify all the four requirements
-     * defining a valid quiz question : 1) None of the fields of a quiz question may be empty or contain only white
+     * defining a valid quiz question : 1) The question body must be a no empty {@link String} or only white spaces
      * spaces. 2) None of the answers of a quiz question may be empty or contain only white spaces. 3) There must be
      * at
      * least 2 answers. 4) One of the answers must be marked as correct.
@@ -250,35 +241,29 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
      * @return True if all requirements defining a valid quiz question are verified, otherwise false.
      */
     public boolean isValid() {
-        EditText questionText = (EditText) findViewById(R.id.edit_questionText);
-        EditText tags = (EditText) findViewById(R.id.edit_tagsText);
+        String questionText = ((EditText) findViewById(R.id.edit_questionText)).getText().toString();
+        String tagsText = ((EditText) findViewById(R.id.edit_tagsText)).getText().toString();
 
-        return !tags.getText().toString().trim().equals("") && !questionText.getText().toString().trim().equals("")
-            && mAdapter.getCount() >= 2 && !mAdapter.hasEmptyAnswer() && mAdapter.hasOneCorrectAnswer();
+        return mPatternTags.matcher(tagsText).find() && !questionText.trim().equals("") && mAdapter.getCount() >= 2
+            && !mAdapter.hasEmptyAnswer() && mAdapter.hasOneCorrectAnswer();
     }
 
     /**
-     * called whenever an empty {@link String} is found in all the {@link EditText} in {@link EditQuestionActivity} or no answer
-     * is selected as correct answer
-     * 
-     */
-    public void updateEmptyText() {
-        Debug.out("Fired empty update");
-        ((Button) findViewById(R.id.submit_button)).setEnabled(false);
-
-    }
-
-    /**
-     * Called if any text on the components of the {@link EditQuestionActivity} has changed and it's not a empty {@link String}
+     * Called if any text on the components of the {@link EditQuestionActivity} has changed; {@link String}
      * 
      */
     public void updateTextchanged() {
 
         Debug.out("Fired filled update");
-        if (isValid()) {
-            ((Button) findViewById(R.id.submit_button)).setEnabled(true);
-        }
+        if (!mReset) {
+            if (isValid()) {
+                ((Button) findViewById(R.id.submit_button)).setEnabled(true);
+            } else {
 
+                ((Button) findViewById(R.id.submit_button)).setEnabled(false);
+            }
+            TestCoordinator.check(TTChecks.QUESTION_EDITED);
+        }
     }
 
     /**
