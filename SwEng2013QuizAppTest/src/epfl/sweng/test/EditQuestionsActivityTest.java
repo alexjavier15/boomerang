@@ -1,9 +1,14 @@
 package epfl.sweng.test;
 
+import java.util.ArrayList;
+
 import android.test.UiThreadTest;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import epfl.sweng.R;
 import epfl.sweng.editquestions.EditQuestionActivity;
+import epfl.sweng.testing.Debug;
 
 public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity> {
 
@@ -12,6 +17,7 @@ public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity
 	String answer1 = "à cause de la cigarrette";
 	String answer2 = "de naissance";
 	String answer3 = "pourquoi pas?";
+	ArrayList<EditText> answers = new ArrayList<EditText>();
 
 	public EditQuestionsActivityTest() {
 		super(EditQuestionActivity.class);
@@ -59,6 +65,37 @@ public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity
 		tagsT.setText("test");
 		assertFalse("answer must be displayed", tagsT.getText().toString().equals(" test"));
 		assertTrue("answer must be displayed", tagsT.getText().toString().equals("test"));
+		submit = solo.getButton("Submit");
+		assertFalse("Submit button should be disabled", submit.isEnabled());
+
 	}
 
+	public void testAddMultipleanswers() {
+		
+
+		for (int i = 0; i < 10; i++) {
+
+			solo.clickOnButton("+");
+			EditText answerT = solo.getEditText("answer");
+			if (i % 2 == 0) {
+
+				solo.enterText(answerT, answer2);
+
+			} else {
+
+				solo.enterText(answerT, answer1);
+
+			}
+			//answers.add(answerT);
+
+		}
+		submit = solo.getButton("Submit");
+		assertFalse("Submit button should be disabled", submit.isEnabled());
+
+		solo.clickOnButton("✘") ;
+		//Debug.out(R.string.heavy_ballot_x);
+		submit = solo.getButton("Submit");
+		assertTrue("Submit button should be disabled", submit.isEnabled());
+
+	}
 }

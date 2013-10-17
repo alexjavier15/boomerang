@@ -70,6 +70,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 		if (!isReset()) {
 			TestCoordinator.check(TTChecks.QUESTION_EDITED);
 		}
+		listView.setSelection(listView.getCount() - 1);
 	}
 
 	/**
