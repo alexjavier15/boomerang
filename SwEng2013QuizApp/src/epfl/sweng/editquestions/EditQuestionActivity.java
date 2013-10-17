@@ -31,9 +31,9 @@ import epfl.sweng.questions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
-import epfl.sweng.testing.Debug;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
+import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -48,8 +48,87 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 
     private AnswerAdapter mAdapter;
     private ListView mListView;
-    private boolean mReset = true;
     private Pattern mPatternTags = Pattern.compile("([A-Za-z0-9]+)");
+    private boolean mReset = true;
+
+    /**
+     * Whenever the button with the plus sign (+) is clicked, it adds a new possible answer with the hint
+     * "Type in the answer" and it is marked as incorrect.
+     * 
+     * @param view
+     */
+    public void addNewSlot(View view) {
+        Answer temp = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
+        mAdapter.add(temp);
+        Debug.out(temp);
+        mAdapter.notifyDataSetChanged();
+        if (!isReset()) {
+            TestCoordinator.check(TTChecks.QUESTION_EDITED);
+        }
+        mListView.setSelection(mListView.getCount() - 1);
+    }
+
+    /**
+     * This method is called when the quiz question is valid and all answers the user typed in are saved in order to
+     * create a quiz question in JSON format for the SwEng quiz server.
+     * 
+     * @return The quiz question is JSON format.
+     */
+    private QuizQuestion createQuestion() {
+        String questionString = ((EditText) findViewById(R.id.edit_questionText)).getText().toString();
+        List<String> answers = new LinkedList<String>();
+        int solIndex = 0;
+        boolean check = true;
+
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            Answer answerI = mAdapter.getItem(i);
+            answers.add(answerI.getAnswer());
+            if (check) {
+                if (answerI.getChecked().equals(getResources().getString(R.string.heavy_check_mark))) {
+                    check = false;
+                } else {
+                    solIndex++;
+                }
+            }
+        }
+
+        EditText tagsEditText = (EditText) findViewById(R.id.edit_tagsText);
+        Pattern patternTags = Pattern.compile("([A-Za-z0-9]+)");
+        Set<String> tags = new HashSet<String>();
+
+        Matcher matcher = patternTags.matcher(tagsEditText.getText().toString());
+        while (matcher.find()) {
+            tags.add(matcher.group(1));
+        }
+
+        return new QuizQuestion(-1, questionString, answers, solIndex, Arrays.asList(tags.toArray(new String[1])));
+    }
+
+    /**
+     * Return the the reset status of {@link EditQuestionActivity}
+     * 
+     * @return the reset
+     */
+    public boolean isReset() {
+        return mReset;
+    }
+
+    /**
+     * When the user clicks on the submission button, this method is triggered to verify all the four requirements
+     * defining a valid quiz question : 1) The question body must be a no empty {@link String} or only white spaces
+     * spaces. 2) None of the answers of a quiz question may be empty or contain only white spaces. 3) There must be
+     * at
+     * least 2 answers. 4) One of the answers must be marked as correct.
+     * 
+     * @return True if all requirements defining a valid quiz question are verified, otherwise false.
+     */
+    public boolean isValid() {
+        String questionText = ((EditText) findViewById(R.id.edit_questionText)).getText().toString();
+        String tagsText = ((EditText) findViewById(R.id.edit_tagsText)).getText().toString();
+
+        return mPatternTags.matcher(tagsText).find() && !questionText.trim().equals("") && mAdapter.getCount() >= 2
+            && !mAdapter.hasEmptyAnswer() && mAdapter.hasOneCorrectAnswer();
+    }
 
     /**
      * Starts the window adding a modified ArrayAdapter to list the answers. Creates the multiple Test Listeners for
@@ -111,20 +190,29 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     }
 
     /**
-     * Whenever the button with the plus sign (+) is clicked, it adds a new possible answer with the hint
-     * "Type in the answer" and it is marked as incorrect.
+     * Used to show a {@link Toast} in case of a failed submission
      * 
-     * @param view
      */
-    public void addNewSlot(View view) {
-        Answer temp = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
-        mAdapter.add(temp);
-        Debug.out(temp);
-        mAdapter.notifyDataSetChanged();
-        if (!isReset()) {
-            TestCoordinator.check(TTChecks.QUESTION_EDITED);
+    private void printFail() {
+        Toast.makeText(this, "Your submission was NOT successful. Please try again later.", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Used to show a {@link Toast} in case of a successful submission
+     */
+    private void printSuccess() {
+        Toast.makeText(this, "Your submission was successful!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void processHttpReponse(HttpResponse response) {
+
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+            reset();
+            printSuccess();
+        } else {
+            printFail();
         }
-        mListView.setSelection(mListView.getCount() - 1);
     }
 
     @Override
@@ -149,51 +237,27 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         return response;
     }
 
-    @Override
-    public void processHttpReponse(HttpResponse response) {
-
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-            reset();
-            printSuccess();
-        } else {
-            printFail();
-        }
+    /**
+     * After a successful submission of a quiz question, EditQuestionActivity‘s UI is reinitialized.
+     */
+    public void reset() {
+        mReset = true;
+        ((EditText) findViewById(R.id.edit_questionText)).setText("");
+        ((EditText) findViewById(R.id.edit_tagsText)).setText("");
+        mAdapter.setDefault();
+        addNewSlot(null);
+        mReset = false;
+        TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
     }
 
     /**
-     * This method is called when the quiz question is valid and all answers the user typed in are saved in order to
-     * create a quiz question in JSON format for the SwEng quiz server.
+     * Set the reset value. Used for avoid TTchecks during updates in the ListView
      * 
-     * @return The quiz question is JSON format.
+     * @param reset
+     *            the reset to set
      */
-    private QuizQuestion createQuestion() {
-        String questionString = ((EditText) findViewById(R.id.edit_questionText)).getText().toString();
-        List<String> answers = new LinkedList<String>();
-        int solIndex = 0;
-        boolean check = true;
-
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            Answer answerI = mAdapter.getItem(i);
-            answers.add(answerI.getAnswer());
-            if (check) {
-                if (answerI.getChecked().equals(getResources().getString(R.string.heavy_check_mark))) {
-                    check = false;
-                } else {
-                    solIndex++;
-                }
-            }
-        }
-
-        EditText tagsEditText = (EditText) findViewById(R.id.edit_tagsText);
-        Pattern patternTags = Pattern.compile("([A-Za-z0-9]+)");
-        Set<String> tags = new HashSet<String>();
-
-        Matcher matcher = patternTags.matcher(tagsEditText.getText().toString());
-        while (matcher.find()) {
-            tags.add(matcher.group(1));
-        }
-
-        return new QuizQuestion(-1, questionString, answers, solIndex, Arrays.asList(tags.toArray(new String[1])));
+    public void setReset(boolean reset) {
+        mReset = reset;
     }
 
     /**
@@ -213,42 +277,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     }
 
     /**
-     * Return the the reset status of {@link EditQuestionActivity}
-     * 
-     * @return the reset
-     */
-    public boolean isReset() {
-        return mReset;
-    }
-
-    /**
-     * Set the reset value. Used for avoid TTchecks during updates in the ListView
-     * 
-     * @param reset
-     *            the reset to set
-     */
-    public void setReset(boolean reset) {
-        mReset = reset;
-    }
-
-    /**
-     * When the user clicks on the submission button, this method is triggered to verify all the four requirements
-     * defining a valid quiz question : 1) The question body must be a no empty {@link String} or only white spaces
-     * spaces. 2) None of the answers of a quiz question may be empty or contain only white spaces. 3) There must be
-     * at
-     * least 2 answers. 4) One of the answers must be marked as correct.
-     * 
-     * @return True if all requirements defining a valid quiz question are verified, otherwise false.
-     */
-    public boolean isValid() {
-        String questionText = ((EditText) findViewById(R.id.edit_questionText)).getText().toString();
-        String tagsText = ((EditText) findViewById(R.id.edit_tagsText)).getText().toString();
-
-        return mPatternTags.matcher(tagsText).find() && !questionText.trim().equals("") && mAdapter.getCount() >= 2
-            && !mAdapter.hasEmptyAnswer() && mAdapter.hasOneCorrectAnswer();
-    }
-
-    /**
      * Called if any text on the components of the {@link EditQuestionActivity} has changed; {@link String}
      * 
      */
@@ -264,34 +292,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             }
             TestCoordinator.check(TTChecks.QUESTION_EDITED);
         }
-    }
-
-    /**
-     * Used to show a {@link Toast} in case of a failed submission
-     * 
-     */
-    private void printFail() {
-        Toast.makeText(this, "Your submission was NOT successful. Please try again later.", Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Used to show a {@link Toast} in case of a successful submission
-     */
-    private void printSuccess() {
-        Toast.makeText(this, "Your submission was successful!", Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * After a successful submission of a quiz question, EditQuestionActivity‘s UI is reinitialized.
-     */
-    public void reset() {
-        mReset = true;
-        ((EditText) findViewById(R.id.edit_questionText)).setText("");
-        ((EditText) findViewById(R.id.edit_tagsText)).setText("");
-        mAdapter.setDefault();
-        addNewSlot(null);
-        mReset = false;
-        TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
     }
 
 }

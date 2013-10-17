@@ -16,9 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import epfl.sweng.R;
-import epfl.sweng.testing.Debug;
-import epfl.sweng.testing.TestCoordinator;
-import epfl.sweng.testing.TestCoordinator.TTChecks;
+import epfl.sweng.tools.Debug;
 
 /**
  * 
@@ -34,6 +32,18 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
         super(context, resourceId, entries);
         setDefault();
 
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see android.widget.ArrayAdapter#add(java.lang.Object)
+     */
+    @Override
+    public void add(Answer object) {
+        // TODO Auto-generated method stub
+        super.add(object);
+        mEmptyAnswers.add(object);
+        Debug.out("empty ans : " + mEmptyAnswers.size());
     }
 
     /**
@@ -86,6 +96,25 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
     }
 
     /**
+     * Check if the set of empty answers if empty
+     * 
+     * @return true if the set is not empty or false otherwise.
+     */
+
+    public boolean hasEmptyAnswer() {
+        return !mEmptyAnswers.isEmpty();
+    }
+
+    /**
+     * Indicates whether the {@link AnswerAdapter} has at leat one correct answer checked
+     * 
+     * @return
+     */
+    public boolean hasOneCorrectAnswer() {
+        return mAnswerChecked != null;
+    }
+
+    /**
      * Set the @ TextWatcher} listener to the corresponding answer {@link EditText} button.
      * 
      * @param ansEditText
@@ -104,7 +133,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
                     mEmptyAnswers.add((Answer) ansEditText.getTag());
 
                 } else {
-                    mEmptyAnswers.remove((Answer) ansEditText.getTag());
+                    mEmptyAnswers.remove(ansEditText.getTag());
 
                 }
 
@@ -122,6 +151,43 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
             }
         });
 
+    }
+
+    /**
+     * Set the @ android.content.DialogInterface.OnClickListener} to the corresponding check {@link Button}.
+     * 
+     * @param checkButton
+     */
+    private void setCheckButtonListener(final Button checkButton) {
+        checkButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (mAnswerChecked != null) {
+                    mAnswerChecked.setChecked(getContext().getResources().getString(R.string.heavy_ballot_x));
+                    mAnswerChecked.setCorrect(false);
+                }
+
+                ((Answer) v.getTag()).setChecked(getContext().getResources().getString(R.string.heavy_check_mark));
+                ((Answer) v.getTag()).setCorrect(true);
+                mAnswerChecked = (Answer) v.getTag();
+                notifyDataSetChanged();
+                ((EditQuestionActivity) AnswerAdapter.this.getContext()).updateTextchanged();
+
+            }
+        });
+    }
+
+    /**
+     * Set defaults values for the {@link AnswerAdapter} (no correct answer checked and empty array list)
+     * 
+     */
+
+    public void setDefault() {
+        mAnswerChecked = null;
+        mEmptyAnswers = new HashSet<Answer>();
+
+        clear();
     }
 
     /**
@@ -152,73 +218,5 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
         });
 
-    }
-
-    /**
-     * Set the @ android.content.DialogInterface.OnClickListener} to the corresponding check {@link Button}.
-     * 
-     * @param checkButton
-     */
-    private void setCheckButtonListener(final Button checkButton) {
-        checkButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (mAnswerChecked != null) {
-                    mAnswerChecked.setChecked(getContext().getResources().getString(R.string.heavy_ballot_x));
-                    mAnswerChecked.setCorrect(false);
-                }
-
-                ((Answer) v.getTag()).setChecked(getContext().getResources().getString(R.string.heavy_check_mark));
-                ((Answer) v.getTag()).setCorrect(true);
-                mAnswerChecked = (Answer) v.getTag();
-                notifyDataSetChanged();
-                ((EditQuestionActivity) AnswerAdapter.this.getContext()).updateTextchanged();
-
-            }
-        });
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see android.widget.ArrayAdapter#add(java.lang.Object)
-     */
-    @Override
-    public void add(Answer object) {
-        // TODO Auto-generated method stub
-        super.add(object);
-        mEmptyAnswers.add(object);
-        Debug.out("empty ans : " + mEmptyAnswers.size());
-    }
-
-    /**
-     * Set defaults values for the {@link AnswerAdapter} (no correct answer checked and empty array list)
-     * 
-     */
-
-    public void setDefault() {
-        mAnswerChecked = null;
-        mEmptyAnswers = new HashSet<Answer>();
-
-        clear();
-    }
-
-    /**
-     * Check if the set of empty answers if empty
-     * 
-     * @return true if the set is not empty or false otherwise.
-     */
-
-    public boolean hasEmptyAnswer() {
-        return !mEmptyAnswers.isEmpty();
-    }
-
-    /**
-     * Indicates whether the {@link AnswerAdapter} has at leat one correct answer checked
-     * 
-     * @return
-     */
-    public boolean hasOneCorrectAnswer() {
-        return mAnswerChecked != null;
     }
 }

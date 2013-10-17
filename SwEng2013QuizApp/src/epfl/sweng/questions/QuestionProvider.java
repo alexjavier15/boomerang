@@ -7,8 +7,8 @@ package epfl.sweng.questions;
  */
 public interface QuestionProvider {
 
-	boolean checkAnswer(int sol);
+    boolean checkAnswer(int sol);
 
-	String getCorrectAnswer();
+    String getCorrectAnswer();
 
 }

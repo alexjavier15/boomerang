@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import epfl.sweng.R;
 import epfl.sweng.editquestions.EditQuestionActivity;
-import epfl.sweng.testing.Debug;
+import epfl.sweng.tools.Debug;
 
 public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity> {
 
