@@ -11,7 +11,9 @@ import java.util.Observer;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
 import android.app.Activity;
@@ -199,8 +201,9 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 	}
 
 	@Override
-	public void processHttpReponse(HttpResponse reponse) {
-		if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
+	public void processHttpReponse(HttpResponse response) {
+
+		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 			reset();
 			printSuccess();
 		} else {

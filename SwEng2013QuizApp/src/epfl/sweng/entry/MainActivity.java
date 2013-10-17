@@ -42,7 +42,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 		if (newValue.equals("")) {
 			Log.i("Session Id has been removed: logged out", newValue);
 			HttpComms.getInstance(this).setSessionID(null);
-			setAthenticated(true);
+			setAthenticated(false);
 			((Button) findViewById(R.id.log_inout)).setText("Log in using Tequila");
 		} else {
 			Log.i("New session Id is: ", newValue);

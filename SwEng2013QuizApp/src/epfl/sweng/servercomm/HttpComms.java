@@ -54,9 +54,10 @@ public final class HttpComms {
 		NetworkErrorException {
 		if (isConnected()) {
 			if (authenticationValue != null) {
+
 				request.addHeader(HEADER, authenticationValue);
+
 			}
-			Debug.out(request);
 			return SwengHttpClientFactory.getInstance().execute(request);
 		} else {
 			throw new NetworkErrorException("A network error has ocurred when trying to contact the server");
