@@ -15,7 +15,6 @@ import epfl.sweng.authentication.AuthenticationActivity;
 import epfl.sweng.authentication.CredentialManager;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.editquestions.EditQuestionActivity;
-import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -43,13 +42,10 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     private void checkStatus(String newValue) {
         if (newValue.equals("")) {
             Log.i("Session Id has been removed: logged out", newValue);
-            HttpComms.getInstance(this).setSessionID(null);
             setAthenticated(false);
             ((Button) findViewById(R.id.log_inout)).setText("Log in using Tequila");
         } else {
             Log.i("New session Id is: ", newValue);
-            // set new header
-            HttpComms.getInstance(this).setSessionID("Tequila " + newValue);
             setAthenticated(true);
             ((Button) findViewById(R.id.log_inout)).setText("Log out");
         }
