@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -36,13 +38,14 @@ import epfl.sweng.tools.JSONParser;
  * 
  * This activity enables the user to submit new quiz questions.
  * 
- * @author CanGuzelhan & LorenzoLeon
+ * @author CanGuzelhan, JavierRivas, LorenzoLeon
  * 
  */
 
-public class EditQuestionActivity extends Activity implements HttpcommunicationsAdapter {
+public class EditQuestionActivity extends Activity implements HttpcommunicationsAdapter, Observer {
 	private ListView listView;
 	private AnswerAdapter adapter;
+
 	// private ArrayList<Answer> fetch = new ArrayList<Answer>();
 
 	private static boolean reset = false;
@@ -113,8 +116,11 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 	 */
 	public boolean isValid() {
 		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
-		return !questionText.getText().toString().trim().equals("") && adapter.getCount() >= 2
-			&& AnswerAdapter.isOneCorrectAnswer() && AnswerAdapter.isNoEmptyAnswer();
+		EditText tags = (EditText) findViewById(R.id.edit_tagsText);
+
+		return !tags.getText().toString().trim().equals("")
+			&& !questionText.getText().toString().trim().equals("") && adapter.getCount() >= 2
+			&& !adapter.hasEmptyAnswer() && adapter.hasOneCorrectAnswer();
 	}
 
 	/**
@@ -131,12 +137,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 		// Answer firstAnswer = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
 		// fetch.add(firstAnswer);
 
-		adapter = new AnswerAdapter(EditQuestionActivity.this, R.id.listview, new ArrayList<Answer>());
-		adapter.setNotifyOnChange(true);
-
-		listView = (ListView) findViewById(R.id.listview);
-		listView.setAdapter(adapter);
-		addNewSlot(null);
 		TextWatcher watcher = new TextWatcher() {
 
 			/**
@@ -144,9 +144,12 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 			 */
 			@Override
 			public void afterTextChanged(Editable s) {
-				((Button) findViewById(R.id.submit_button)).setEnabled(false);
-				if (isValid()) {
-					((Button) findViewById(R.id.submit_button)).setEnabled(true);
+
+				if (s.toString().trim().equals("")) {
+					updateEmptyText();
+				} else {
+
+					updateTextchanged();
 				}
 			}
 
@@ -161,12 +164,19 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 				}
 			}
 		};
+		adapter = new AnswerAdapter(this, R.id.listview, new ArrayList<Answer>(), this);
+		adapter.setNotifyOnChange(true);
 
+		listView = (ListView) findViewById(R.id.listview);
+		listView.setAdapter(adapter);
+		addNewSlot(null);
 		EditText questionText = (EditText) findViewById(R.id.edit_questionText);
 		questionText.addTextChangedListener(watcher);
+		questionText.setTag(null);
 
 		EditText tagsText = (EditText) findViewById(R.id.edit_tagsText);
 		tagsText.addTextChangedListener(watcher);
+		questionText.setTag(null);
 
 		TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
 	}
@@ -247,4 +257,26 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 	public void submitQuestion(View view) {
 		new HttpCommsBackgroundTask(this).execute();
 	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void updateEmptyText() {
+		Debug.out("Fired empty update");
+		((Button) findViewById(R.id.submit_button)).setEnabled(false);
+
+	}
+
+	public void updateTextchanged() {
+
+		Debug.out("Fired filled update");
+		if (isValid()) {
+			((Button) findViewById(R.id.submit_button)).setEnabled(true);
+		}
+
+	}
+
 }

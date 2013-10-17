@@ -11,8 +11,9 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
  * 
  */
 public class Answer {
-	private String checked;
-	private String answer;
+	private String checked= null;
+	private String answer = null;
+	private boolean mCorrect = false;
 
 	/**
 	 * Each answer the user types is represented by an Object of type Answer. The user can modify the text and
@@ -23,7 +24,14 @@ public class Answer {
 	 *                The property of the answer: it might be marked as correct (✔) or incorrect (✘).
 	 * @param answerText
 	 *                The text of the answer that the user can enter.
+	 * 
 	 */
+
+	public Answer() {
+		super();
+
+	}
+
 	public Answer(String check, String answerText) {
 		super();
 		checked = check;
@@ -43,6 +51,16 @@ public class Answer {
 			TestCoordinator.check(TTChecks.QUESTION_EDITED);
 			answer = receivedAnswer;
 		}
+	}
+
+	public boolean isCorrect() {
+
+		return mCorrect;
+	}
+
+	public void setCorrect(boolean isCorrect) {
+
+		mCorrect = isCorrect;
 	}
 
 	public void setChecked(String receivedChecked) {
