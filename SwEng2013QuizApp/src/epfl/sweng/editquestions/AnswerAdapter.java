@@ -26,10 +26,6 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
  * 
  */
 
-/**
- * @author alex
- * 
- */
 public class AnswerAdapter extends ArrayAdapter<Answer> {
     private Answer mAnswerChecked = null;
     private boolean mOneCorrectAnswer = false;
@@ -88,6 +84,11 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
         return newView;
     }
 
+    /**
+     * Set the {@ TextWatcher}  listener to the corresponding answer {@link EditText} button.
+     * 
+     * @param ansEditText
+     */
     private void setAnswerTextWatcher(final EditText ansEditText) {
         ansEditText.addTextChangedListener(new TextWatcher() {
 
@@ -123,6 +124,11 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
     }
 
+    /**
+     * Set the {@ android.content.DialogInterface.OnClickListener} to the corresponding remove {@link Button}
+     * 
+     * @param removeButton
+     */
     private void setRemoveButtonListener(final Button removeButton) {
         removeButton.setOnClickListener(new OnClickListener() {
 
@@ -147,6 +153,11 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
     }
 
+    /**
+     * Set the {@ android.content.DialogInterface.OnClickListener} to the corresponding check {@link Button}.
+     * 
+     * @param checkButton
+     */
     private void setCheckButtonListener(final Button checkButton) {
         checkButton.setOnClickListener(new OnClickListener() {
 
@@ -167,6 +178,10 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
         });
     }
 
+    /*
+     * (non-Javadoc)
+     * @see android.widget.ArrayAdapter#add(java.lang.Object)
+     */
     @Override
     public void add(Answer object) {
         // TODO Auto-generated method stub
@@ -176,9 +191,10 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
     }
 
     /**
-     * Set defaults for the {@link AnswerAdapter}
+     * Set defaults values for the {@link AnswerAdapter} (no correct answer checked and empty array list)
      * 
      */
+
     public void setDefault() {
         mAnswerChecked = null;
         mOneCorrectAnswer = false;
@@ -197,6 +213,8 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
     }
 
     /**
+     * Indicates whether the {@link AnswerAdapter} has at leat one correct answer checked
+     * 
      * @return
      */
     public boolean hasOneCorrectAnswer() {
