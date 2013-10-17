@@ -91,8 +91,10 @@ public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity
 		}
 		submit = solo.getButton("Submit");
 		assertFalse("Submit button should be disabled", submit.isEnabled());
-
-		solo.clickOnButton("✘") ;
+		Button but =  solo.getButton(R.string.heavy_ballot_x);
+		assertTrue("Submit button should be disabled", but.isEnabled());
+		
+		//solo.clickOnButton(R.string.heavy_ballot_x);
 		//Debug.out(R.string.heavy_ballot_x);
 		submit = solo.getButton("Submit");
 		assertTrue("Submit button should be disabled", submit.isEnabled());
