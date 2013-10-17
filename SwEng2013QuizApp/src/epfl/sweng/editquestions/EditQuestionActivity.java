@@ -39,6 +39,26 @@ import epfl.sweng.tools.JSONParser;
  * 
  */
 
+/**
+ * @author alex
+ *
+ */
+/**
+ * @author alex
+ *
+ */
+/**
+ * @author alex
+ *
+ */
+/**
+ * @author alex
+ *
+ */
+/**
+ * @author alex
+ *
+ */
 public class EditQuestionActivity extends Activity implements HttpcommunicationsAdapter {
 
     private AnswerAdapter mAdapter;
@@ -113,6 +133,8 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     /**
      * Whenever the button with the plus sign (+) is clicked, it adds a new possible answer with the hint
      * "Type in the answer" and it is marked as incorrect.
+     *    
+     * @param view
      */
     public void addNewSlot(View view) {
         Answer temp = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
@@ -206,7 +228,14 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     public void submitQuestion(View view) {
         new HttpCommsBackgroundTask(this).execute();
     }
+    
 
+   
+
+    /**Return the the reset status of {@link EditQuestionActivity}
+     *
+     * @return the reset
+     */
     public boolean isReset() {
         return mReset;
     }
@@ -228,12 +257,21 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             && mAdapter.getCount() >= 2 && !mAdapter.hasEmptyAnswer() && mAdapter.hasOneCorrectAnswer();
     }
 
+    /**
+     * called whenever an empty {@link String} is found in all the {@link EditText} in {@link EditQuestionActivity} or no answer
+     * is selected as correct answer
+     * 
+     */
     public void updateEmptyText() {
         Debug.out("Fired empty update");
         ((Button) findViewById(R.id.submit_button)).setEnabled(false);
 
     }
 
+    /**
+     * Called if any text on the components of the {@link EditQuestionActivity} has changed and it's not a empty {@link String}
+     * 
+     */
     public void updateTextchanged() {
 
         Debug.out("Fired filled update");
@@ -243,11 +281,18 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 
     }
 
-    public void printFail() {
+    /**
+     * Used to show a {@link Toast} in case of a failed submission
+     * 
+     */
+    private void printFail() {
         Toast.makeText(this, "Your submission was NOT successful. Please try again later.", Toast.LENGTH_SHORT).show();
     }
 
-    public void printSuccess() {
+    /**
+     * Used to show a {@link Toast} in case of a successful submission
+     */
+    private void printSuccess() {
         Toast.makeText(this, "Your submission was successful!", Toast.LENGTH_SHORT).show();
     }
 
