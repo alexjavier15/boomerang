@@ -111,9 +111,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
 	 * Launches the HTTPGET operation to display a new random question
 	 */
 	public void fetchNewQuestion() {
-
 		new HttpCommsBackgroundTask(this, true).execute();
-
 	}
 
 	@Override
@@ -211,7 +209,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
 
 			adapter.setNotifyOnChange(true);
 			TestCoordinator.check(TTChecks.QUESTION_SHOWN);
-
 		}
 
 	}

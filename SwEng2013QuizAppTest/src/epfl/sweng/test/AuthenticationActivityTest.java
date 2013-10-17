@@ -10,7 +10,7 @@ public class AuthenticationActivityTest extends TestTemplate<AuthenticationActiv
 	
 	public void testAfterLogIn() {
 		getActivity();
-		assertTrue("Sign in", solo.searchButton("Sign in"));
+		assertTrue("Sign in", solo.searchButton("Log in using Tequila"));
 		assertTrue("Username", solo.searchEditText("GASPAR Username"));
 		assertTrue("Password", solo.searchEditText("GASPAR Password"));
 	}
