@@ -81,13 +81,15 @@ public class TestTemplate<T> extends ActivityInstrumentationTestCase2 {
         return myActivity;
     }
 
-   
-
     /**
      * @return the solo
      */
     public Solo getSolo() {
         return mSolo;
+    }
+    
+    public MockHttpClient getMock() {
+    	return httpClient;
     }
 
     /**
