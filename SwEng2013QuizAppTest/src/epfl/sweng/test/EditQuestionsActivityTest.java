@@ -8,7 +8,7 @@ import epfl.sweng.editquestions.EditQuestionActivity;
 public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity> {
 
     private final static int NUM_ANSWERS = 10;
-    private String answer1 = "à cause de la cigarrette";
+    private String answer1 = "a cause de la cigarrette";
     private String answer2 = "de naissance";
     private String question = "Pourquoi suis je si con?";
     private Button submit;
@@ -60,7 +60,7 @@ public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity
 //	}
 
 	public void testAddMultipleanswers() {
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < NUM_ANSWERS; i++) {
 			getSolo().clickOnButton("+");
 			EditText answerT = getSolo().getEditText("answer");
 			if (i % 2 == 0) {
