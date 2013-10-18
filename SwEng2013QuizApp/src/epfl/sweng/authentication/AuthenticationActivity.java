@@ -95,10 +95,8 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
 	public void logIn(View view) {
 		if (HttpComms.getInstance(this).isConnected()) {
-
 			new HttpCommsBackgroundTask(this).execute();
 		} else {
-
 			Toast.makeText(this, "Not internet connection", Toast.LENGTH_SHORT).show();
 		}
 	}

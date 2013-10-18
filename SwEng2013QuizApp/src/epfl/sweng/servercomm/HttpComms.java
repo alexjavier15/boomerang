@@ -98,9 +98,7 @@ public final class HttpComms {
 		ConnectivityManager connMgr = (ConnectivityManager) mcontext
 			.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
 		return networkInfo != null && networkInfo.isConnected();
-
 	}
 
 	public HttpResponse postEntity(String url, HttpEntity entity) throws ClientProtocolException, IOException,
@@ -108,7 +106,6 @@ public final class HttpComms {
 		HttpPost post = new HttpPost(url);
 		post.setEntity(entity);
 		return execute(post);
-
 	}
 
 	/**
