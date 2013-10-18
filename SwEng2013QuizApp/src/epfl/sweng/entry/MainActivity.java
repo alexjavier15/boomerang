@@ -71,7 +71,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         CredentialManager.getInstance(this).setListener(this);
         String newValue = CredentialManager.getInstance(this).getPreferences().getString(PreferenceKeys.SESSION_ID, "");
         checkStatus(newValue);
-        TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
     }
 
     /**

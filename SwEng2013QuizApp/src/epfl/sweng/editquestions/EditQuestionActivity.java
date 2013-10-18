@@ -213,6 +213,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         } else {
             printFail();
         }
+        TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
     }
 
     @Override
@@ -247,7 +248,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         mAdapter.setDefault();
         addNewSlot(null);
         mReset = false;
-        TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
     }
 
     /**
@@ -274,6 +274,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
      */
     public void submitQuestion(View view) {
         new HttpCommsBackgroundTask(this).execute();
+
     }
 
     /**

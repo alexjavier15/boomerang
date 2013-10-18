@@ -209,9 +209,9 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             answerChoices.setAdapter(adapter);
 
             adapter.setNotifyOnChange(true);
-            TestCoordinator.check(TTChecks.QUESTION_SHOWN);
 
         }
+        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
 
     }
 
