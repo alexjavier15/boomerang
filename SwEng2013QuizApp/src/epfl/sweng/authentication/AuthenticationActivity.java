@@ -127,7 +127,9 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         NameValuePair[] namList = {new BasicNameValuePair("requestkey", token),
             new BasicNameValuePair("username", username), new BasicNameValuePair("password", password)};
         UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(Arrays.asList(namList));
+        
         state = TEQUILA;
+        Debug.out(urlEntity.toString());        
         return HttpComms.getInstance(this).postEntity(HttpComms.URL_TEQUILA, urlEntity);
 
     }

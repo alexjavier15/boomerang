@@ -13,13 +13,16 @@ public class MainActivityTest extends TestTemplate<MainActivity> {
         super(MainActivity.class);
     }
 
-    public void testButtonsShouldBeDisplayed() {
-        getActivityAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
-        assertTrue("Log in", getSolo().searchButton(login));
-        assertTrue("Show a random question", getSolo().searchButton(showQuestion));
-        assertTrue("Submit question", getSolo().searchButton(editQuestion));
-        assertFalse("Show question must be disabled", getSolo().getButton(showQuestion).isEnabled());
-        assertFalse("Submit question must be disabled", getSolo().getButton(editQuestion).isEnabled());
-    }
+//	public void testButtonsShouldBeDisplayed() {
+//		getActivityAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
+//		assertTrue("Log in", getSolo().searchButton(login));
+//		assertTrue("Show a random question",
+//				getSolo().searchButton(showQuestion));
+//		assertTrue("Submit question", getSolo().searchButton(editQuestion));
+//		assertFalse("Show question must be disabled",
+//				getSolo().getButton(showQuestion).isEnabled());
+//		assertFalse("Submit question must be disabled",
+//				getSolo().getButton(editQuestion).isEnabled());
+//	}
 
 }
