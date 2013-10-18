@@ -12,6 +12,8 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import epfl.sweng.authentication.CredentialManager;
+
 import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -52,16 +54,25 @@ public final class HttpComms {
     public HttpResponse execute(HttpUriRequest request) throws ClientProtocolException, IOException,
         NetworkErrorException {
         if (isConnected()) {
-            if (authenticationValue != null) {
-
+            if (checkLoginStatus()) {
                 request.addHeader(HEADER, authenticationValue);
-
             }
             return SwengHttpClientFactory.getInstance().execute(request);
         } else {
             throw new NetworkErrorException("A network error has ocurred when trying to contact the server");
         }
     }
+
+	private boolean checkLoginStatus() {
+		String value = CredentialManager.getInstance(mcontext)
+				.getUserPrefValue(CredentialManager.ID, "");
+		if (!value.equals("")) {
+			authenticationValue = "Tequila " + value;
+			return true;
+		} else {
+			return false;
+		}
+	}
 
     /**
      * Gets an HttpResponse from the quiz server.
@@ -132,9 +143,5 @@ public final class HttpComms {
         HttpResponse response = execute(post);
 
         return response;
-    }
-
-    public void setSessionID(String value) {
-        authenticationValue = value;
     }
 }

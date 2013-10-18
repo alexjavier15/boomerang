@@ -18,6 +18,7 @@ public final class CredentialManager {
 
     private static CredentialManager singletonObject = null;
     public final static String USER_PREFERENCE = "user_session";
+    public final static String ID = "SESSION_ID";
 
     public static CredentialManager getInstance(Context cont) {
         if (singletonObject == null) {
@@ -32,13 +33,16 @@ public final class CredentialManager {
         mContext = cont;
 
     }
+    public String getUserPrefValue(String key, String defValue) {
+    	return mContext.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE).getString(key, defValue);
+    }
 
     public SharedPreferences getPreferences() {
         return mContext.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE);
     }
 
-    public boolean removePreference(String name) {
-        return getPreferences().edit().remove(name).commit();
+    public boolean removePreference(String key) {
+        return getPreferences().edit().remove(key).commit();
     }
 
     public void setListener(OnSharedPreferenceChangeListener listener) {
@@ -47,8 +51,8 @@ public final class CredentialManager {
 
     }
 
-    public boolean writePreference(String name, String value) {
-        return getPreferences().edit().putString(name, value).commit();
+    public boolean writePreference(String key, String value) {
+        return getPreferences().edit().putString(key, value).commit();
 
     }
 
