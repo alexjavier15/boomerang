@@ -7,7 +7,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import epfl.sweng.editquestions.EditQuestionActivity;
 import epfl.sweng.minimalmock.MockHttpClient;
-import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity> {

@@ -2,12 +2,9 @@ package epfl.sweng.bigtest;
 
 import org.apache.http.HttpStatus;
 
-import android.app.Activity;
-import android.view.KeyEvent;
 import android.widget.EditText;
 import epfl.sweng.entry.MainActivity;
 import epfl.sweng.minimalmock.MockHttpClient;
-import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.test.TestTemplate;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
