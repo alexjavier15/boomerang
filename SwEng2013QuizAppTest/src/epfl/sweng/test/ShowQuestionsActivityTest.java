@@ -6,7 +6,7 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class ShowQuestionsActivityTest extends TestTemplate<ShowQuestionsActivity> {
 
-    public final static int CLICKS = 20;
+    public final static int CLICKS = 2000000;
 
     public ShowQuestionsActivityTest() {
         super(ShowQuestionsActivity.class);
@@ -21,17 +21,15 @@ public class ShowQuestionsActivityTest extends TestTemplate<ShowQuestionsActivit
 
         assertTrue("Tags are displayed", getSolo().searchText("h2g2"));
         assertTrue("Tags are displayed", getSolo().searchText("trivia"));
-
+        
         assertTrue("Next question button is displayed", getSolo().searchButton("Next question"));
         Button nextQuestionButton = getSolo().getButton("Next question");
         assertFalse("Next question button is disabled", nextQuestionButton.isEnabled());
 
         getSolo().clickOnText("Forty-two");
-        /*
-         * for (int i = 0; i < CLICKS; i++) {
-         * }
-         */
+        waitFor(TTChecks.ANSWER_SELECTED);
 
+        assertTrue("NExt question button exists", getSolo().searchButton("Next question"));
         assertTrue("Next question button is enabled", nextQuestionButton.isEnabled());
 
     }

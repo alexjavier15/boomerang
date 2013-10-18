@@ -43,7 +43,25 @@ public class TestTemplate<T> extends ActivityInstrumentationTestCase2 {
             }
         });
     }
+    protected void waitFor(final TestCoordinator.TTChecks expected) {
+        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
+            @Override
+            public void initiate() {
+                
+            }
 
+            @Override
+            public String toString() {
+                return String.format("getActivityAndWaitFor(%s)", expected);
+            }
+
+            @Override
+            public void verify(TestCoordinator.TTChecks notification) {
+                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
+                    expected, notification);
+            }
+        });
+    }
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -53,7 +71,7 @@ public class TestTemplate<T> extends ActivityInstrumentationTestCase2 {
                 + " \"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\","
                 + " \"solutionIndex\": 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }", "application/json");
         SwengHttpClientFactory.setInstance(httpClient);
-        setSolo(new Solo(getInstrumentation(), getActivity()));
+        setSolo(new Solo(getInstrumentation()));
     }
 
     /**

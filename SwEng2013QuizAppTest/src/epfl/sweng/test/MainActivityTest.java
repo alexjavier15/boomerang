@@ -1,6 +1,7 @@
 package epfl.sweng.test;
 
 import epfl.sweng.entry.MainActivity;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class MainActivityTest extends TestTemplate<MainActivity> {
 
@@ -13,7 +14,7 @@ public class MainActivityTest extends TestTemplate<MainActivity> {
     }
 
     public void testButtonsShouldBeDisplayed() {
-        getActivity();
+        getActivityAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
         assertTrue("Log in", getSolo().searchButton(login));
         assertTrue("Show a random question", getSolo().searchButton(showQuestion));
         assertTrue("Submit question", getSolo().searchButton(editQuestion));

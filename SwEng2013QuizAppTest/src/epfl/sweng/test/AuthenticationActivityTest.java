@@ -1,6 +1,7 @@
 package epfl.sweng.test;
 
 import epfl.sweng.authentication.AuthenticationActivity;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class AuthenticationActivityTest extends TestTemplate<AuthenticationActivity> {
 	
@@ -9,8 +10,8 @@ public class AuthenticationActivityTest extends TestTemplate<AuthenticationActiv
     }
 
     public void testAfterLogIn() {
-        getActivity();
-        assertTrue("Sign in", getSolo().searchButton("Sign in"));
+        getActivityAndWaitFor(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
+        assertTrue("Sign in", getSolo().searchButton("Log in using Tequila"));
         assertTrue("Username", getSolo().searchEditText("GASPAR Username"));
         assertTrue("Password", getSolo().searchEditText("GASPAR Password"));
     }
