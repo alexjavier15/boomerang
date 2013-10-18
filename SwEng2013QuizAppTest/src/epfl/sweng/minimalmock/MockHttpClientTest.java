@@ -16,9 +16,9 @@ public class MockHttpClientTest extends TestTemplate<ShowQuestionsActivity> {
     public void testFetchQuestion() {
         getActivityAndWaitFor(TTChecks.QUESTION_SHOWN);
         assertTrue("Question must be displayed",
-                solo.searchText("What is the answer to life, the universe, and everything?"));
-        assertTrue("Correct answer must be displayed", solo.searchText("Forty-two"));
-        assertTrue("Incorrect answer must be displayed", solo.searchText("Twenty-seven"));
+            getSolo().searchText("What is the answer to life, the universe, and everything?"));
+        assertTrue("Correct answer must be displayed", getSolo().searchText("Forty-two"));
+        assertTrue("Incorrect answer must be displayed", getSolo().searchText("Twenty-seven"));
     }
 
 }

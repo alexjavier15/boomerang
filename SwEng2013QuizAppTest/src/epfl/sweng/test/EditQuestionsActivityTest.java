@@ -1,103 +1,94 @@
 package epfl.sweng.test;
 
-import java.util.ArrayList;
-
 import android.test.UiThreadTest;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import epfl.sweng.R;
 import epfl.sweng.editquestions.EditQuestionActivity;
-import epfl.sweng.tools.Debug;
 
 public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity> {
 
-	Button submit;
-	String question = "Pourquoi suis je si con?";
-	String answer1 = "à cause de la cigarrette";
-	String answer2 = "de naissance";
-	String answer3 = "pourquoi pas?";
-	ArrayList<EditText> answers = new ArrayList<EditText>();
+    private final static int NUM_ANSWERS = 10;
+    private String answer1 = "à cause de la cigarrette";
+    private String answer2 = "de naissance";
+    private String question = "Pourquoi suis je si con?";
+    private Button submit;
 
-	public EditQuestionsActivityTest() {
-		super(EditQuestionActivity.class);
+    public EditQuestionsActivityTest() {
+        super(EditQuestionActivity.class);
 
-	}
+    }
 
-	@Override
-	protected void setUp() throws Exception {
-		// TODO Auto-generated method stub
-		super.setUp();
-		// myActivity = getActivity();
-	}
+    @Override
+    protected void setUp() throws Exception {
+        // TODO Auto-generated method stub
+        super.setUp();
+        // myActivity = getActivity();
+    }
 
-	public void testButtonsMustBeDisplayed() {
+    public void testAddMultipleanswers() {
 
-		assertTrue("EditText for the question", solo.searchText("Type in the question’s text body"));
-		assertTrue("EditText for an answer", solo.searchText("Type in the answer"));
-		assertTrue("Button to remove answer", solo.searchButton("-"));
-		assertTrue("Button to add an answer", solo.searchButton("+"));
-		assertTrue("EditText for the tags", solo.searchText("Type in the question’s tag"));
-		assertTrue("Button to submit", solo.searchButton("Submit"));
+        for (int i = 0; i < NUM_ANSWERS; i++) {
 
-		submit = solo.getButton("Submit");
-		assertFalse("Submit button should be disabled", submit.isEnabled());
+            getSolo().clickOnButton("+");
+            EditText answerT = getSolo().getEditText("answer");
+            if (i % 2 == 0) {
 
-	}
+                getSolo().enterText(answerT, answer2);
 
-	@UiThreadTest
-	public void testButtonStayDissabled() {
+            } else {
 
-		EditText questionT = solo.getEditText("question");
-		questionT.setText("test question");
-		assertFalse("question body must be displayed", questionT.getText().toString().equals(question));
-		questionT.setText(question);
-		assertTrue("question body must be displayed", questionT.getText().toString().equals(question));
+                getSolo().enterText(answerT, answer1);
 
-		submit = solo.getButton("Submit");
-		assertFalse("Submit button should be disabled", submit.isEnabled());
-		EditText answerT = solo.getEditText("answer");
-		answerT.setText(answer1);
-		assertTrue("answer must be displayed", answerT.getText().toString().equals(answer1));
-		submit = solo.getButton("Submit");
-		assertFalse("Submit button should be disabled", submit.isEnabled());
-		EditText tagsT = solo.getEditText("tag");
-		tagsT.setText("test");
-		assertFalse("answer must be displayed", tagsT.getText().toString().equals(" test"));
-		assertTrue("answer must be displayed", tagsT.getText().toString().equals("test"));
-		submit = solo.getButton("Submit");
-		assertFalse("Submit button should be disabled", submit.isEnabled());
+            }
+            // answers.add(answerT);
 
-	}
+        }
+        submit = getSolo().getButton("Submit");
+        assertFalse("Submit button should be disabled", submit.isEnabled());
+        Button but = getSolo().getButton(0);
+        assertTrue("Minus button should be enable", but.isEnabled());
 
-	public void testAddMultipleanswers() {
-		
+        // solo.clickOnButton(R.string.heavy_ballot_x);
+        // Debug.out(R.string.heavy_ballot_x);
 
-		for (int i = 0; i < 10; i++) {
+    }
 
-			solo.clickOnButton("+");
-			EditText answerT = solo.getEditText("answer");
-			if (i % 2 == 0) {
+    public void testButtonsMustBeDisplayed() {
 
-				solo.enterText(answerT, answer2);
+        assertTrue("EditText for the question", getSolo().searchText("Type in the question’s text body"));
+        assertTrue("EditText for an answer", getSolo().searchText("Type in the answer"));
+        assertTrue("Button to remove answer", getSolo().searchButton("-"));
+        assertTrue("Button to add an answer", getSolo().searchButton("+"));
+        assertTrue("EditText for the tags", getSolo().searchText("Type in the question’s tag"));
+        assertTrue("Button to submit", getSolo().searchButton("Submit"));
 
-			} else {
+        submit = getSolo().getButton("Submit");
+        assertFalse("Submit button should be disabled", submit.isEnabled());
 
-				solo.enterText(answerT, answer1);
+    }
 
-			}
-			//answers.add(answerT);
+    @UiThreadTest
+    public void testButtonStayDissabled() {
 
-		}
-		submit = solo.getButton("Submit");
-		assertFalse("Submit button should be disabled", submit.isEnabled());
-		Button but =  solo.getButton(R.string.heavy_ballot_x);
-		assertTrue("Submit button should be disabled", but.isEnabled());
-		
-		//solo.clickOnButton(R.string.heavy_ballot_x);
-		//Debug.out(R.string.heavy_ballot_x);
-		submit = solo.getButton("Submit");
-		assertTrue("Submit button should be disabled", submit.isEnabled());
+        EditText questionT = getSolo().getEditText("question");
+        questionT.setText("test question");
+        assertFalse("question body must be displayed", questionT.getText().toString().equals(question));
+        questionT.setText(question);
+        assertTrue("question body must be displayed", questionT.getText().toString().equals(question));
 
-	}
+        submit = getSolo().getButton("Submit");
+        assertFalse("Submit button should be disabled", submit.isEnabled());
+        EditText answerT = getSolo().getEditText("answer");
+        answerT.setText(answer1);
+        assertTrue("answer must be displayed", answerT.getText().toString().equals(answer1));
+        submit = getSolo().getButton("Submit");
+        assertFalse("Submit button should be disabled", submit.isEnabled());
+        EditText tagsT = getSolo().getEditText("tag");
+        tagsT.setText("test");
+        assertFalse("answer must be displayed", tagsT.getText().toString().equals(" test"));
+        assertTrue("answer must be displayed", tagsT.getText().toString().equals("test"));
+        submit = getSolo().getButton("Submit");
+        assertFalse("Submit button should be disabled", submit.isEnabled());
+
+    }
 }

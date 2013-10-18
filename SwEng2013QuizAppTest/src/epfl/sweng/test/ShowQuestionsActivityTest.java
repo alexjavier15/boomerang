@@ -6,33 +6,34 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class ShowQuestionsActivityTest extends TestTemplate<ShowQuestionsActivity> {
 
-	public ShowQuestionsActivityTest() {
-		super(ShowQuestionsActivity.class);
-	}
+    public final static int CLICKS = 20;
 
-	public void testShowQuestion() {
-		getActivityAndWaitFor(TTChecks.QUESTION_SHOWN);
-		assertTrue(
-				"Question is displayed :" + solo.getText(0).getText(),
-				solo.searchText("What is the answer to life, the universe, and everything?"));
-		assertTrue("Correct answer is displayed", solo.searchText("Forty-two"));
-		assertTrue("Incorrect answer is displayed",
-				solo.searchText("Twenty-seven"));
+    public ShowQuestionsActivityTest() {
+        super(ShowQuestionsActivity.class);
+    }
 
-		assertTrue("Tags are displayed", solo.searchText("h2g2"));
-		assertTrue("Tags are displayed", solo.searchText("trivia"));
+    public void testShowQuestion() {
+        getActivityAndWaitFor(TTChecks.QUESTION_SHOWN);
+        assertTrue("Question is displayed :" + getSolo().getText(0).getText(),
+            getSolo().searchText("What is the answer to life, the universe, and everything?"));
+        assertTrue("Correct answer is displayed", getSolo().searchText("Forty-two"));
+        assertTrue("Incorrect answer is displayed", getSolo().searchText("Twenty-seven"));
 
-		assertTrue("Next question button is displayed", solo.searchButton("Next question"));
-		Button nextQuestionButton = solo.getButton("Next question");
-		assertFalse("Next question button is disabled",
-				nextQuestionButton.isEnabled());
-		
-		solo.clickOnText("Forty-two");
-		for(int i=0; i<100000000; i++){};
-		assertTrue("Next question button is enabled",
-				nextQuestionButton.isEnabled());
-		
-	}
+        assertTrue("Tags are displayed", getSolo().searchText("h2g2"));
+        assertTrue("Tags are displayed", getSolo().searchText("trivia"));
 
-	
+        assertTrue("Next question button is displayed", getSolo().searchButton("Next question"));
+        Button nextQuestionButton = getSolo().getButton("Next question");
+        assertFalse("Next question button is disabled", nextQuestionButton.isEnabled());
+
+        getSolo().clickOnText("Forty-two");
+        /*
+         * for (int i = 0; i < CLICKS; i++) {
+         * }
+         */
+
+        assertTrue("Next question button is enabled", nextQuestionButton.isEnabled());
+
+    }
+
 }
