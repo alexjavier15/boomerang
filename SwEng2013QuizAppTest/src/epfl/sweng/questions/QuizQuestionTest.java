@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 public class QuizQuestionTest extends TestCase {
 
-    /*private QuizQuestion mQuestion = createQuestion();
+    private QuizQuestion mQuestion = createQuestion();
 
     public QuizQuestion createQuestion() {
         String question = "What is the answer to life, the universe, and everything?";
@@ -19,18 +19,9 @@ public class QuizQuestionTest extends TestCase {
         tags.add("h2g2");
         tags.add("trivia");
         return new QuizQuestion(-1, question, answers, sol, tags);
-    }*/
+    }
 
     public void testGettersQuestion() {
-    	String question = "What is the answer to life, the universe, and everything?";
-        ArrayList<String> answers = new ArrayList<String>();
-        answers.add("Forty-two");
-        answers.add("Twenty-seven");
-        int sol = 0;
-        List<String> tags = new ArrayList<String>();
-        tags.add("h2g2");
-        tags.add("trivia");
-        QuizQuestion mQuestion = new QuizQuestion(-1, question, answers, sol, tags);
         
         assertEquals(mQuestion.getID(), -1);
         assertEquals(mQuestion.getCorrectAnswer(), "Forty-two");
@@ -39,10 +30,10 @@ public class QuizQuestionTest extends TestCase {
         ans.add("Forty-two");
         ans.add("Twenty-seven");
         assertEquals(mQuestion.getAnswers(), ans);
-        List<String> tagsTest = new ArrayList<String>();
+        List<String> tags = new ArrayList<String>();
         tags.add("h2g2");
         tags.add("trivia");
-        assertEquals(mQuestion.getTags(), tagsTest);
+        assertEquals(mQuestion.getTags(), tags);
         assertEquals(mQuestion.getIndex(), 0);
     }
 
