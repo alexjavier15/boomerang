@@ -4,9 +4,9 @@ package epfl.sweng.testing;
  * An exception that is thrown whenever the TestCoordinator detects an inconsistency.
  */
 public class TestCoordinationError extends AssertionError {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public TestCoordinationError(String msg) {
-		super(msg);
-	}
+    public TestCoordinationError(String msg) {
+        super(msg);
+    }
 }
