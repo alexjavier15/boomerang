@@ -245,6 +245,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         mReset = true;
         ((EditText) findViewById(R.id.edit_questionText)).setText("");
         ((EditText) findViewById(R.id.edit_tagsText)).setText("");
+        ((Button) findViewById(R.id.submit_button)).setEnabled(false);
         mAdapter.setDefault();
         addNewSlot(null);
         mReset = false;

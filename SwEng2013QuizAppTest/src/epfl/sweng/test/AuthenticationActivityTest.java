@@ -14,5 +14,4 @@ public class AuthenticationActivityTest extends TestTemplate<AuthenticationActiv
         assertTrue("Username", getSolo().searchEditText("GASPAR Username"));
         assertTrue("Password", getSolo().searchEditText("GASPAR Password"));
     }
-
 }
