@@ -106,7 +106,7 @@ class MockHttpResponse extends BasicHttpResponse {
 
 /**
  * A request director which does nothing else than passing the request back to
- * the MockHttpClient.
+ * the MockHttpCient.
  */
 class MockRequestDirector implements RequestDirector {
 

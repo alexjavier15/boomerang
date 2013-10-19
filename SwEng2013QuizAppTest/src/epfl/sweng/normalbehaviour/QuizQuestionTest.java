@@ -1,7 +1,9 @@
-package epfl.sweng.questions;
+package epfl.sweng.normalbehaviour;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import epfl.sweng.questions.QuizQuestion;
 
 import junit.framework.TestCase;
 

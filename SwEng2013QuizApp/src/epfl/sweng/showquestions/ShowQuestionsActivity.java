@@ -203,14 +203,15 @@ public class ShowQuestionsActivity extends Activity implements
 				quizQuestion = JSONParser.parseJsonToQuiz(httpResponse);
 				Debug.out(quizQuestion);
 			} catch (JSONException e) {
-				text.append("/n No question can be obtained !");
+				text.append("No question can be obtained !");
 				Log.e(getLocalClassName(), e.getMessage());
 				return;
 			} catch (IOException e) {
-				text.append("/n No question can be obtained !");
+				text.append("No question can be obtained !");
 				Log.e(getLocalClassName(), e.getMessage());
 				return;
 			} finally {
+				TestCoordinator.check(TTChecks.QUESTION_SHOWN);
 				if (quizQuestion == null) {
 					Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
 				}

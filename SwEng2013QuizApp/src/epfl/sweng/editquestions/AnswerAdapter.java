@@ -126,7 +126,6 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
             public void afterTextChanged(Editable s) {
                 if (!((EditQuestionActivity) AnswerAdapter.this.getContext()).isReset()) {
                     ((Answer) ansEditText.getTag()).setAnswer(s.toString());
-
                 }
                 if (s.toString().trim().equals("")) {
 
