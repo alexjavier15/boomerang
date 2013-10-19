@@ -42,7 +42,7 @@ public final class TestCoordinator {
     private static final String TAG = "TestingTransaction";
 
     /** The maximum time we wait for a transaction to complete, in milliseconds */
-    private static final long TRANSACTION_TIMEOUT = 20000500;;
+    private static final long TRANSACTION_TIMEOUT = 20500;;
 
     // Notifies the waiting thread that the transaction has been completed and
     // is ready to be verified

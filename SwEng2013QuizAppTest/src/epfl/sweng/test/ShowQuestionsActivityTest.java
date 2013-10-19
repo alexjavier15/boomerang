@@ -41,7 +41,21 @@ public class ShowQuestionsActivityTest extends
 				getSolo().searchButton("Next question"));
 		assertTrue("Next question button is enabled",
 				nextQuestionButton.isEnabled());
+		
+		getSolo().clickOnButton("Next question");
+		waitFor(TTChecks.QUESTION_SHOWN);
+	
+		getSolo().clickOnText("Twenty-seven");
+		waitFor(TTChecks.ANSWER_SELECTED);
 
+		assertFalse("Next question button is disabled",
+				nextQuestionButton.isEnabled());
+		
+		getSolo().clickOnText("Forty-two");
+		waitFor(TTChecks.ANSWER_SELECTED);
+		
+		assertTrue("Next question button is enabled",
+				nextQuestionButton.isEnabled());
 	}
 
 }

@@ -151,8 +151,10 @@ public class ShowQuestionsActivity extends Activity implements
 					TextView lastChild = (TextView) list.getChildAt(lastChoice);
 					if (lastChild != null) {
 						String lastAnswer = lastChild.getText().toString();
-						lastAnswer = lastAnswer.substring(0,
+						if (lastAnswer.contains("\u2718")) {
+							lastAnswer = lastAnswer.substring(0,
 								lastAnswer.length() - 1);
+						}
 						lastChild.setText(lastAnswer);
 					}
 				}
@@ -166,12 +168,10 @@ public class ShowQuestionsActivity extends Activity implements
 					((Button) findViewById(R.id.next_question))
 							.setEnabled(true);
 					list.setOnItemClickListener(null);
-					// answerChoices.setOnClickListener(null);
-
-					TestCoordinator.check(TTChecks.ANSWER_SELECTED);
-
 				}
 
+				TestCoordinator.check(TTChecks.ANSWER_SELECTED);
+				
 				String newText = textListener.getText().toString() + question;
 				textListener.setText(newText);
 				lastChoice = selectedAnswer;
