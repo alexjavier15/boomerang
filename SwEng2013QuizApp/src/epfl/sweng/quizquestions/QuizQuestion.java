@@ -1,4 +1,4 @@
-package epfl.sweng.questions;
+package epfl.sweng.quizquestions;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -27,7 +27,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import epfl.sweng.R;
-import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
@@ -240,7 +240,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     }
 
     /**
-     * After a successful submission of a quiz question, EditQuestionActivity‘s UI is reinitialized.
+     * After a successful submission of a quiz question, EditQuestionActivitys UI is reinitialized.
      */
     public void reset() {
         mReset = true;
