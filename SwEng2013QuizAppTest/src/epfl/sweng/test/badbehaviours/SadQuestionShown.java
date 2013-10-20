@@ -7,7 +7,11 @@ import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.test.template.TestTemplate;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
-
+/**
+ * 
+ * @author LorenzoLeon
+ *
+ */
 public class SadQuestionShown extends TestTemplate<ShowQuestionsActivity> {
 
 	private String errorMessage = ShowQuestionsActivity.ERROR_MESSAGE;
@@ -23,9 +27,9 @@ public class SadQuestionShown extends TestTemplate<ShowQuestionsActivity> {
 		mock.pushCannedResponse(
 				"GET (?:https?://[^/]+|[^/]+)?/+quizquestions/random HTTP/1.1",
 				HttpStatus.SC_NOT_FOUND,
-				"{\"question\": \"What is the answer to life, the universe, and everything?\", " +
-				"\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\", \"solutionIndex\":" +
-				" 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }",
+				"{\"question\": \"What is the answer to life, the universe, and everything?\", "
+						+ "\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\", \"solutionIndex\":"
+						+ " 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }",
 				"application/json");
 		SwengHttpClientFactory.setInstance(mock);
 	}

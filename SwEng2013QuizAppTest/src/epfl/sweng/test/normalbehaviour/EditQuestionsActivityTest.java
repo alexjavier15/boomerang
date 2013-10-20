@@ -15,6 +15,7 @@ public class EditQuestionsActivityTest extends
 		TestTemplate<EditQuestionActivity> {
 
 	private final static int NUM_ANSWERS = 5;
+	private final static int NUMBER = 9;
 	private String answer1 = "a cause de la cigarrette";
 	private String answer2 = "de naissance";
 	private String question = "Pourquoi suis je si con?";
@@ -52,7 +53,7 @@ public class EditQuestionsActivityTest extends
 			getSolo().clickOnButton("+");
 			// waitFor(TTChecks.QUESTION_EDITED);
 		}
-		getSolo().clickOnButton(9);
+		getSolo().clickOnButton(NUMBER);
 		EditText answerT = getSolo().getEditText("answer");
 		getSolo().enterText(answerT, answer1);
 		submit = getSolo().getButton("Submit");

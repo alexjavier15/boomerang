@@ -7,7 +7,11 @@ import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.test.template.TestTemplate;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
-
+/**
+ * 
+ * @author LorenzoLeon
+ *
+ */
 public class SadEditQuestion extends TestTemplate<EditQuestionActivity> {
 
 	private String errorMessage = EditQuestionActivity.ERROR_MESSAGE;
