@@ -151,10 +151,6 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
                 mStatusMsg = UNEXPECTED_ERROR_MSG;
                 failedAuthenReset();
                 Log.e(getLocalClassName(), e.getMessage());
-            } catch (JSONException e) {
-                mStatusMsg = INTERNAL_ERROR_MSG;
-                failedAuthenReset();
-                Log.e(getLocalClassName(), e.getMessage());
             } catch (IOException e) {
                 mStatusMsg = INTERNAL_ERROR_MSG;
                 failedAuthenReset();

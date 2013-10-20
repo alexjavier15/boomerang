@@ -6,8 +6,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
-
 import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.os.Bundle;
@@ -195,51 +193,34 @@ public class ShowQuestionsActivity extends Activity implements
 
 	@Override
 	public void processHttpReponse(HttpResponse httpResponse) {
-		if (httpResponse != null) {
-			Debug.out(httpResponse);
-			QuizQuestion quizQuestion = null;
-	
-			try {
-				quizQuestion = JSONParser.parseJsonToQuiz(httpResponse);
-				Debug.out(quizQuestion);
-			} catch (JSONException e) {
-				text.append("No question can be obtained !");
-				Log.e(getLocalClassName(), e.getMessage());
-				return;
-			} catch (IOException e) {
-				text.append("No question can be obtained !");
-				Log.e(getLocalClassName(), e.getMessage());
-				return;
-			} finally {
-				TestCoordinator.check(TTChecks.QUESTION_SHOWN);
-				if (quizQuestion == null) {
-					Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-				}
-			}
-	
-			if (text == null && quizQuestion != null) {
-				Debug.out("null textview");
-				Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-			} else {
-				// We've got a satisfying question => treating it
-				currrentQuestion = quizQuestion;
-	
-				text.setText(quizQuestion.getQuestion());
-				tags.setText(displayTags(quizQuestion.getTags()));
-				adapter = new ArrayAdapter<String>(this,
-						android.R.layout.simple_list_item_1,
-						quizQuestion.getAnswers());
-	
-				answerChoices.setAdapter(adapter);
-	
-				adapter.setNotifyOnChange(true);
-	
-			}
-		} else {
+		QuizQuestion quizQuestion = null;
+
+		try {
+			quizQuestion = JSONParser.parseJsonToQuiz(httpResponse);
+			Debug.out(quizQuestion);
+		} catch (IOException e) {
+			text.append("No question can be obtained !");
 			Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+			Log.e(getLocalClassName(), e.getMessage());
 		}
-		Debug.out("text : " + text);
+		if (quizQuestion != null){
+			setQuestion(quizQuestion);
+		}
+
 		TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+	}
+
+	private void setQuestion(QuizQuestion quizQuestion) {
+		currrentQuestion = quizQuestion;
+
+		text.setText(quizQuestion.getQuestion());
+		tags.setText(displayTags(quizQuestion.getTags()));
+		adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
+
+		answerChoices.setAdapter(adapter);
+
+		adapter.setNotifyOnChange(true);
 	}
 
 	@Override
