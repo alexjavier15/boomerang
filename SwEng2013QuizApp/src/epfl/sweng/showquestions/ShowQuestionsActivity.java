@@ -153,7 +153,7 @@ public class ShowQuestionsActivity extends Activity implements
 						String lastAnswer = lastChild.getText().toString();
 						if (lastAnswer.contains("\u2718")) {
 							lastAnswer = lastAnswer.substring(0,
-								lastAnswer.length() - 1);
+									lastAnswer.length() - 1);
 						}
 						lastChild.setText(lastAnswer);
 					}
@@ -171,7 +171,7 @@ public class ShowQuestionsActivity extends Activity implements
 				}
 
 				TestCoordinator.check(TTChecks.ANSWER_SELECTED);
-				
+
 				String newText = textListener.getText().toString() + question;
 				textListener.setText(newText);
 				lastChoice = selectedAnswer;
@@ -198,48 +198,51 @@ public class ShowQuestionsActivity extends Activity implements
 		if (httpResponse != null) {
 			Debug.out(httpResponse);
 			QuizQuestion quizQuestion = null;
-	
+
 			try {
 				quizQuestion = JSONParser.parseJsonToQuiz(httpResponse);
 				Debug.out(quizQuestion);
 			} catch (JSONException e) {
 				text.append("No question can be obtained !");
 				Log.e(getLocalClassName(), e.getMessage());
+				TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+				Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
 				return;
 			} catch (IOException e) {
 				text.append("No question can be obtained !");
-				Log.e(getLocalClassName(), e.getMessage());
-				return;
-			} finally {
 				TestCoordinator.check(TTChecks.QUESTION_SHOWN);
-				if (quizQuestion == null) {
-					Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-				}
+				Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+				Log.e(getLocalClassName(), e.getMessage());
+
+				return;
 			}
-	
+
 			if (text == null && quizQuestion != null) {
 				Debug.out("null textview");
 				Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
 			} else {
 				// We've got a satisfying question => treating it
 				currrentQuestion = quizQuestion;
-	
+
 				text.setText(quizQuestion.getQuestion());
 				tags.setText(displayTags(quizQuestion.getTags()));
 				adapter = new ArrayAdapter<String>(this,
 						android.R.layout.simple_list_item_1,
 						quizQuestion.getAnswers());
-	
+
 				answerChoices.setAdapter(adapter);
-	
+
 				adapter.setNotifyOnChange(true);
-	
+				TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+
 			}
 		} else {
 			Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+			TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+
 		}
 		Debug.out("text : " + text);
-		TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+
 	}
 
 	@Override
@@ -255,7 +258,7 @@ public class ShowQuestionsActivity extends Activity implements
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return response;
 	}
 
