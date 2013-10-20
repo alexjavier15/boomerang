@@ -151,7 +151,7 @@ public class ShowQuestionsActivity extends Activity implements
 						String lastAnswer = lastChild.getText().toString();
 						if (lastAnswer.contains("\u2718")) {
 							lastAnswer = lastAnswer.substring(0,
-								lastAnswer.length() - 1);
+									lastAnswer.length() - 1);
 						}
 						lastChild.setText(lastAnswer);
 					}
@@ -169,7 +169,7 @@ public class ShowQuestionsActivity extends Activity implements
 				}
 
 				TestCoordinator.check(TTChecks.ANSWER_SELECTED);
-				
+
 				String newText = textListener.getText().toString() + question;
 				textListener.setText(newText);
 				lastChoice = selectedAnswer;
@@ -203,7 +203,7 @@ public class ShowQuestionsActivity extends Activity implements
 			Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
 			Log.e(getLocalClassName(), e.getMessage());
 		}
-		if (quizQuestion != null){
+		if (quizQuestion != null) {
 			setQuestion(quizQuestion);
 		}
 
@@ -236,7 +236,7 @@ public class ShowQuestionsActivity extends Activity implements
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return response;
 	}
 
