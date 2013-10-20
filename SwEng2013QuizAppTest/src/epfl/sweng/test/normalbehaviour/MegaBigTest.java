@@ -10,6 +10,7 @@ import epfl.sweng.test.template.TestTemplate;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class MegaBigTest extends TestTemplate<MainActivity> {
+	public static final int NUMBER = 200;
 
 	public MegaBigTest() {
 		super(MainActivity.class);
@@ -48,10 +49,10 @@ public class MegaBigTest extends TestTemplate<MainActivity> {
 				"application/json");
 		mock.pushCannedResponse(
 				"GET (?:https?://[^/]+|[^/]+)?/+quizquestions/random\\b",
-				200,
-				"{\"question\": \"What is the answer to life, the universe, and everything?\", " +
-				"\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\", \"solutionIndex\":" +
-				" 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }",
+				NUMBER,
+				"{\"question\": \"What is the answer to life, the universe, and everything?\", "
+						+ "\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\", \"solutionIndex\":"
+						+ " 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }",
 				"application/json");
 		SwengHttpClientFactory.setInstance(mock);
 	}

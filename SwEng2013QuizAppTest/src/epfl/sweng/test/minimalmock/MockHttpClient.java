@@ -40,11 +40,11 @@ public class MockHttpClient extends DefaultHttpClient {
         private final String responseBody;
         private final int statusCode;
 
-        public CannedResponse(Pattern pattern, int statusCode, String responseBody, String contentType) {
-            this.pattern = pattern;
-            this.statusCode = statusCode;
-            this.responseBody = responseBody;
-            this.contentType = contentType;
+        public CannedResponse(Pattern pat, int statu, String response, String content) {
+            this.pattern = pat;
+            this.statusCode = statu;
+            this.responseBody = response;
+            this.contentType = content;
         }
     }
 
@@ -112,8 +112,8 @@ class MockRequestDirector implements RequestDirector {
 
     private MockHttpClient httpClient;
 
-    public MockRequestDirector(MockHttpClient httpClient) {
-        this.httpClient = httpClient;
+    public MockRequestDirector(MockHttpClient client) {
+        this.httpClient = client;
     }
 
     @Override

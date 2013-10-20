@@ -1,6 +1,5 @@
 package epfl.sweng.authentication;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -13,7 +12,6 @@ import android.util.Log;
  * @author LorenzoLeon
  * 
  */
-@SuppressLint("CommitPrefEdits")
 public final class CredentialManager {
 
     private static CredentialManager singletonObject = null;

@@ -43,8 +43,8 @@ public class LogOutLogInTest extends TestTemplate<MainActivity> {
 				"POST https://sweng-quiz.appspot.com/login\\b",
 				HttpStatus.SC_OK,
 				"{\"session\": \"test\","
-						+ " \"message\": \"Here's your session id. Please include the following HTTP" +
-						" header in your subsequent requests:\n Authorization: Tequila test\"}",
+						+ " \"message\": \"Here's your session id. Please include the following HTTP"
+						+ " header in your subsequent requests:\n Authorization: Tequila test\"}",
 				"application/json");
 		SwengHttpClientFactory.setInstance(mock);
 	}

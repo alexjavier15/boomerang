@@ -9,7 +9,12 @@ import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestingTransaction;
-
+/**
+ * 
+ * @author LorenzoLeon
+ *
+ * @param <T>
+ */
 @SuppressWarnings("rawtypes")
 public class TestTemplate<T> extends ActivityInstrumentationTestCase2 {
 
