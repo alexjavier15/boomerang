@@ -172,9 +172,9 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
             state = TOKEN;
             return response;
         } else {
-
-            Log.w("Authentication state: AUTHENTICATION", ", failedcount: ");
-            return null;
+        	
+         
+            throw new ClientProtocolException(INTERNAL_ERROR_MSG);
         }
     }
 

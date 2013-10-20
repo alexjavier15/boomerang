@@ -66,9 +66,12 @@ public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity
 		waitFor(TTChecks.NEW_QUESTION_SUBMITTED);
 		
 		assertTrue("Succes", getSolo().searchText("Your submission was successful"));
+		getActivity().finish();
+		
 		}
 
-	public void testButtonsMustBeDisplayed() {
+	public void test1ButtonsMustBeDisplayed() {
+	
 		getActivityAndWaitFor(TTChecks.EDIT_QUESTIONS_SHOWN);
 		assertTrue("EditText for the question", getSolo().searchText("Type in the question"));
 		assertTrue("EditText for an answer", getSolo().searchText("Type in the answer"));
@@ -83,6 +86,7 @@ public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity
 
 	@UiThreadTest
 	public void testButtonStayDissabled() {
+		getActivityAndWaitFor(TTChecks.EDIT_QUESTIONS_SHOWN);
 		EditText questionT = getSolo().getEditText("question");
 		questionT.setText("test question");
 		assertFalse("question body must be displayed", questionT.getText().toString().equals(question));
