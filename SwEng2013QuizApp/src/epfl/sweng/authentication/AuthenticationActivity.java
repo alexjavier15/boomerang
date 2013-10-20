@@ -30,11 +30,13 @@ import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
- * This Activity allows the user to login with his Gaspar account using Tequila server to authenticate the request.
+ * This Activity allows the user to login with his Gaspar account using Tequila
+ * server to authenticate the request.
  * 
  * @author AlexRivas
  * 
  */
+
 public class AuthenticationActivity extends Activity implements HttpcommunicationsAdapter {
 	
     private static final int AUTHENTICATED = 4;
@@ -234,4 +236,6 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
                 return null;
         }
     }
+
+
 }

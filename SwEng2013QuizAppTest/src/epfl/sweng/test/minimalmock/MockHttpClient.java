@@ -1,4 +1,4 @@
-package epfl.sweng.minimalmock;
+package epfl.sweng.test.minimalmock;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
