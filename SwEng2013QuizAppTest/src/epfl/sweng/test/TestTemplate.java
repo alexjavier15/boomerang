@@ -72,6 +72,12 @@ public class TestTemplate<T> extends ActivityInstrumentationTestCase2 {
                 + " \"solutionIndex\": 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }", "application/json");
         SwengHttpClientFactory.setInstance(httpClient);
         setSolo(new Solo(getInstrumentation()));
+        httpClient.pushCannedResponse("GET (?:https?://[^/]+|[^/]+)?/+quizquestions/random\\b", HttpStatus.SC_OK,
+            "{\"question\": \"What is the answer to life, the universe, and everything?\","
+                + " \"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\","
+                + " \"solutionIndex\": 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }", "application/json");
+        SwengHttpClientFactory.setInstance(httpClient);
+        setSolo(new Solo(getInstrumentation()));
     }
 
     /**

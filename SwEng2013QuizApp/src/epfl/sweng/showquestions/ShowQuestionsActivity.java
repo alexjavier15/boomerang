@@ -31,10 +31,10 @@ import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
-*
-* @author AlbanMarguet & LorenzoLeon
-*
-*/
+ * 
+ * @author AlbanMarguet & LorenzoLeon
+ * 
+ */
 
 public class ShowQuestionsActivity extends Activity implements HttpcommunicationsAdapter {
 
@@ -47,10 +47,10 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     private TextView text;
 
     /**
-* Launches fetchNewQuestion() when clicking on the button labeled "Next Question"
-*
-* @param view
-*/
+     * Launches fetchNewQuestion() when clicking on the button labeled "Next Question"
+     * 
+     * @param view
+     */
     public void askNextQuestion(View view) {
         answerChoices.setOnItemClickListener(answerListener);
         ((Button) findViewById(R.id.next_question)).setEnabled(false);
@@ -58,12 +58,12 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     }
 
     /**
-* Get the tags of the question to display them on the screen
-*
-* @param list
-* : set of Strings
-* @return the tags
-*/
+     * Get the tags of the question to display them on the screen
+     * 
+     * @param list
+     *            : set of Strings
+     * @return the tags
+     */
     private String displayTags(List<String> list) {
         if (list.size() > 0) {
             System.out.println("Va afficher les tags");
@@ -86,10 +86,10 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     }
 
     /**
-* Obtains a random question thru an AsyncTask but blocks the thread until the response is received.
-*
-* @return HttpResponse
-*/
+     * Obtains a random question thru an AsyncTask but blocks the thread until the response is received.
+     * 
+     * @return HttpResponse
+     */
 
     public HttpResponse fetchFirstQuestion() {
         HttpResponse response = null;
@@ -108,8 +108,8 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     }
 
     /**
-* Launches the HTTPGET operation to display a new random question
-*/
+     * Launches the HTTPGET operation to display a new random question
+     */
     public void fetchNewQuestion() {
 
         new HttpCommsBackgroundTask(this, true).execute();
@@ -141,7 +141,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
                     TextView lastChild = (TextView) list.getChildAt(lastChoice);
                     if (lastChild != null) {
                         String lastAnswer = lastChild.getText().toString();
-                        lastAnswer = lastAnswer.substring(0, lastAnswer.length() - 1);
+                        lastAnswer = lastAnswer.replace(getResources().getString(R.string.heavy_ballot_x), "");
                         lastChild.setText(lastAnswer);
                     }
                 }
@@ -170,9 +170,9 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     }
 
     /**
-* Inflate the menu; this adds items to the action bar if it is present.
-*
-*/
+     * Inflate the menu; this adds items to the action bar if it is present.
+     * 
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.show_questions, menu);
