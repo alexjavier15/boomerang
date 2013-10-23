@@ -1,11 +1,12 @@
 package epfl.sweng.showquestions;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+
 import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.os.Bundle;
@@ -61,19 +62,19 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     /**
      * Get the tags of the question to display them on the screen
      * 
-     * @param list
+     * @param set
      *            : set of Strings
      * @return the tags
      */
-    private String displayTags(List<String> list) {
-        if (list.size() > 0) {
+    private String displayTags(Set<String> set) {
+        if (set.size() > 0) {
             System.out.println("Va afficher les tags");
             String tagsInString = "";
             int counter = 0;
 
-            for (String s : list) {
+            for (String s : set) {
                 counter++;
-                if (counter == list.size()) {
+                if (counter == set.size()) {
                     tagsInString += s;
                 } else {
                     tagsInString += s + ", ";
@@ -189,7 +190,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         QuizQuestion quizQuestion = null;
 
         try {
-            quizQuestion = JSONParser.parseJsonToQuiz(httpResponse);
+            quizQuestion = JSONParser.parseJsonToQuiz(httpResponse, getApplicationContext());
             Debug.out(quizQuestion);
         } catch (IOException e) {
             text.append("No question can be obtained !");

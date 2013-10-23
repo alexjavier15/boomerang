@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import epfl.sweng.authentication.CredentialManager;
+import epfl.sweng.authentication.PreferenceKeys;
 
 import android.accounts.NetworkErrorException;
 import android.content.Context;
@@ -66,7 +67,7 @@ public final class HttpComms {
 
 	private boolean checkLoginStatus() {
 		String value = CredentialManager.getInstance(mcontext)
-				.getUserPrefValue(CredentialManager.ID, "");
+				.getUserPrefValue(PreferenceKeys.SESSION_ID, "");
 		if (!value.equals("")) {
 			authenticationValue = "Tequila " + value;
 			return true;

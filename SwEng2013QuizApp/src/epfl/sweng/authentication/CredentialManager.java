@@ -16,7 +16,7 @@ public final class CredentialManager {
 
     private static CredentialManager singletonObject = null;
     public final static String USER_PREFERENCE = "user_session";
-    public final static String ID = "SESSION_ID";
+ 
 
     public static CredentialManager getInstance(Context cont) {
         if (singletonObject == null) {

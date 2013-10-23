@@ -2,7 +2,6 @@ package epfl.sweng.editquestions;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +26,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import epfl.sweng.R;
+import epfl.sweng.authentication.CredentialManager;
+import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
@@ -46,7 +47,7 @@ import epfl.sweng.tools.JSONParser;
 
 public class EditQuestionActivity extends Activity implements HttpcommunicationsAdapter {
 
-	public static final String ERROR_MESSAGE = "Could not upload the question to the server";
+    public static final String ERROR_MESSAGE = "Could not upload the question to the server";
     private AnswerAdapter mAdapter;
     private ListView mListView;
     private Pattern mPatternTags = Pattern.compile("([A-Za-z0-9]+)");
@@ -102,7 +103,8 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             tags.add(matcher.group(1));
         }
 
-        return new QuizQuestion(-1, questionString, answers, solIndex, Arrays.asList(tags.toArray(new String[1])));
+        return new QuizQuestion(questionString, answers, solIndex, tags, QuizQuestion.ID, CredentialManager.getInstance(
+            getApplicationContext()).getUserPrefValue(PreferenceKeys.SESSION_ID, ""));
     }
 
     /**
