@@ -7,7 +7,7 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.jayway.android.robotium.solo.Solo;
 
-import epfl.sweng.minimalmock.MockHttpClient;
+import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestingTransaction;

@@ -27,7 +27,7 @@ import android.net.NetworkInfo;
  */
 public final class HttpComms {
 
-    public final static String HEADER = "Authentication";
+    public final static String HEADER = "Authorization";
     private static HttpComms singleHTTPComs = null;
     public final static int STRING_ENTITY = 1;
     public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
@@ -56,6 +56,7 @@ public final class HttpComms {
         if (isConnected()) {
             if (checkLoginStatus()) {
                 request.addHeader(HEADER, authenticationValue);
+           
             }
             return SwengHttpClientFactory.getInstance().execute(request);
         } else {

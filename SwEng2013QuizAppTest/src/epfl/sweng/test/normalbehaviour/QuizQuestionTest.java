@@ -1,9 +1,10 @@
-package epfl.sweng.questions;
+package epfl.sweng.test.normalbehaviour;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+import epfl.sweng.quizquestions.QuizQuestion;
 
 public class QuizQuestionTest extends TestCase {
 

@@ -6,8 +6,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
-
 import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.os.Bundle;
@@ -20,8 +18,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import epfl.sweng.R;
-import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
@@ -38,6 +37,7 @@ import epfl.sweng.tools.JSONParser;
 
 public class ShowQuestionsActivity extends Activity implements HttpcommunicationsAdapter {
 
+    public static final String ERROR_MESSAGE = "There was an error retrieving the question";
     private ArrayAdapter<String> adapter;
     private ListView answerChoices;
     private OnItemClickListener answerListener = null;
@@ -47,7 +47,8 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     private TextView text;
 
     /**
-     * Launches fetchNewQuestion() when clicking on the button labeled "Next Question"
+     * Launches fetchNewQuestion() when clicking on the button labeled
+     * "Next Question"
      * 
      * @param view
      */
@@ -86,7 +87,8 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     }
 
     /**
-     * Obtains a random question thru an AsyncTask but blocks the thread until the response is received.
+     * Obtains a random question thru an AsyncTask but blocks the thread until
+     * the response is received.
      * 
      * @return HttpResponse
      */
@@ -101,7 +103,10 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             Log.e(getLocalClassName(), "AsyncTask thread exception");
         } catch (ExecutionException e) {
             Log.e(getLocalClassName(), "AsyncTask thread exception");
-
+        } finally {
+            if (response == null) {
+                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+            }
         }
 
         return response;
@@ -141,7 +146,9 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
                     TextView lastChild = (TextView) list.getChildAt(lastChoice);
                     if (lastChild != null) {
                         String lastAnswer = lastChild.getText().toString();
-                        lastAnswer = lastAnswer.replace(getResources().getString(R.string.heavy_ballot_x), "");
+                        if (lastAnswer.contains("\u2718")) {
+                            lastAnswer = lastAnswer.substring(0, lastAnswer.length() - 1);
+                        }
                         lastChild.setText(lastAnswer);
                     }
                 }
@@ -152,11 +159,9 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
                     question = getResources().getString(R.string.heavy_check_mark);
                     ((Button) findViewById(R.id.next_question)).setEnabled(true);
                     list.setOnItemClickListener(null);
-                    // answerChoices.setOnClickListener(null);
-
-                    TestCoordinator.check(TTChecks.ANSWER_SELECTED);
-
                 }
+
+                TestCoordinator.check(TTChecks.ANSWER_SELECTED);
 
                 String newText = textListener.getText().toString() + question;
                 textListener.setText(newText);
@@ -181,39 +186,33 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
 
     @Override
     public void processHttpReponse(HttpResponse httpResponse) {
-        Debug.out(httpResponse);
         QuizQuestion quizQuestion = null;
 
         try {
             quizQuestion = JSONParser.parseJsonToQuiz(httpResponse);
             Debug.out(quizQuestion);
-        } catch (JSONException e) {
-            text.append("/n No question can be obtained !");
-            Log.e(getLocalClassName(), e.getMessage());
-            return;
         } catch (IOException e) {
-            text.append("/n No question can be obtained !");
+            text.append("No question can be obtained !");
+            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
             Log.e(getLocalClassName(), e.getMessage());
-            return;
+        }
+        if (quizQuestion != null) {
+            setQuestion(quizQuestion);
         }
 
-        if (text == null && quizQuestion != null) {
-            Debug.out("null textview");
-        } else {
-            // We've got a satisfying question => treating it
-            currrentQuestion = quizQuestion;
-
-            text.setText(quizQuestion.getQuestion());
-            tags.setText(displayTags(quizQuestion.getTags()));
-            adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
-
-            answerChoices.setAdapter(adapter);
-
-            adapter.setNotifyOnChange(true);
-
-        }
         TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+    }
 
+    private void setQuestion(QuizQuestion quizQuestion) {
+        currrentQuestion = quizQuestion;
+
+        text.setText(quizQuestion.getQuestion());
+        tags.setText(displayTags(quizQuestion.getTags()));
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
+
+        answerChoices.setAdapter(adapter);
+
+        adapter.setNotifyOnChange(true);
     }
 
     @Override
@@ -223,17 +222,21 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         try {
             response = HttpComms.getInstance(this).getHttpResponse();
         } catch (NetworkErrorException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return response;
 
+        return response;
     }
 
+    public TextView getText() {
+        return text;
+    }
+
+    public void setText(TextView view) {
+        text = view;
+    }
 }

@@ -30,11 +30,13 @@ import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
- * This Activity allows the user to login with his Gaspar account using Tequila server to authenticate the request.
+ * This Activity allows the user to login with his Gaspar account using Tequila
+ * server to authenticate the request.
  * 
  * @author AlexRivas
  * 
  */
+
 public class AuthenticationActivity extends Activity implements HttpcommunicationsAdapter {
 	
     private static final int AUTHENTICATED = 4;
@@ -127,7 +129,9 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         NameValuePair[] namList = {new BasicNameValuePair("requestkey", token),
             new BasicNameValuePair("username", username), new BasicNameValuePair("password", password)};
         UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(Arrays.asList(namList));
+        
         state = TEQUILA;
+        Debug.out(urlEntity.toString());        
         return HttpComms.getInstance(this).postEntity(HttpComms.URL_TEQUILA, urlEntity);
 
     }
@@ -145,10 +149,6 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
                 this.finish();
             } catch (NullPointerException e) {
                 mStatusMsg = UNEXPECTED_ERROR_MSG;
-                failedAuthenReset();
-                Log.e(getLocalClassName(), e.getMessage());
-            } catch (JSONException e) {
-                mStatusMsg = INTERNAL_ERROR_MSG;
                 failedAuthenReset();
                 Log.e(getLocalClassName(), e.getMessage());
             } catch (IOException e) {
@@ -170,9 +170,9 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
             state = TOKEN;
             return response;
         } else {
-
-            Log.w("Authentication state: AUTHENTICATION", ", failedcount: ");
-            return null;
+        	
+         
+            throw new ClientProtocolException(INTERNAL_ERROR_MSG);
         }
     }
 
@@ -232,4 +232,6 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
                 return null;
         }
     }
+
+
 }

@@ -1,4 +1,4 @@
-package epfl.sweng.questions;
+package epfl.sweng.quizquestions;
 
 /**
  * 

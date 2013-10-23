@@ -27,7 +27,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import epfl.sweng.R;
-import epfl.sweng.questions.QuizQuestion;
+import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
@@ -46,6 +46,7 @@ import epfl.sweng.tools.JSONParser;
 
 public class EditQuestionActivity extends Activity implements HttpcommunicationsAdapter {
 
+	public static final String ERROR_MESSAGE = "Could not upload the question to the server";
     private AnswerAdapter mAdapter;
     private ListView mListView;
     private Pattern mPatternTags = Pattern.compile("([A-Za-z0-9]+)");
@@ -194,7 +195,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
      * 
      */
     private void printFail() {
-        Toast.makeText(this, "Your submission was NOT successful. Please try again later.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -239,7 +240,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     }
 
     /**
-     * After a successful submission of a quiz question, EditQuestionActivity‘s UI is reinitialized.
+     * After a successful submission of a quiz question, EditQuestionActivitys UI is reinitialized.
      */
     public void reset() {
         mReset = true;
