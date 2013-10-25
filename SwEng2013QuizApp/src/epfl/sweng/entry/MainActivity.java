@@ -150,13 +150,13 @@ public class MainActivity extends Activity implements
 			changeOnLineState(true);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param state
 	 */
 	public void changeOnLineState(boolean state) {
 		CredentialManager.getInstance(getApplicationContext()).getPreferences()
-		.edit().putBoolean(PreferenceKeys.SESSION_ON, state).commit();
+				.edit().putBoolean(PreferenceKeys.SESSION_ON, state).commit();
 	}
 }
