@@ -1,7 +1,10 @@
 package epfl.sweng.test.normalbehaviour;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 import epfl.sweng.quizquestions.QuizQuestion;
@@ -16,10 +19,8 @@ public class QuizQuestionTest extends TestCase {
         answers.add("Forty-two");
         answers.add("Twenty-seven");
         int sol = 0;
-        List<String> tags = new ArrayList<String>();
-        tags.add("h2g2");
-        tags.add("trivia");
-        return new QuizQuestion(-1, question, answers, sol, tags);
+        Set<String> tags = new HashSet<String>(Arrays.asList("h2g2", "trivia"));
+        return new QuizQuestion(question, answers, sol, tags, -1, "");
     }
 
     public void testGettersQuestion() {

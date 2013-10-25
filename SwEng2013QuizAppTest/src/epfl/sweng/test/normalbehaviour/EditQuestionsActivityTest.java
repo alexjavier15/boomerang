@@ -72,7 +72,6 @@ public class EditQuestionsActivityTest extends
 	}
 
 	public void test1ButtonsMustBeDisplayed() {
-	
 		getActivityAndWaitFor(TTChecks.EDIT_QUESTIONS_SHOWN);
 		assertTrue("EditText for the question",
 				getSolo().searchText("Type in the question"));
@@ -89,7 +88,7 @@ public class EditQuestionsActivityTest extends
 
 	@UiThreadTest
 	public void testButtonStayDissabled() {
-		getActivityAndWaitFor(TTChecks.EDIT_QUESTIONS_SHOWN);
+		//getActivityAndWaitFor(TTChecks.EDIT_QUESTIONS_SHOWN);
 		EditText questionT = getSolo().getEditText("question");
 		questionT.setText("test question");
 		assertFalse("question body must be displayed", questionT.getText()
