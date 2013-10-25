@@ -299,4 +299,10 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         }
     }
 
+    private int auditEditTexts() {
+    	int numberErrors = 0;
+    	
+    	return numberErrors;
+    }
+    
 }
