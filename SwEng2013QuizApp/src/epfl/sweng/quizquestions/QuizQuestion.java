@@ -26,6 +26,12 @@ public class QuizQuestion implements QuestionProvider {
     private Set<String> tags = new HashSet<String>();
     private String owner;
 
+    private final int maxQuestionLength = 500;
+    private final int maxAnswersSize = 10;
+    private final int maxAnswerLength = 500;
+    private final int maxTagsSize = 20;
+    private final int maxTagLength = 20;
+    
     /**
      * Constructor of a QuizQuestion : class to modelize a quiz question at the json format.
      * 
@@ -48,6 +54,9 @@ public class QuizQuestion implements QuestionProvider {
         this.solutionIndex = solutionIndex;
         this.tags = tags;
         this.owner=owner;
+        if (auditError() > 0) {
+        	throw new IllegalArgumentException();
+        }
     }
     
     public QuizQuestion(final String jsonInput) throws JSONException  {
@@ -64,8 +73,7 @@ public class QuizQuestion implements QuestionProvider {
             answers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
             solutionIndex = parser.getInt("solutionIndex");
             tags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
-            owner = parser.getString("owner");
-            
+            owner = parser.getString("owner"); 
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -78,10 +86,36 @@ public class QuizQuestion implements QuestionProvider {
         this.tags=tags;
         this.id=id;
         this.owner= owner;
-
+        if (auditError() > 0) {
+        	throw new IllegalArgumentException();
+        }
+    }
     
-        
-        
+    public int auditError() {
+    	int numberOfErrors = 0;
+    	if (question.length() <= 0 || question.length() > maxQuestionLength || question.trim().length() <= 0) {
+    		numberOfErrors++;
+    	}
+    	for (String a : answers) {
+    		if (a.length() <= 0 || a.length() > maxAnswerLength || a.trim().length() <= 0) {
+    			numberOfErrors++;
+    		}
+    	}
+    	if (answers.size() < 2 || answers.size() > maxAnswersSize) {
+    		numberOfErrors++;
+    	}
+    	if (solutionIndex < 0 || solutionIndex > answers.size()-1) {
+    		numberOfErrors++;
+    	}
+    	if (tags.size() < 1 || tags.size() > maxTagsSize) {
+    		numberOfErrors++;
+    	}
+    	for (String t : tags) {
+    		if (t.length() <= 0 || t.length() > maxTagLength || t.trim().length() <= 0) {
+    			numberOfErrors++;
+    		}
+    	}
+    	return numberOfErrors;
     }
 
     @Override

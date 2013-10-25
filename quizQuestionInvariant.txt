@@ -1,6 +1,6 @@
 0 < len(question.question) <= 500 && question.question.trim() > 0
 forall a in question.answers : 0 < len(a) <= 500 && a.trim() > 0
-2 <= len(question.answers) <= 10
+2 <= size(question.answers) <= 10
 there exists i such that isMarkedCorrect(question.answers[i])
-1 <= len(question.tags) <= 20
+1 <= size(question.tags) <= 20
 forall t in question.tags : 0 < len(t) <= 20 && t.trim() > 0
