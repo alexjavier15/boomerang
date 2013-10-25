@@ -91,12 +91,18 @@ public class MainActivity extends Activity implements
 		return true;
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public void onResume() {
 		super.onResume();
 		TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
 		if (key.equals("SESSION_ID")) {
@@ -106,6 +112,10 @@ public class MainActivity extends Activity implements
 		}
 	}
 
+	/**
+	 * 
+	 * @param newState
+	 */
 	private void setAthenticated(boolean newState) {
 		authenticated = newState;
 		((Button) findViewById(R.id.ShowQuestionButton)).setEnabled(newState);
@@ -127,8 +137,26 @@ public class MainActivity extends Activity implements
 				EditQuestionActivity.class);
 		startActivity(submitActivityIntent);
 	}
+
+	/**
+	 * 
+	 * @param view
+	 */
+	public void changeNetworkMode(View view) {
+		CheckBox offLineMode = (CheckBox) view.findViewById(R.id.offline_mode);
+		if (offLineMode.isChecked()) {
+			changeOnLineState(false);
+		} else {
+			changeOnLineState(true);
+		}
+	}
 	
-	public void goOffline() {
-		
+	/**
+	 * 
+	 * @param state
+	 */
+	public void changeOnLineState(boolean state) {
+		CredentialManager.getInstance(getApplicationContext()).getPreferences()
+		.edit().putBoolean(PreferenceKeys.SESSION_ON, state).commit();
 	}
 }
