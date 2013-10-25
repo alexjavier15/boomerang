@@ -32,9 +32,7 @@ public class QuizQuestionTest extends TestCase {
         ans.add("Forty-two");
         ans.add("Twenty-seven");
         assertEquals(mQuestion.getAnswers(), ans);
-        List<String> tags = new ArrayList<String>();
-        tags.add("h2g2");
-        tags.add("trivia");
+        Set<String> tags = new HashSet<String>(Arrays.asList("h2g2", "trivia"));
         assertEquals(mQuestion.getTags(), tags);
         assertEquals(mQuestion.getIndex(), 0);
     }

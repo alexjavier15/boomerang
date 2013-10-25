@@ -122,6 +122,5 @@ public class QuizQuestion implements QuestionProvider {
         return owner;
     }
 
-  
 
 }
