@@ -54,7 +54,7 @@ public class QuizQuestion implements QuestionProvider {
         this.solutionIndex = solutionIndex;
         this.tags = tags;
         this.owner=owner;
-        if (auditError() > 0) {
+        if (auditErrors() > 0) {
         	throw new IllegalArgumentException();
         }
     }
@@ -86,12 +86,12 @@ public class QuizQuestion implements QuestionProvider {
         this.tags=tags;
         this.id=id;
         this.owner= owner;
-        if (auditError() > 0) {
+        if (auditErrors() > 0) {
         	throw new IllegalArgumentException();
         }
     }
     
-    public int auditError() {
+    public int auditErrors() {
     	int numberOfErrors = 0;
     	if (question.length() <= 0 || question.length() > maxQuestionLength || question.trim().length() <= 0) {
     		numberOfErrors++;
