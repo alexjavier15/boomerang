@@ -89,7 +89,6 @@ public class QuizQuestion implements QuestionProvider {
 		this.tags = initTags;
 		this.id = initId;
 		this.owner = initOwner;
-
 		if (auditErrors() > 0) {
 			throw new IllegalArgumentException();
 		}

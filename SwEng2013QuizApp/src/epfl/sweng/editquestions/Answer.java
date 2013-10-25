@@ -26,7 +26,6 @@ public class Answer {
 
     public Answer() {
         super();
-
     }
 
     public Answer(String check, String answerText) {
@@ -44,14 +43,11 @@ public class Answer {
     }
 
     public boolean isCorrect() {
-
         return mCorrect;
     }
 
     public void setAnswer(String receivedAnswer) {
-
         answer = receivedAnswer;
-
     }
 
     public void setChecked(String receivedChecked) {
@@ -59,7 +55,6 @@ public class Answer {
     }
 
     public void setCorrect(boolean isCorrect) {
-
         mCorrect = isCorrect;
     }
 

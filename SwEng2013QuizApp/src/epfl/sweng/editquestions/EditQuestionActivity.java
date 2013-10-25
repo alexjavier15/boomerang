@@ -52,6 +52,13 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     private ListView mListView;
     private Pattern mPatternTags = Pattern.compile("([A-Za-z0-9]+)");
     private boolean mReset = true;
+    
+    private EditText questionEditText;
+    private final String questionHint = "Type in the question's text body";
+    private final String answersHint = "Type in the answer";
+    private EditText tagsEditText;
+    private final String tagsHint = "Type in the question's tags";
+    private Button submitButton;
 
     /**
      * Whenever the button with the plus sign (+) is clicked, it adds a new possible answer with the hint
@@ -77,7 +84,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
      * @return The quiz question is JSON format.
      */
     private QuizQuestion createQuestion() {
-        String questionString = ((EditText) findViewById(R.id.edit_questionText)).getText().toString();
+        String questionString = questionEditText.getText().toString();
         List<String> answers = new LinkedList<String>();
         int solIndex = 0;
         boolean check = true;
@@ -94,7 +101,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             }
         }
 
-        EditText tagsEditText = (EditText) findViewById(R.id.edit_tagsText);
         Pattern patternTags = Pattern.compile("([A-Za-z0-9]+)");
         Set<String> tags = new HashSet<String>();
 
@@ -126,8 +132,8 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
      * @return True if all requirements defining a valid quiz question are verified, otherwise false.
      */
     public boolean isValid() {
-        String questionText = ((EditText) findViewById(R.id.edit_questionText)).getText().toString();
-        String tagsText = ((EditText) findViewById(R.id.edit_tagsText)).getText().toString();
+        String questionText = questionEditText.getText().toString();
+        String tagsText = tagsEditText.getText().toString();
 
         return mPatternTags.matcher(tagsText).find() && !questionText.trim().equals("") && mAdapter.getCount() >= 2
             && !mAdapter.hasEmptyAnswer() && mAdapter.hasOneCorrectAnswer();
@@ -176,11 +182,12 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         mListView = (ListView) findViewById(R.id.listview);
         mListView.setAdapter(mAdapter);
         addNewSlot(null);
-        EditText questionText = (EditText) findViewById(R.id.edit_questionText);
-        questionText.addTextChangedListener(watcher);
+        questionEditText = (EditText) findViewById(R.id.edit_questionText);
+        questionEditText.addTextChangedListener(watcher);
 
-        EditText tagsText = (EditText) findViewById(R.id.edit_tagsText);
-        tagsText.addTextChangedListener(watcher);
+        tagsEditText = (EditText) findViewById(R.id.edit_tagsText);
+        tagsEditText.addTextChangedListener(watcher);
+        submitButton = (Button) findViewById(R.id.submit_button);        
         mReset = false;
         TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
     }
@@ -209,7 +216,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 
     @Override
     public void processHttpReponse(HttpResponse response) {
-
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
             reset();
             printSuccess();
@@ -226,16 +232,12 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             response = HttpComms.getInstance(this).postQuestion(HttpComms.URLPUSH,
                 JSONParser.parseQuiztoJSON(createQuestion()));
         } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (NetworkErrorException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return response;
@@ -246,9 +248,9 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
      */
     public void reset() {
         mReset = true;
-        ((EditText) findViewById(R.id.edit_questionText)).setText("");
-        ((EditText) findViewById(R.id.edit_tagsText)).setText("");
-        ((Button) findViewById(R.id.submit_button)).setEnabled(false);
+        questionEditText.setText("");
+        tagsEditText.setText("");
+        submitButton.setEnabled(false);
         mAdapter.setDefault();
         addNewSlot(null);
         mReset = false;
@@ -278,7 +280,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
      */
     public void submitQuestion(View view) {
         new HttpCommsBackgroundTask(this).execute();
-
     }
 
     /**
@@ -286,22 +287,53 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
      * 
      */
     public void updateTextchanged() {
-
         Debug.out("Fired filled update");
         if (!mReset) {
             if (isValid()) {
-                ((Button) findViewById(R.id.submit_button)).setEnabled(true);
+                submitButton.setEnabled(true);
             } else {
-
-                ((Button) findViewById(R.id.submit_button)).setEnabled(false);
+                submitButton.setEnabled(false);
             }
             TestCoordinator.check(TTChecks.QUESTION_EDITED);
         }
     }
+    
+    public int auditErrors() {
+    	return auditAnswers() + auditButtons() + auditEditTexts() + auditSubmitButton();
+    }
 
     private int auditEditTexts() {
     	int numberErrors = 0;
-    	
+    	if (!questionEditText.getHint().equals(questionHint) || questionEditText.getVisibility() != View.VISIBLE) {
+    		numberErrors++;
+    	}
+    	for (int i = 0; i < mListView.getChildCount(); i++) {
+    		EditText answer = (EditText) mListView.getChildAt(i).findViewById(R.id.edit_answerText);
+    		if (!answer.getHint().equals(answersHint) || answer.getVisibility() != View.VISIBLE) {
+    			numberErrors++;
+    		}
+    	}
+    	if (!tagsEditText.getHint().equals(tagsHint) || tagsEditText.getVisibility() != View.VISIBLE) {
+    		numberErrors++;
+    	}
+    	return numberErrors;
+    }
+    
+    private int auditButtons() {
+    	int numberErrors = 0;
+    	// TODO
+    	return numberErrors;
+    }
+    
+    private int auditAnswers() {
+    	int numberErrors = 0;
+    	// TODO
+    	return numberErrors;
+    }
+    
+    private int auditSubmitButton() {
+    	int numberErrors = 0;
+    	// TODO
     	return numberErrors;
     }
     
