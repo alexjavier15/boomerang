@@ -52,23 +52,23 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_questions);
-    
+
         ((Button) findViewById(R.id.next_question)).setEnabled(false);
         answerChoices = (ListView) findViewById(R.id.answer_choices);
-    
+
         tags = (TextView) findViewById(R.id.show_tags);
-    
+
         text = (TextView) findViewById(R.id.show_question);
         Debug.out(text);
-    
+
         answerListener = new OnItemClickListener() {
-    
+
             @Override
             public void onItemClick(AdapterView<?> listAdapter, View view, int selectedAnswer, long arg3) {
-    
+
                 ListView list = (ListView) listAdapter;
                 TextView textListener = (TextView) list.getChildAt(selectedAnswer);
-    
+
                 if (lastChoice != -1) {
                     TextView lastChild = (TextView) list.getChildAt(lastChoice);
                     if (lastChild != null) {
@@ -79,23 +79,23 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
                         lastChild.setText(lastAnswer);
                     }
                 }
-    
+
                 String question = getResources().getString(R.string.heavy_ballot_x);
-    
+
                 if (currrentQuestion.checkAnswer(selectedAnswer)) {
                     question = getResources().getString(R.string.heavy_check_mark);
                     ((Button) findViewById(R.id.next_question)).setEnabled(true);
                     list.setOnItemClickListener(null);
                 }
-    
+
                 TestCoordinator.check(TTChecks.ANSWER_SELECTED);
-    
+
                 String newText = textListener.getText().toString() + question;
                 textListener.setText(newText);
                 lastChoice = selectedAnswer;
-    
+
             }
-    
+
         };
         answerChoices.setOnItemClickListener(answerListener);
         processHttpReponse(fetchFirstQuestion());
@@ -117,10 +117,10 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      * 
      * @return HttpResponse
      */
-    
+
     public HttpResponse fetchFirstQuestion() {
         HttpResponse response = null;
-    
+
         Debug.out("Start fetching");
         try {
             response = new HttpCommsBackgroundTask(this, false).execute().get();
@@ -129,11 +129,11 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } catch (ExecutionException e) {
             Log.e(getLocalClassName(), "AsyncTask thread exception");
         } finally {
-            if (response == null || response.getStatusLine().getStatusCode()!= HttpStatus.SC_OK) {
+            if (response == null || response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
             }
         }
-    
+
         return response;
     }
 
@@ -153,9 +153,9 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      * Launches the HTTPGET operation to display a new random question
      */
     public void fetchNewQuestion() {
-    
+
         new HttpCommsBackgroundTask(this, true).execute();
-    
+
     }
 
     /**
@@ -189,7 +189,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     @Override
     public HttpResponse requete() {
         HttpResponse response = null;
-    
+
         try {
             response = HttpComms.getInstance(this).getHttpResponse();
         } catch (NetworkErrorException e) {
@@ -199,7 +199,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } catch (IOException e) {
             e.printStackTrace();
         }
-    
+
         return response;
     }
 
@@ -207,16 +207,21 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     public void processHttpReponse(HttpResponse httpResponse) {
         QuizQuestion quizQuestion = null;
 
-        try {
-            quizQuestion = JSONParser.parseJsonToQuiz(httpResponse, getApplicationContext());
-            Debug.out(quizQuestion);
-        } catch (IOException e) {
-            Log.e(getLocalClassName(), e.getMessage());
-        }
-        if (quizQuestion != null && httpResponse.getStatusLine().getStatusCode()==HttpStatus.SC_OK) {
-            setQuestion(quizQuestion);
+        if (httpResponse != null && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+
+            try {
+                quizQuestion = JSONParser.parseJsonToQuiz(httpResponse, getApplicationContext());
+                Debug.out(quizQuestion);
+            } catch (IOException e) {
+                Log.e(getLocalClassName(), e.getMessage());
+            }
+            if (quizQuestion != null) {
+                setQuestion(quizQuestion);
+            } else {
+                text.append("No question can be obtained !");
+                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+            }
         } else {
-            text.append("No question can be obtained !");
             Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
         }
         TestCoordinator.check(TTChecks.QUESTION_SHOWN);
