@@ -193,15 +193,16 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             quizQuestion = JSONParser.parseJsonToQuiz(httpResponse, getApplicationContext());
             Debug.out(quizQuestion);
         } catch (IOException e) {
-            text.append("No question can be obtained !");
-            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
             Log.e(getLocalClassName(), e.getMessage());
         }
         if (quizQuestion != null) {
             setQuestion(quizQuestion);
+            TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+        } else {
+            TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+            text.append("No question can be obtained !");
+            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
         }
-
-        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
     }
 
     private void setQuestion(QuizQuestion quizQuestion) {

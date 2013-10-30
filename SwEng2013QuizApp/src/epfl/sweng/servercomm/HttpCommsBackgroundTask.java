@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 
 /**
  * 
- * @author LorenzoLeon
+ * @author LorenzoLeon & JavierRivas
  * 
  */
 public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse> {
@@ -22,6 +22,7 @@ public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse>
         super();
         adapter = adapt;
         doPostExecute = doPost;
+
     }
 
     /**
@@ -48,5 +49,5 @@ public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse>
         }
 
     }
-
+    
 }
