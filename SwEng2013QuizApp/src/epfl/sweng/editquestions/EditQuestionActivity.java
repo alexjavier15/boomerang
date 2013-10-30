@@ -52,92 +52,13 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     private ListView mListView;
     private Pattern mPatternTags = Pattern.compile("([A-Za-z0-9]+)");
     private boolean mReset = true;
-    
+
     private EditText questionEditText;
     private final String questionHint = "Type in the question's text body";
     private final String answersHint = "Type in the answer";
     private EditText tagsEditText;
     private final String tagsHint = "Type in the question's tags";
     private Button submitButton;
-
-    /**
-     * Whenever the button with the plus sign (+) is clicked, it adds a new possible answer with the hint
-     * "Type in the answer" and it is marked as incorrect.
-     * 
-     * @param view
-     */
-    public void addNewSlot(View view) {
-        Answer temp = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
-        mAdapter.add(temp);
-        Debug.out(temp);
-        mAdapter.notifyDataSetChanged();
-        if (!isReset()) {
-            TestCoordinator.check(TTChecks.QUESTION_EDITED);
-        }
-        mListView.setSelection(mListView.getCount() - 1);
-    }
-
-    /**
-     * This method is called when the quiz question is valid and all answers the user typed in are saved in order to
-     * create a quiz question in JSON format for the SwEng quiz server.
-     * 
-     * @return The quiz question is JSON format.
-     */
-    private QuizQuestion createQuestion() {
-        String questionString = questionEditText.getText().toString();
-        List<String> answers = new LinkedList<String>();
-        int solIndex = 0;
-        boolean check = true;
-
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            Answer answerI = mAdapter.getItem(i);
-            answers.add(answerI.getAnswer());
-            if (check) {
-                if (answerI.getChecked().equals(getResources().getString(R.string.heavy_check_mark))) {
-                    check = false;
-                } else {
-                    solIndex++;
-                }
-            }
-        }
-
-        Pattern patternTags = Pattern.compile("([A-Za-z0-9]+)");
-        Set<String> tags = new HashSet<String>();
-
-        Matcher matcher = patternTags.matcher(tagsEditText.getText().toString());
-        while (matcher.find()) {
-            tags.add(matcher.group(1));
-        }
-
-        return new QuizQuestion(questionString, answers, solIndex, tags, QuizQuestion.ID, CredentialManager.getInstance(
-            getApplicationContext()).getUserPrefValue(PreferenceKeys.SESSION_ID, ""));
-    }
-
-    /**
-     * Return the the reset status of {@link EditQuestionActivity}
-     * 
-     * @return the reset
-     */
-    public boolean isReset() {
-        return mReset;
-    }
-
-    /**
-     * When the user clicks on the submission button, this method is triggered to verify all the four requirements
-     * defining a valid quiz question : 1) The question body must be a no empty {@link String} or only white spaces
-     * spaces. 2) None of the answers of a quiz question may be empty or contain only white spaces. 3) There must be
-     * at
-     * least 2 answers. 4) One of the answers must be marked as correct.
-     * 
-     * @return True if all requirements defining a valid quiz question are verified, otherwise false.
-     */
-    public boolean isValid() {
-        String questionText = questionEditText.getText().toString();
-        String tagsText = tagsEditText.getText().toString();
-
-        return mPatternTags.matcher(tagsText).find() && !questionText.trim().equals("") && mAdapter.getCount() >= 2
-            && !mAdapter.hasEmptyAnswer() && mAdapter.hasOneCorrectAnswer();
-    }
 
     /**
      * Starts the window adding a modified ArrayAdapter to list the answers. Creates the multiple Test Listeners for
@@ -187,7 +108,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 
         tagsEditText = (EditText) findViewById(R.id.edit_tagsText);
         tagsEditText.addTextChangedListener(watcher);
-        submitButton = (Button) findViewById(R.id.submit_button);        
+        submitButton = (Button) findViewById(R.id.submit_button);
         mReset = false;
         TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
     }
@@ -197,6 +118,90 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.edit_question, menu);
         return true;
+    }
+
+    /**
+     * Whenever the button with the plus sign (+) is clicked, it adds a new possible answer with the hint
+     * "Type in the answer" and it is marked as incorrect.
+     * 
+     * @param view
+     */
+    public void addNewSlot(View view) {
+        Answer temp = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
+        mAdapter.add(temp);
+        Debug.out(temp);
+        mAdapter.notifyDataSetChanged();
+        if (!isReset()) {
+            TestCoordinator.check(TTChecks.QUESTION_EDITED);
+        }
+        mListView.setSelection(mListView.getCount() - 1);
+    }
+
+    /**
+     * This method is called when the quiz question is valid and all answers the user typed in are saved in order to
+     * create a quiz question in JSON format for the SwEng quiz server.
+     * 
+     * @return The quiz question is JSON format.
+     */
+    private QuizQuestion createQuestion() throws IllegalArgumentException {
+        String questionString = questionEditText.getText().toString();
+        List<String> answers = new LinkedList<String>();
+        int solIndex = 0;
+        boolean check = true;
+        QuizQuestion questionCreated = null;
+
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            Answer answerI = mAdapter.getItem(i);
+            answers.add(answerI.getAnswer());
+            if (check) {
+                if (answerI.getChecked().equals(getResources().getString(R.string.heavy_check_mark))) {
+                    check = false;
+                } else {
+                    solIndex++;
+                }
+            }
+        }
+
+        Pattern patternTags = Pattern.compile("([A-Za-z0-9]+)");
+        Set<String> tags = new HashSet<String>();
+
+        Matcher matcher = patternTags.matcher(tagsEditText.getText().toString());
+        while (matcher.find()) {
+            tags.add(matcher.group(1));
+        }
+        questionCreated = new QuizQuestion(questionString, answers, solIndex, tags, QuizQuestion.ID, CredentialManager
+            .getInstance(getApplicationContext()).getUserPrefValue(PreferenceKeys.SESSION_ID, ""));
+
+        return questionCreated;
+    }
+    @Override
+    public HttpResponse requete() {
+        HttpResponse response = null;
+        try {
+            response = HttpComms.getInstance(this).postQuestion(HttpComms.URLPUSH,
+                JSONParser.parseQuiztoJSON(createQuestion()));
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (NetworkErrorException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+    @Override
+    public void processHttpReponse(HttpResponse response) {
+        if (response != null&& response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+            reset();
+            printSuccess();
+        } else {
+            printFail();
+        }
+        TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
     }
 
     /**
@@ -214,33 +219,31 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         Toast.makeText(this, "Your submission was successful!", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void processHttpReponse(HttpResponse response) {
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-            reset();
-            printSuccess();
-        } else {
-            printFail();
-        }
-        TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
+   
+    /**
+     * Return the the reset status of {@link EditQuestionActivity}
+     * 
+     * @return the reset
+     */
+    public boolean isReset() {
+        return mReset;
     }
 
-    @Override
-    public HttpResponse requete() {
-        HttpResponse response = null;
-        try {
-            response = HttpComms.getInstance(this).postQuestion(HttpComms.URLPUSH,
-                JSONParser.parseQuiztoJSON(createQuestion()));
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (NetworkErrorException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return response;
+    /**
+     * When the user clicks on the submission button, this method is triggered to verify all the four requirements
+     * defining a valid quiz question : 1) The question body must be a no empty {@link String} or only white spaces
+     * spaces. 2) None of the answers of a quiz question may be empty or contain only white spaces. 3) There must be
+     * at
+     * least 2 answers. 4) One of the answers must be marked as correct.
+     * 
+     * @return True if all requirements defining a valid quiz question are verified, otherwise false.
+     */
+    public boolean isValid() {
+        String questionText = questionEditText.getText().toString();
+        String tagsText = tagsEditText.getText().toString();
+
+        return mPatternTags.matcher(tagsText).find() && !questionText.trim().equals("") && mAdapter.getCount() >= 2
+            && !mAdapter.hasEmptyAnswer() && mAdapter.hasOneCorrectAnswer();
     }
 
     /**
@@ -297,44 +300,44 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             TestCoordinator.check(TTChecks.QUESTION_EDITED);
         }
     }
-    
+
     public int auditErrors() {
-    	return auditAnswers() + auditButtons() + auditEditTexts() + auditSubmitButton();
+        return auditAnswers() + auditButtons() + auditEditTexts() + auditSubmitButton();
     }
 
     private int auditEditTexts() {
-    	int numberErrors = 0;
-    	if (!questionEditText.getHint().equals(questionHint) || questionEditText.getVisibility() != View.VISIBLE) {
-    		numberErrors++;
-    	}
-    	for (int i = 0; i < mListView.getChildCount(); i++) {
-    		EditText answer = (EditText) mListView.getChildAt(i).findViewById(R.id.edit_answerText);
-    		if (!answer.getHint().equals(answersHint) || answer.getVisibility() != View.VISIBLE) {
-    			numberErrors++;
-    		}
-    	}
-    	if (!tagsEditText.getHint().equals(tagsHint) || tagsEditText.getVisibility() != View.VISIBLE) {
-    		numberErrors++;
-    	}
-    	return numberErrors;
+        int numberErrors = 0;
+        if (!questionEditText.getHint().equals(questionHint) || questionEditText.getVisibility() != View.VISIBLE) {
+            numberErrors++;
+        }
+        for (int i = 0; i < mListView.getChildCount(); i++) {
+            EditText answer = (EditText) mListView.getChildAt(i).findViewById(R.id.edit_answerText);
+            if (!answer.getHint().equals(answersHint) || answer.getVisibility() != View.VISIBLE) {
+                numberErrors++;
+            }
+        }
+        if (!tagsEditText.getHint().equals(tagsHint) || tagsEditText.getVisibility() != View.VISIBLE) {
+            numberErrors++;
+        }
+        return numberErrors;
     }
-    
+
     private int auditButtons() {
-    	int numberErrors = 0;
-    	// TODO
-    	return numberErrors;
+        int numberErrors = 0;
+        // TODO
+        return numberErrors;
     }
-    
+
     private int auditAnswers() {
-    	int numberErrors = 0;
-    	// TODO
-    	return numberErrors;
+        int numberErrors = 0;
+        // TODO
+        return numberErrors;
     }
-    
+
     private int auditSubmitButton() {
-    	int numberErrors = 0;
-    	// TODO
-    	return numberErrors;
+        int numberErrors = 0;
+        // TODO
+        return numberErrors;
     }
-    
+
 }
