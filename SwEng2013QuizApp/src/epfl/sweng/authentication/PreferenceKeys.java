@@ -10,7 +10,7 @@ package epfl.sweng.authentication;
 public final class PreferenceKeys {
 
     public final static String SESSION_ID = "SESSION_ID";
-    public final static String SESSION_STAT="SESSION_STAT";
+    public final static String SESSION_ON="SESSION_ON";
 
     
 

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import epfl.sweng.authentication.CredentialManager;
+import epfl.sweng.authentication.PreferenceKeys;
 import android.content.Context;
 
 /**
@@ -19,6 +20,7 @@ public final class CacheManager {
     
     private static CacheManager sSingletonObject = null;
     private Context mContext;
+    private boolean mOnlineMode = false;
     private FileOutputStream mFileOut;
     private FileInputStream mFileIn;
     
@@ -38,8 +40,10 @@ public final class CacheManager {
      */
     public CacheManager(Context context) {
              mContext = context;
-             
+             mOnlineMode =CredentialManager.getInstance(context).getPreferences()
+                 .getBoolean(PreferenceKeys.SESSION_ON, false);
     }
+    public void updateStatus(){}
     
     
     

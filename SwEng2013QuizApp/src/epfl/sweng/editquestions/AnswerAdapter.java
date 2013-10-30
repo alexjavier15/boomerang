@@ -27,7 +27,7 @@ import epfl.sweng.tools.Debug;
 public class AnswerAdapter extends ArrayAdapter<Answer> {
     private Answer mAnswerChecked = null;
     private Set<Answer> mEmptyAnswers = new HashSet<Answer>();
-
+   
     public AnswerAdapter(Activity context, int resourceId, ArrayList<Answer> entries) {
         super(context, resourceId, entries);
         setDefault();
