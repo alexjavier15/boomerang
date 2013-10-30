@@ -197,12 +197,11 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         }
         if (quizQuestion != null) {
             setQuestion(quizQuestion);
-            TestCoordinator.check(TTChecks.QUESTION_SHOWN);
         } else {
-            TestCoordinator.check(TTChecks.QUESTION_SHOWN);
             text.append("No question can be obtained !");
             Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
         }
+        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
     }
 
     private void setQuestion(QuizQuestion quizQuestion) {
