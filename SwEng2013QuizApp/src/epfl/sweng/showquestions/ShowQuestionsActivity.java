@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 
 import android.accounts.NetworkErrorException;
@@ -47,6 +48,95 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     private TextView tags;
     private TextView text;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_show_questions);
+    
+        ((Button) findViewById(R.id.next_question)).setEnabled(false);
+        answerChoices = (ListView) findViewById(R.id.answer_choices);
+    
+        tags = (TextView) findViewById(R.id.show_tags);
+    
+        text = (TextView) findViewById(R.id.show_question);
+        Debug.out(text);
+    
+        answerListener = new OnItemClickListener() {
+    
+            @Override
+            public void onItemClick(AdapterView<?> listAdapter, View view, int selectedAnswer, long arg3) {
+    
+                ListView list = (ListView) listAdapter;
+                TextView textListener = (TextView) list.getChildAt(selectedAnswer);
+    
+                if (lastChoice != -1) {
+                    TextView lastChild = (TextView) list.getChildAt(lastChoice);
+                    if (lastChild != null) {
+                        String lastAnswer = lastChild.getText().toString();
+                        if (lastAnswer.contains("\u2718")) {
+                            lastAnswer = lastAnswer.substring(0, lastAnswer.length() - 1);
+                        }
+                        lastChild.setText(lastAnswer);
+                    }
+                }
+    
+                String question = getResources().getString(R.string.heavy_ballot_x);
+    
+                if (currrentQuestion.checkAnswer(selectedAnswer)) {
+                    question = getResources().getString(R.string.heavy_check_mark);
+                    ((Button) findViewById(R.id.next_question)).setEnabled(true);
+                    list.setOnItemClickListener(null);
+                }
+    
+                TestCoordinator.check(TTChecks.ANSWER_SELECTED);
+    
+                String newText = textListener.getText().toString() + question;
+                textListener.setText(newText);
+                lastChoice = selectedAnswer;
+    
+            }
+    
+        };
+        answerChoices.setOnItemClickListener(answerListener);
+        processHttpReponse(fetchFirstQuestion());
+    }
+
+    /**
+     * Inflate the menu; this adds items to the action bar if it is present.
+     * 
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.show_questions, menu);
+        return true;
+    }
+
+    /**
+     * Obtains a random question thru an AsyncTask but blocks the thread until
+     * the response is received.
+     * 
+     * @return HttpResponse
+     */
+    
+    public HttpResponse fetchFirstQuestion() {
+        HttpResponse response = null;
+    
+        Debug.out("Start fetching");
+        try {
+            response = new HttpCommsBackgroundTask(this, false).execute().get();
+        } catch (InterruptedException e) {
+            Log.e(getLocalClassName(), "AsyncTask thread exception");
+        } catch (ExecutionException e) {
+            Log.e(getLocalClassName(), "AsyncTask thread exception");
+        } finally {
+            if (response == null) {
+                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+            }
+        }
+    
+        return response;
+    }
+
     /**
      * Launches fetchNewQuestion() when clicking on the button labeled
      * "Next Question"
@@ -57,6 +147,15 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         answerChoices.setOnItemClickListener(answerListener);
         ((Button) findViewById(R.id.next_question)).setEnabled(false);
         fetchNewQuestion();
+    }
+
+    /**
+     * Launches the HTTPGET operation to display a new random question
+     */
+    public void fetchNewQuestion() {
+    
+        new HttpCommsBackgroundTask(this, true).execute();
+    
     }
 
     /**
@@ -87,102 +186,21 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         }
     }
 
-    /**
-     * Obtains a random question thru an AsyncTask but blocks the thread until
-     * the response is received.
-     * 
-     * @return HttpResponse
-     */
-
-    public HttpResponse fetchFirstQuestion() {
+    @Override
+    public HttpResponse requete() {
         HttpResponse response = null;
-
-        Debug.out("Start fetching");
+    
         try {
-            response = new HttpCommsBackgroundTask(this, false).execute().get();
-        } catch (InterruptedException e) {
-            Log.e(getLocalClassName(), "AsyncTask thread exception");
-        } catch (ExecutionException e) {
-            Log.e(getLocalClassName(), "AsyncTask thread exception");
-        } finally {
-            if (response == null) {
-                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-            }
+            response = HttpComms.getInstance(this).getHttpResponse();
+        } catch (NetworkErrorException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
+    
         return response;
-    }
-
-    /**
-     * Launches the HTTPGET operation to display a new random question
-     */
-    public void fetchNewQuestion() {
-
-        new HttpCommsBackgroundTask(this, true).execute();
-
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_questions);
-
-        ((Button) findViewById(R.id.next_question)).setEnabled(false);
-        answerChoices = (ListView) findViewById(R.id.answer_choices);
-
-        tags = (TextView) findViewById(R.id.show_tags);
-
-        text = (TextView) findViewById(R.id.show_question);
-        Debug.out(text);
-
-        answerListener = new OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> listAdapter, View view, int selectedAnswer, long arg3) {
-
-                ListView list = (ListView) listAdapter;
-                TextView textListener = (TextView) list.getChildAt(selectedAnswer);
-
-                if (lastChoice != -1) {
-                    TextView lastChild = (TextView) list.getChildAt(lastChoice);
-                    if (lastChild != null) {
-                        String lastAnswer = lastChild.getText().toString();
-                        if (lastAnswer.contains("\u2718")) {
-                            lastAnswer = lastAnswer.substring(0, lastAnswer.length() - 1);
-                        }
-                        lastChild.setText(lastAnswer);
-                    }
-                }
-
-                String question = getResources().getString(R.string.heavy_ballot_x);
-
-                if (currrentQuestion.checkAnswer(selectedAnswer)) {
-                    question = getResources().getString(R.string.heavy_check_mark);
-                    ((Button) findViewById(R.id.next_question)).setEnabled(true);
-                    list.setOnItemClickListener(null);
-                }
-
-                TestCoordinator.check(TTChecks.ANSWER_SELECTED);
-
-                String newText = textListener.getText().toString() + question;
-                textListener.setText(newText);
-                lastChoice = selectedAnswer;
-
-            }
-
-        };
-        answerChoices.setOnItemClickListener(answerListener);
-        processHttpReponse(fetchFirstQuestion());
-    }
-
-    /**
-     * Inflate the menu; this adds items to the action bar if it is present.
-     * 
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.show_questions, menu);
-        return true;
     }
 
     @Override
@@ -195,11 +213,11 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } catch (IOException e) {
             Log.e(getLocalClassName(), e.getMessage());
         }
-        if (quizQuestion != null) {
+        if (quizQuestion != null && httpResponse.getStatusLine().getStatusCode()==HttpStatus.SC_OK) {
             setQuestion(quizQuestion);
         } else {
             text.append("No question can be obtained !");
-            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, ERROR_MESSAGE+". "+httpResponse.getStatusLine().getStatusCode(), Toast.LENGTH_LONG).show();
         }
         TestCoordinator.check(TTChecks.QUESTION_SHOWN);
     }
@@ -214,23 +232,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         answerChoices.setAdapter(adapter);
 
         adapter.setNotifyOnChange(true);
-    }
-
-    @Override
-    public HttpResponse requete() {
-        HttpResponse response = null;
-
-        try {
-            response = HttpComms.getInstance(this).getHttpResponse();
-        } catch (NetworkErrorException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return response;
     }
 
     public TextView getText() {
