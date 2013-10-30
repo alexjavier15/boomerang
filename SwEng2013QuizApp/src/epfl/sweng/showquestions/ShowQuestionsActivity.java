@@ -128,12 +128,8 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             Log.e(getLocalClassName(), "AsyncTask thread exception");
         } catch (ExecutionException e) {
             Log.e(getLocalClassName(), "AsyncTask thread exception");
-        } finally {
-            if (response == null || response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-            }
         }
-
+        
         return response;
     }
 
