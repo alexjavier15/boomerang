@@ -129,7 +129,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } catch (ExecutionException e) {
             Log.e(getLocalClassName(), "AsyncTask thread exception");
         } finally {
-            if (response == null) {
+            if (response == null || response.getStatusLine().getStatusCode()!= HttpStatus.SC_OK) {
                 Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
             }
         }
@@ -217,7 +217,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             setQuestion(quizQuestion);
         } else {
             text.append("No question can be obtained !");
-            Toast.makeText(this, ERROR_MESSAGE+". "+httpResponse.getStatusLine().getStatusCode(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
         }
         TestCoordinator.check(TTChecks.QUESTION_SHOWN);
     }
