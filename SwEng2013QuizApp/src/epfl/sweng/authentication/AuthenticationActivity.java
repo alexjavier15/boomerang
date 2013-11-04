@@ -76,7 +76,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
     private HttpResponse confirm(HttpResponse response) throws ClientProtocolException, IOException, JSONException,
         NetworkErrorException, AuthenticationException {
-        response = HttpComms.getInstance(this).postQuestion(HttpComms.URL_SWENG_SWERVER_LOGIN,
+        response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_SWERVER_LOGIN,
             JSONParser.parseTokentoJSON(token));
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             state = AUTHENTICATED;
@@ -96,7 +96,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     }
 
     public void logIn(View view) {
-        if (HttpComms.getInstance(this).isConnected()) {
+        if (HttpComms.getInstance().isConnected()) {
 
             new HttpCommsBackgroundTask(this).execute();
         } else {
@@ -108,6 +108,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferenceManager.setContext(this);
         setContentView(R.layout.activity_authentication);
         // by default initial state is
         state = UNAUTHENTICATED;
@@ -132,7 +133,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         
         state = TEQUILA;
         Debug.out(urlEntity.toString());        
-        return HttpComms.getInstance(this).postEntity(HttpComms.URL_TEQUILA, urlEntity);
+        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA, urlEntity);
 
     }
 
@@ -142,7 +143,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
             try {
                 String sessionID = JSONParser.parseJsonGetKey(response, "session");
-                CredentialManager.getInstance(this).writePreference(PreferenceKeys.SESSION_ID, sessionID);
+                CredentialManager.getInstance().setUserCredential(sessionID);
                 Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
                 Debug.out(sessionID);
 
@@ -165,7 +166,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
     private HttpResponse requestAuthToken(HttpResponse starter) throws ClientProtocolException, IOException,
         NetworkErrorException {
-        HttpResponse response = HttpComms.getInstance(this).getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
+        HttpResponse response = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             state = TOKEN;
             return response;

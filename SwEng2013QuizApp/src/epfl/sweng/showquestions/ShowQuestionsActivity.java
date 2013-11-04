@@ -221,7 +221,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         HttpResponse response = null;
 
         try {
-            response = HttpComms.getInstance(this).getHttpResponse();
+            response = HttpComms.getInstance().getHttpResponse(HttpComms.URL);
         } catch (NetworkErrorException e) {
             e.printStackTrace();
         } catch (ClientProtocolException e) {

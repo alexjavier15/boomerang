@@ -1,7 +1,5 @@
 package epfl.sweng.authentication;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.util.Log;
 
@@ -14,43 +12,36 @@ import android.util.Log;
  */
 public final class CredentialManager {
 
-    private static CredentialManager singletonObject = null;
-    public final static String USER_PREFERENCE = "user_session";
- 
+    private static CredentialManager sUserCredentials = null;
+    private static SharedPreferenceManager mUserPreferences = null;
 
-    public static CredentialManager getInstance(Context cont) {
-        if (singletonObject == null) {
-            singletonObject = new CredentialManager(cont);
+    public static CredentialManager getInstance() {
+        if (sUserCredentials == null) {
+            sUserCredentials = new CredentialManager();
         }
-        return singletonObject;
+        return sUserCredentials;
     }
 
-    private Context mContext;
-
-    private CredentialManager(Context cont) {
-        mContext = cont;
+    private CredentialManager() {
+        mUserPreferences = SharedPreferenceManager.getInstance();
 
     }
-    public String getUserPrefValue(String key, String defValue) {
-    	return mContext.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE).getString(key, defValue);
+
+    public String getUserCredential() {
+        return mUserPreferences.getStringPreference(PreferenceKeys.SESSION_ID);
     }
 
-    public SharedPreferences getPreferences() {
-        return mContext.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE);
+    public boolean removeUserCredential() {
+        return mUserPreferences.removePreference(PreferenceKeys.SESSION_ID);
     }
 
-    public boolean removePreference(String key) {
-        return getPreferences().edit().remove(key).commit();
-    }
-
-    public void setListener(OnSharedPreferenceChangeListener listener) {
+    public void addOnchangeListener(OnSharedPreferenceChangeListener listener) {
         Log.i("SavedPreferences", "register listener");
-        getPreferences().registerOnSharedPreferenceChangeListener(listener);
-
+        mUserPreferences.addOnChangeListener(listener);
     }
 
-    public boolean writePreference(String key, String value) {
-        return getPreferences().edit().putString(key, value).commit();
+    public boolean setUserCredential(String value) {
+        return mUserPreferences.writeStringPreference(PreferenceKeys.SESSION_ID, value);
 
     }
 

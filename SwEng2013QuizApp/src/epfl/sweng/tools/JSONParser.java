@@ -14,9 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-
 import epfl.sweng.authentication.CredentialManager;
-import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.quizquestions.QuizQuestion;
 
 /**
@@ -106,8 +104,8 @@ public class JSONParser {
             throw new IOException(e.getMessage());
         }
 
-        return new QuizQuestion(question, answers, solutionIndex, tags, id, CredentialManager.getInstance(context)
-            .getUserPrefValue(PreferenceKeys.SESSION_ID, ""));
+        return new QuizQuestion(question, answers, solutionIndex, tags, id, CredentialManager.getInstance()
+            .getUserCredential());
 
     }
 

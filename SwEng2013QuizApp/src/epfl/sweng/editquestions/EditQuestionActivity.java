@@ -27,7 +27,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 import epfl.sweng.R;
 import epfl.sweng.authentication.CredentialManager;
-import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
@@ -103,8 +102,8 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             tags.add(matcher.group(1));
         }
 
-        return new QuizQuestion(questionString, answers, solIndex, tags, QuizQuestion.ID, CredentialManager.getInstance(
-            getApplicationContext()).getUserPrefValue(PreferenceKeys.SESSION_ID, ""));
+        return new QuizQuestion(questionString, answers, solIndex, tags, QuizQuestion.ID,
+            CredentialManager.getInstance().getUserCredential());
     }
 
     /**
@@ -223,7 +222,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     public HttpResponse requete() {
         HttpResponse response = null;
         try {
-            response = HttpComms.getInstance(this).postQuestion(HttpComms.URLPUSH,
+            response = HttpComms.getInstance().postJSONObject(HttpComms.URLPUSH, 
                 JSONParser.parseQuiztoJSON(createQuestion()));
         } catch (ClientProtocolException e) {
             // TODO Auto-generated catch block
