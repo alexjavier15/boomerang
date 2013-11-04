@@ -26,7 +26,7 @@ public class SadQuestionShown extends TestTemplate<ShowQuestionsActivity> {
 		MockHttpClient mock = new MockHttpClient();
 		mock.pushCannedResponse(
 				"GET (?:https?://[^/]+|[^/]+)?/+quizquestions/random HTTP/1.1",
-				HttpStatus.SC_NOT_FOUND,
+				HttpStatus.SC_FORBIDDEN,
 				"{\"question\": \"What is the answer to life, the universe, and everything?\", "
 						+ "\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\", \"solutionIndex\":"
 						+ " 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }",

@@ -29,17 +29,14 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 
     private boolean authenticated = true;
 
-    /**
-     * Launches the new Activity ShowQuestionsActivity to display a random
-     * question
-     * 
-     * @param view
-     *            The view that was clicked.
-     */
-    public void askQuestion(View view) {
-        Toast.makeText(this, "You are on the page to show a random question!", Toast.LENGTH_SHORT).show();
-        Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
-        this.startActivity(showQuestionActivityIntent);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SharedPreferenceManager.setContext(this);
+        setContentView(R.layout.activity_main);
+        CredentialManager.getInstance().addOnchangeListener(this);
+        String newValue = CredentialManager.getInstance().getUserCredential();
+        checkStatus(newValue);
     }
 
     private void checkStatus(String newValue) {
@@ -54,27 +51,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         }
     }
 
-    public void logInOut(View view) {
-        if (authenticated) {
-            // this means you are logging out!
-            CredentialManager.getInstance(this).removeUserCredential();
-            TestCoordinator.check(TTChecks.LOGGED_OUT);
-        } else {
-            Intent loginActivityIntent = new Intent(this, AuthenticationActivity.class);
-            startActivity(loginActivityIntent);
-        }
-
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        CredentialManager.getInstance(this).addOnchangeListener(this);
-        String newValue = CredentialManager.getInstance(this).getUserCredential();
-        checkStatus(newValue);
-    }
-
     /**
      * Inflate the menu; this adds items to the action bar if it is present.
      * 
@@ -86,12 +62,37 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     }
 
     /**
-	 * 
-	 */
+     * 
+     */
     @Override
     public void onResume() {
         super.onResume();
         TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
+    }
+
+    /**
+     * Launches the new Activity ShowQuestionsActivity to display a random
+     * question
+     * 
+     * @param view
+     *            The view that was clicked.
+     */
+    public void askQuestion(View view) {
+        Toast.makeText(this, "You are on the page to show a random question!", Toast.LENGTH_SHORT).show();
+        Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
+        this.startActivity(showQuestionActivityIntent);
+    }
+
+    public void logInOut(View view) {
+        if (authenticated) {
+            // this means you are logging out!
+            CredentialManager.getInstance().removeUserCredential();
+            TestCoordinator.check(TTChecks.LOGGED_OUT);
+        } else {
+            Intent loginActivityIntent = new Intent(this, AuthenticationActivity.class);
+            startActivity(loginActivityIntent);
+        }
+
     }
 
     /**
@@ -149,7 +150,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
      * @param state
      */
     public void changeOnLineState(boolean state) {
-        SharedPreferenceManager.getInstance(getApplicationContext()).writeBooleaPreference(PreferenceKeys.ONLINE_MODE,
-            state);
+        SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE, state);
     }
 }

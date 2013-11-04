@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 
 import android.accounts.NetworkErrorException;
@@ -46,81 +47,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     private int lastChoice = -1;
     private TextView tags;
     private TextView text;
-
-    /**
-     * Launches fetchNewQuestion() when clicking on the button labeled
-     * "Next Question"
-     * 
-     * @param view
-     */
-    public void askNextQuestion(View view) {
-        answerChoices.setOnItemClickListener(answerListener);
-        ((Button) findViewById(R.id.next_question)).setEnabled(false);
-        fetchNewQuestion();
-    }
-
-    /**
-     * Get the tags of the question to display them on the screen
-     * 
-     * @param set
-     *            : set of Strings
-     * @return the tags
-     */
-    private String displayTags(Set<String> set) {
-        if (set.size() > 0) {
-            System.out.println("Va afficher les tags");
-            String tagsInString = "";
-            int counter = 0;
-
-            for (String s : set) {
-                counter++;
-                if (counter == set.size()) {
-                    tagsInString += s;
-                } else {
-                    tagsInString += s + ", ";
-                }
-            }
-
-            return tagsInString;
-        } else {
-            return "No tags for this question";
-        }
-    }
-
-    /**
-     * Obtains a random question thru an AsyncTask but blocks the thread until
-     * the response is received.
-     * 
-     * @return HttpResponse
-     */
-
-    public HttpResponse fetchFirstQuestion() {
-        HttpResponse response = null;
-
-        Debug.out("Start fetching");
-        try {
-            response = new HttpCommsBackgroundTask(this, false).execute().get();
-        } catch (InterruptedException e) {
-            Log.e(getLocalClassName(), "AsyncTask thread exception");
-        } catch (ExecutionException e) {
-            Log.e(getLocalClassName(), "AsyncTask thread exception");
-        } finally {
-            if (response == null) {
-                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-            }
-        }
-
-        return response;
-    }
-
-    /**
-     * Launches the HTTPGET operation to display a new random question
-     */
-    public void fetchNewQuestion() {
-
-        new HttpCommsBackgroundTask(this, true).execute();
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,35 +111,75 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         return true;
     }
 
-    @Override
-    public void processHttpReponse(HttpResponse httpResponse) {
-        QuizQuestion quizQuestion = null;
+    /**
+     * Obtains a random question thru an AsyncTask but blocks the thread until
+     * the response is received.
+     * 
+     * @return HttpResponse
+     */
 
+    public HttpResponse fetchFirstQuestion() {
+        HttpResponse response = null;
+
+        Debug.out("Start fetching");
         try {
-            quizQuestion = JSONParser.parseJsonToQuiz(httpResponse, getApplicationContext());
-            Debug.out(quizQuestion);
-        } catch (IOException e) {
-            text.append("No question can be obtained !");
-            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-            Log.e(getLocalClassName(), e.getMessage());
+            response = new HttpCommsBackgroundTask(this, false).execute().get();
+        } catch (InterruptedException e) {
+            Log.e(getLocalClassName(), "AsyncTask thread exception");
+        } catch (ExecutionException e) {
+            Log.e(getLocalClassName(), "AsyncTask thread exception");
         }
-        if (quizQuestion != null) {
-            setQuestion(quizQuestion);
-        }
-
-        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+        
+        return response;
     }
 
-    private void setQuestion(QuizQuestion quizQuestion) {
-        currrentQuestion = quizQuestion;
+    /**
+     * Launches fetchNewQuestion() when clicking on the button labeled
+     * "Next Question"
+     * 
+     * @param view
+     */
+    public void askNextQuestion(View view) {
+        answerChoices.setOnItemClickListener(answerListener);
+        ((Button) findViewById(R.id.next_question)).setEnabled(false);
+        fetchNewQuestion();
+    }
 
-        text.setText(quizQuestion.getQuestion());
-        tags.setText(displayTags(quizQuestion.getTags()));
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
+    /**
+     * Launches the HTTPGET operation to display a new random question
+     */
+    public void fetchNewQuestion() {
 
-        answerChoices.setAdapter(adapter);
+        new HttpCommsBackgroundTask(this, true).execute();
 
-        adapter.setNotifyOnChange(true);
+    }
+
+    /**
+     * Get the tags of the question to display them on the screen
+     * 
+     * @param set
+     *            : set of Strings
+     * @return the tags
+     */
+    private String displayTags(Set<String> set) {
+        if (set.size() > 0) {
+            System.out.println("Va afficher les tags");
+            String tagsInString = "";
+            int counter = 0;
+
+            for (String s : set) {
+                counter++;
+                if (counter == set.size()) {
+                    tagsInString += s;
+                } else {
+                    tagsInString += s + ", ";
+                }
+            }
+
+            return tagsInString;
+        } else {
+            return "No tags for this question";
+        }
     }
 
     @Override
@@ -231,6 +197,42 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         }
 
         return response;
+    }
+
+    @Override
+    public void processHttpReponse(HttpResponse httpResponse) {
+        QuizQuestion quizQuestion = null;
+
+        if (httpResponse != null && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+
+            try {
+                quizQuestion = JSONParser.parseJsonToQuiz(httpResponse, getApplicationContext());
+                Debug.out(quizQuestion);
+            } catch (IOException e) {
+                Log.e(getLocalClassName(), e.getMessage());
+            }
+            if (quizQuestion != null) {
+                setQuestion(quizQuestion);
+            } else {
+                text.append("No question can be obtained !");
+                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+        }
+        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+    }
+
+    private void setQuestion(QuizQuestion quizQuestion) {
+        currrentQuestion = quizQuestion;
+
+        text.setText(quizQuestion.getQuestion());
+        tags.setText(displayTags(quizQuestion.getTags()));
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
+
+        answerChoices.setAdapter(adapter);
+
+        adapter.setNotifyOnChange(true);
     }
 
     public TextView getText() {

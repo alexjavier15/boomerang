@@ -47,6 +47,7 @@ public final class HttpComms implements IHttpConnection {
     }
 
     private HttpComms() {
+        
     }
 
 

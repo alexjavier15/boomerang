@@ -60,52 +60,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     // private int failedCount;
     private String token;
 
-    private HttpResponse checkTequila(HttpResponse response) throws AuthenticationException {
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
-            state = CONFIRMATION;
-            return response;
-        } else {
-            state = ERROR;
-            // failedCount++;
 
-            Log.w("Authentication state: TEQUILA", ", failedcount: ");
-            throw new AuthenticationException(TEQUILA_ERROR_MSG);
-        }
-
-    }
-
-    private HttpResponse confirm(HttpResponse response) throws ClientProtocolException, IOException, JSONException,
-        NetworkErrorException, AuthenticationException {
-        response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_SWERVER_LOGIN,
-            JSONParser.parseTokentoJSON(token));
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            state = AUTHENTICATED;
-            mStatusMsg = SUCCEFUL_MSG;
-            return response;
-        } else {
-            throw new AuthenticationException(SWENG_ERROR_MSG);
-        }
-    }
-
-    private void failedAuthenReset() {
-        Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
-        ((EditText) findViewById(R.id.GasparPassword_EditText)).setText("");
-        ((EditText) findViewById(R.id.GasparUsername_EditText)).setText("");
-        state = UNAUTHENTICATED;
-        TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
-    }
-
-    public void logIn(View view) {
-        if (HttpComms.getInstance().isConnected()) {
-
-            new HttpCommsBackgroundTask(this).execute();
-        } else {
-
-            Toast.makeText(this, "Not internet connection", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SharedPreferenceManager.setContext(this);
@@ -122,88 +77,14 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         return true;
     }
 
-    private HttpResponse postTequilaToken(HttpResponse tokenResponse) throws JSONException, IOException,
-        NetworkErrorException {
-        token = JSONParser.parseJsonGetKey(tokenResponse, "token");
-        String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
-        String password = ((EditText) findViewById(R.id.GasparPassword_EditText)).getText().toString();
-        NameValuePair[] namList = {new BasicNameValuePair("requestkey", token),
-            new BasicNameValuePair("username", username), new BasicNameValuePair("password", password)};
-        UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(Arrays.asList(namList));
-        
-        state = TEQUILA;
-        Debug.out(urlEntity.toString());        
-        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA, urlEntity);
-
-    }
-
-    @Override
-    public void processHttpReponse(HttpResponse response) {
-        if (response != null) {
-
-            try {
-                String sessionID = JSONParser.parseJsonGetKey(response, "session");
-                CredentialManager.getInstance().setUserCredential(sessionID);
-                Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
-                Debug.out(sessionID);
-
-                this.finish();
-            } catch (NullPointerException e) {
-                mStatusMsg = UNEXPECTED_ERROR_MSG;
-                failedAuthenReset();
-                Log.e(getLocalClassName(), e.getMessage());
-            } catch (IOException e) {
-                mStatusMsg = INTERNAL_ERROR_MSG;
-                failedAuthenReset();
-                Log.e(getLocalClassName(), e.getMessage());
-
-            }
+    public void logIn(View view) {
+        if (HttpComms.getInstance().isConnected()) {
+    
+            new HttpCommsBackgroundTask(this).execute();
         } else {
-            failedAuthenReset();
-
+    
+            Toast.makeText(this, "Not internet connection", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private HttpResponse requestAuthToken(HttpResponse starter) throws ClientProtocolException, IOException,
-        NetworkErrorException {
-        HttpResponse response = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            state = TOKEN;
-            return response;
-        } else {
-        	
-         
-            throw new ClientProtocolException(INTERNAL_ERROR_MSG);
-        }
-    }
-
-    @Override
-    public HttpResponse requete() {
-
-        HttpResponse response = null;
-
-        try {
-            response = stateMachine(null);
-        } catch (AuthenticationException e) {
-            mStatusMsg = e.getMessage();
-            Log.e(getLocalClassName(), e.getMessage());
-        } catch (NetworkErrorException e) {
-            mStatusMsg = e.getMessage();
-            Log.e(getLocalClassName(), e.getMessage());
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            mStatusMsg = INTERNAL_ERROR_MSG;
-            Log.e(getLocalClassName(), e.getMessage());
-        } catch (IOException e) {
-            mStatusMsg = INTERNAL_ERROR_MSG;
-            Log.e(getLocalClassName(), e.getMessage());
-        } catch (JSONException e) {
-            mStatusMsg = INTERNAL_ERROR_MSG;
-            Log.e(getLocalClassName(), e.getMessage());
-
-        }
-
-        return response;
     }
 
     private HttpResponse stateMachine(HttpResponse response) throws ClientProtocolException, IOException,
@@ -231,6 +112,129 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
             default:
                 // nullPointerException => failedAuthenReset()
                 return null;
+        }
+    }
+
+    private HttpResponse requestAuthToken(HttpResponse starter) throws ClientProtocolException, IOException,
+        NetworkErrorException {
+        HttpResponse response = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            state = TOKEN;
+            return response;
+        } else {
+        	
+         
+            throw new ClientProtocolException(INTERNAL_ERROR_MSG);
+        }
+    }
+
+    private HttpResponse postTequilaToken(HttpResponse tokenResponse) throws JSONException, IOException,
+        NetworkErrorException {
+        token = JSONParser.parseJsonGetKey(tokenResponse, "token");
+        String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
+        String password = ((EditText) findViewById(R.id.GasparPassword_EditText)).getText().toString();
+        NameValuePair[] namList = {new BasicNameValuePair("requestkey", token),
+            new BasicNameValuePair("username", username), new BasicNameValuePair("password", password)};
+        UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(Arrays.asList(namList));
+        
+        state = TEQUILA;
+        Debug.out(urlEntity.toString());        
+
+        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA, urlEntity);
+    
+    }
+
+    private HttpResponse checkTequila(HttpResponse response) throws AuthenticationException {
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
+            state = CONFIRMATION;
+            return response;
+
+        } else {
+            state = ERROR;
+            // failedCount++;
+
+            Log.w("Authentication state: TEQUILA", ", failedcount: ");
+            throw new AuthenticationException(TEQUILA_ERROR_MSG);
+        }
+
+    }
+
+
+    private HttpResponse confirm(HttpResponse response) throws ClientProtocolException, IOException, JSONException,
+        NetworkErrorException, AuthenticationException {
+        response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_SWERVER_LOGIN,
+            JSONParser.parseTokentoJSON(token));
+
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            state = AUTHENTICATED;
+            mStatusMsg = SUCCEFUL_MSG;
+            return response;
+        } else {
+            throw new AuthenticationException(SWENG_ERROR_MSG);
+        }
+    }
+
+    private void failedAuthenReset() {
+        Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
+        ((EditText) findViewById(R.id.GasparPassword_EditText)).setText("");
+        ((EditText) findViewById(R.id.GasparUsername_EditText)).setText("");
+        state = UNAUTHENTICATED;
+        TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
+    }
+
+    @Override
+    public HttpResponse requete() {
+    
+        HttpResponse response = null;
+    
+        try {
+            response = stateMachine(null);
+        } catch (AuthenticationException e) {
+            mStatusMsg = e.getMessage();
+            Log.e(getLocalClassName(), e.getMessage());
+        } catch (NetworkErrorException e) {
+            mStatusMsg = e.getMessage();
+            Log.e(getLocalClassName(), e.getMessage());
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            mStatusMsg = INTERNAL_ERROR_MSG;
+            Log.e(getLocalClassName(), e.getMessage());
+        } catch (IOException e) {
+            mStatusMsg = INTERNAL_ERROR_MSG;
+            Log.e(getLocalClassName(), e.getMessage());
+        } catch (JSONException e) {
+            mStatusMsg = INTERNAL_ERROR_MSG;
+            Log.e(getLocalClassName(), e.getMessage());
+    
+        }
+    
+        return response;
+    }
+
+    @Override
+    public void processHttpReponse(HttpResponse response) {
+        if (response != null) {
+
+            try {
+                String sessionID = JSONParser.parseJsonGetKey(response, "session");
+                CredentialManager.getInstance().setUserCredential(sessionID);
+                Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
+                Debug.out(sessionID);
+
+                this.finish();
+            } catch (NullPointerException e) {
+                mStatusMsg = UNEXPECTED_ERROR_MSG;
+                failedAuthenReset();
+                Log.e(getLocalClassName(), e.getMessage());
+            } catch (IOException e) {
+                mStatusMsg = INTERNAL_ERROR_MSG;
+                failedAuthenReset();
+                Log.e(getLocalClassName(), e.getMessage());
+
+            }
+        } else {
+            failedAuthenReset();
+
         }
     }
 

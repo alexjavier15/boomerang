@@ -31,16 +31,10 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
     public AnswerAdapter(Activity context, int resourceId, ArrayList<Answer> entries) {
         super(context, resourceId, entries);
         setDefault();
-
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.widget.ArrayAdapter#add(java.lang.Object)
-     */
     @Override
     public void add(Answer object) {
-        // TODO Auto-generated method stub
         super.add(object);
         mEmptyAnswers.add(object);
         Debug.out("empty ans : " + mEmptyAnswers.size());
@@ -96,7 +90,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
     }
 
     /**
-     * Check if the set of empty answers if empty
+     * Check if the set of empty answers is empty
      * 
      * @return true if the set is not empty or false otherwise.
      */
@@ -149,7 +143,6 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
             }
         });
-
     }
 
     /**
@@ -185,7 +178,6 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
     public void setDefault() {
         mAnswerChecked = null;
         mEmptyAnswers = new HashSet<Answer>();
-
         clear();
     }
 
@@ -196,26 +188,21 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
      */
     private void setRemoveButtonListener(final Button removeButton) {
         removeButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 if (AnswerAdapter.this.getCount() > 0) {
                     if (((Answer) v.getTag()).isCorrect() || AnswerAdapter.this.getCount() < 2) {
                         mAnswerChecked = null;
-
                     }
                     mEmptyAnswers.remove(v.getTag());
                     AnswerAdapter.this.remove((Answer) v.getTag());
                     AnswerAdapter.this.notifyDataSetChanged();
-
                 } else {
                     Toast.makeText(AnswerAdapter.this.getContext(),
                         "A question without an answer is useless, isn't it?", Toast.LENGTH_SHORT).show();
                 }
                 ((EditQuestionActivity) AnswerAdapter.this.getContext()).updateTextchanged();
             }
-
         });
-
     }
 }
