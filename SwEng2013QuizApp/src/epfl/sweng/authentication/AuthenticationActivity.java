@@ -130,8 +130,8 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         token = JSONParser.parseJsonGetKey(tokenResponse, "token");
         String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
         String password = ((EditText) findViewById(R.id.GasparPassword_EditText)).getText().toString();
-        NameValuePair[] namList = { new BasicNameValuePair("requestkey", token),
-                new BasicNameValuePair("username", username), new BasicNameValuePair("password", password) };
+        NameValuePair[] namList = {new BasicNameValuePair("requestkey", token),
+            new BasicNameValuePair("username", username), new BasicNameValuePair("password", password)};
         UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(Arrays.asList(namList));
 
         state = TEQUILA;
