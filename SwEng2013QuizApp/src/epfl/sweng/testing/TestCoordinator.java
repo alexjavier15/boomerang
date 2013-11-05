@@ -27,8 +27,7 @@ public final class TestCoordinator {
      * The possible points at which transactions end. Each of these corresponds to some finished action.
      */
     public enum TTChecks {
-        ANSWER_SELECTED, AUTHENTICATION_ACTIVITY_SHOWN, AVAILABLE_QUIZZES_SHOWN, EDIT_QUESTIONS_SHOWN, LOGGED_OUT,
-        MAIN_ACTIVITY_SHOWN, NEW_QUESTION_SUBMITTED, NONE, QUESTION_EDITED, QUESTION_SHOWN, QUIZ_SCORE_SHOWN
+        ANSWER_SELECTED, AUTHENTICATION_ACTIVITY_SHOWN, AVAILABLE_QUIZZES_SHOWN, EDIT_QUESTIONS_SHOWN, LOGGED_OUT, MAIN_ACTIVITY_SHOWN, NEW_QUESTION_SUBMITTED, NONE, QUESTION_EDITED, QUESTION_SHOWN, QUIZ_SCORE_SHOWN
     }
 
     /** The possible states of a transaction */
@@ -58,7 +57,7 @@ public final class TestCoordinator {
                 tts.notify();
             } else {
                 throw new TestCoordinationError(String.format("Multiple calls to check: First was %s, then %s",
-                    tts.currentCheck, completedCheck));
+                        tts.currentCheck, completedCheck));
             }
         }
     }
@@ -78,7 +77,7 @@ public final class TestCoordinator {
             synchronized (tts) {
                 if (tts.state != TTState.IDLE) {
                     throw new TestCoordinationError("Attempt to run transaction '" + t
-                        + "', but another transaction is running.");
+                            + "', but another transaction is running.");
                 }
                 tts.startTime = System.currentTimeMillis();
                 Log.d(TAG, String.format("Starting transaction %s", t));
@@ -117,7 +116,7 @@ public final class TestCoordinator {
 
                 if (tts.state != TTState.COMPLETED) {
                     throw new TestCoordinationError(String.format("Transaction %s timed out (elapsed: %d)", t,
-                        currentTime - tts.startTime));
+                            currentTime - tts.startTime));
                 }
                 receivedCheck = tts.currentCheck;
             }
@@ -129,7 +128,8 @@ public final class TestCoordinator {
             instr.waitForIdleSync();
             t.verify(receivedCheck);
             Log.d(TAG,
-                String.format("Completed transaction %s (elapsed: %d)", t, System.currentTimeMillis() - tts.startTime));
+                    String.format("Completed transaction %s (elapsed: %d)", t, System.currentTimeMillis()
+                            - tts.startTime));
         } finally {
             synchronized (tts) {
                 tts.state = TTState.IDLE;

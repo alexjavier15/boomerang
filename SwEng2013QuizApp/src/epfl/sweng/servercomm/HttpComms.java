@@ -25,7 +25,7 @@ import epfl.sweng.authentication.SharedPreferenceManager;
  *         This class is used to communicate with the server
  * 
  */
-public final class HttpComms implements IHttpConnection {
+public final class HttpComms implements IHttpConnectionHelper {
 
     public final static String HEADER = "Authorization";
     public final static int STRING_ENTITY = 1;
@@ -35,7 +35,6 @@ public final class HttpComms implements IHttpConnection {
     public final static String URLPUSH = "https://sweng-quiz.appspot.com/quizquestions/";
     private static HttpComms singleHTTPComs = null;
     private String authenticationValue = null;
-    
 
     public static HttpComms getInstance() {
 
@@ -47,13 +46,11 @@ public final class HttpComms implements IHttpConnection {
     }
 
     private HttpComms() {
-        
+
     }
 
-
-
     private HttpResponse execute(HttpUriRequest request) throws ClientProtocolException, IOException,
-        NetworkErrorException {
+            NetworkErrorException {
 
         if (isConnected()) {
             if (checkLoginStatus()) {
@@ -86,17 +83,19 @@ public final class HttpComms implements IHttpConnection {
      * @throws IOException
      * @throws NetworkErrorException
      */
+    @Override
     public HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException,
-        NetworkErrorException {
+            NetworkErrorException {
         HttpGet request = new HttpGet(urlString);
 
         return execute(request);
 
     }
 
+    @Override
     public boolean isConnected() {
-        ConnectivityManager connMgr = (ConnectivityManager) SharedPreferenceManager.getInstance()
-            .getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connMgr = (ConnectivityManager) SharedPreferenceManager.getInstance().getSystemService(
+                Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
         return networkInfo != null && networkInfo.isConnected();
@@ -104,7 +103,7 @@ public final class HttpComms implements IHttpConnection {
     }
 
     public HttpResponse postEntity(String url, HttpEntity entity) throws ClientProtocolException, IOException,
-        NetworkErrorException {
+            NetworkErrorException {
 
         HttpPost post = new HttpPost(url);
         post.setEntity(entity);
@@ -126,8 +125,9 @@ public final class HttpComms implements IHttpConnection {
      * @throws NetworkErrorException
      */
     // TODO do so no code is repeated
+    @Override
     public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
-        JSONException, NetworkErrorException {
+            JSONException, NetworkErrorException {
 
         HttpPost post = new HttpPost(URLPUSH);
         post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));

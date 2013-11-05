@@ -49,5 +49,5 @@ public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse>
         }
 
     }
-    
+
 }

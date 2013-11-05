@@ -113,8 +113,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     }
 
     /**
-     * Obtains a random question thru an AsyncTask but blocks the thread until
-     * the response is received.
+     * Obtains a random question thru an AsyncTask but blocks the thread until the response is received.
      * 
      * @return HttpResponse
      */
@@ -130,13 +129,12 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } catch (ExecutionException e) {
             Log.e(getLocalClassName(), "AsyncTask thread exception");
         }
-        
+
         return response;
     }
 
     /**
-     * Launches fetchNewQuestion() when clicking on the button labeled
-     * "Next Question"
+     * Launches fetchNewQuestion() when clicking on the button labeled "Next Question"
      * 
      * @param view
      */

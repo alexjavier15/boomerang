@@ -14,8 +14,7 @@ public interface TestingTransaction {
     void initiate();
 
     /**
-     * Contains the code to verify that a transaction succeeded. For example, this might check that the user
-     * interface
+     * Contains the code to verify that a transaction succeeded. For example, this might check that the user interface
      * has been updated correctly after a button has been pressed.
      * 
      * @param completedCheck

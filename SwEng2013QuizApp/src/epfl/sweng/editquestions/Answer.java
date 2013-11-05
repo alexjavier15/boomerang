@@ -13,8 +13,7 @@ public class Answer {
     private boolean mCorrect = false;
 
     /**
-     * Each answer the user types is represented by an Object of type Answer. The user can modify the text and
-     * choose
+     * Each answer the user types is represented by an Object of type Answer. The user can modify the text and choose
      * whether this answer is the correct one or not.
      * 
      * @param check

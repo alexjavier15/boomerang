@@ -30,29 +30,28 @@ import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
- * This Activity allows the user to login with his Gaspar account using Tequila
- * server to authenticate the request.
+ * This Activity allows the user to login with his Gaspar account using Tequila server to authenticate the request.
  * 
  * @author AlexRivas
  * 
  */
 
 public class AuthenticationActivity extends Activity implements HttpcommunicationsAdapter {
-	
+
     private static final int AUTHENTICATED = 4;
     private static final int CONFIRMATION = 3;
     private static final int ERROR = -1;
     private static final String INTERNAL_ERROR_MSG = "An internal error has occurred during "
-        + "authentication. Please try again.";
+            + "authentication. Please try again.";
     private static final String SUCCEFUL_MSG = "You have succesfully logged in";
     private static final String SWENG_ERROR_MSG = "Authentication with SwEgQuizServed has failed.";
     private static final int TEQUILA = 2;
     private static final String TEQUILA_ERROR_MSG = "Login with Tequila was  NOT successful. "
-        + "Please check your account infos.";
+            + "Please check your account infos.";
     private static final int TOKEN = 1;
     private static final int UNAUTHENTICATED = 0;
     private static final String UNEXPECTED_ERROR_MSG = "An unexpected error has occured. "
-        + "Your credentials couldn't be saved. Please try again";
+            + "Your credentials couldn't be saved. Please try again";
     private String mStatusMsg = "";
 
     // private static final int MAX_NUMBER_OF_FAILS = 3;
@@ -60,10 +59,9 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     // private int failedCount;
     private String token;
 
-
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferenceManager.setContext(this);
         setContentView(R.layout.activity_authentication);
         // by default initial state is
         state = UNAUTHENTICATED;
@@ -79,19 +77,19 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
     public void logIn(View view) {
         if (HttpComms.getInstance().isConnected()) {
-    
+
             new HttpCommsBackgroundTask(this).execute();
         } else {
-    
+
             Toast.makeText(this, "Not internet connection", Toast.LENGTH_SHORT).show();
         }
     }
 
     private HttpResponse stateMachine(HttpResponse response) throws ClientProtocolException, IOException,
-        JSONException, NetworkErrorException, AuthenticationException {
+            JSONException, NetworkErrorException, AuthenticationException {
         /*
-         * if (failedCount > MAX_NUMBER_OF_FAILS) { // too many fails! reset fields! state = ERROR_OVERLOAD;
-         * return null; }
+         * if (failedCount > MAX_NUMBER_OF_FAILS) { // too many fails! reset fields! state = ERROR_OVERLOAD; return
+         * null; }
          */
         switch (state) {
             case UNAUTHENTICATED:
@@ -116,32 +114,31 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     }
 
     private HttpResponse requestAuthToken(HttpResponse starter) throws ClientProtocolException, IOException,
-        NetworkErrorException {
+            NetworkErrorException {
         HttpResponse response = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             state = TOKEN;
             return response;
         } else {
-        	
-         
+
             throw new ClientProtocolException(INTERNAL_ERROR_MSG);
         }
     }
 
     private HttpResponse postTequilaToken(HttpResponse tokenResponse) throws JSONException, IOException,
-        NetworkErrorException {
+            NetworkErrorException {
         token = JSONParser.parseJsonGetKey(tokenResponse, "token");
         String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
         String password = ((EditText) findViewById(R.id.GasparPassword_EditText)).getText().toString();
-        NameValuePair[] namList = {new BasicNameValuePair("requestkey", token),
-            new BasicNameValuePair("username", username), new BasicNameValuePair("password", password)};
+        NameValuePair[] namList = { new BasicNameValuePair("requestkey", token),
+                new BasicNameValuePair("username", username), new BasicNameValuePair("password", password) };
         UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(Arrays.asList(namList));
-        
+
         state = TEQUILA;
-        Debug.out(urlEntity.toString());        
+        Debug.out(urlEntity.toString());
 
         return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA, urlEntity);
-    
+
     }
 
     private HttpResponse checkTequila(HttpResponse response) throws AuthenticationException {
@@ -159,11 +156,10 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
     }
 
-
     private HttpResponse confirm(HttpResponse response) throws ClientProtocolException, IOException, JSONException,
-        NetworkErrorException, AuthenticationException {
+            NetworkErrorException, AuthenticationException {
         response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_SWERVER_LOGIN,
-            JSONParser.parseTokentoJSON(token));
+                JSONParser.parseTokentoJSON(token));
 
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             state = AUTHENTICATED;
@@ -184,9 +180,9 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
     @Override
     public HttpResponse requete() {
-    
+
         HttpResponse response = null;
-    
+
         try {
             response = stateMachine(null);
         } catch (AuthenticationException e) {
@@ -205,9 +201,9 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         } catch (JSONException e) {
             mStatusMsg = INTERNAL_ERROR_MSG;
             Log.e(getLocalClassName(), e.getMessage());
-    
+
         }
-    
+
         return response;
     }
 
@@ -237,6 +233,5 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
         }
     }
-
 
 }

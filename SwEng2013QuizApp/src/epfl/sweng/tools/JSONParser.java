@@ -21,8 +21,7 @@ import epfl.sweng.quizquestions.QuizQuestion;
  * 
  * @author LorenzoLeon
  * 
- *         This class is used to parse JSON Objects to QuizQuestion and vice
- *         versa.
+ *         This class is used to parse JSON Objects to QuizQuestion and vice versa.
  * 
  */
 public class JSONParser {
@@ -74,8 +73,8 @@ public class JSONParser {
             throw new IOException(e.getMessage());
         }
     }
-    
-    //FIX ME! RMEOVE ME!
+
+    // FIX ME! RMEOVE ME!
 
     /**
      * Parses a JSONObject from an HttpResponse to a QuizQuestion
@@ -88,7 +87,7 @@ public class JSONParser {
      */
     public static QuizQuestion parseJsonToQuiz(HttpResponse response, Context context) throws IOException {
         JSONObject parser = getParser(response);
-        
+
         int id;
         String question;
         List<String> answers;
@@ -105,7 +104,7 @@ public class JSONParser {
         }
 
         return new QuizQuestion(question, answers, solutionIndex, tags, id, CredentialManager.getInstance()
-            .getUserCredential());
+                .getUserCredential());
 
     }
 

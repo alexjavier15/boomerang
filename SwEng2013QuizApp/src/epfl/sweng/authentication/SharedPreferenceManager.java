@@ -6,6 +6,7 @@ package epfl.sweng.authentication;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import epfl.sweng.entry.QuizApp;
 
 /**
  * @author Alex
@@ -27,28 +28,10 @@ public final class SharedPreferenceManager {
     // Fix with correct pre-condition implemetation
 
     private SharedPreferenceManager() {
-        if (sContext != null) {
-            sSharedPreferences = sContext.getSharedPreferences(PreferenceKeys.USER_PREFERENCE, Context.MODE_PRIVATE);
-        } else {
-            throw new IllegalArgumentException("Error accessing SharedPreferences. Context can't be null."
-                + " you must set a context before calling an instance");
-        }
 
-    }
-    
+        sContext = QuizApp.getContexStatic();
+        sSharedPreferences = sContext.getSharedPreferences(PreferenceKeys.USER_PREFERENCE, Context.MODE_PRIVATE);
 
-    public static void setContext(Context context) {
-        if (sContext == null && context != null) {
-            sContext = context;
-        }
-    }
-
-    /**Return the the sContext
-     *
-     * @return the sContext
-     */
-    public static Context getsContext() {
-        return sContext;
     }
 
     public Object getSystemService(String name) {

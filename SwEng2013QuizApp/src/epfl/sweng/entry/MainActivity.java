@@ -32,7 +32,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferenceManager.setContext(this);
         setContentView(R.layout.activity_main);
         CredentialManager.getInstance().addOnchangeListener(this);
         String newValue = CredentialManager.getInstance().getUserCredential();
@@ -71,8 +70,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     }
 
     /**
-     * Launches the new Activity ShowQuestionsActivity to display a random
-     * question
+     * Launches the new Activity ShowQuestionsActivity to display a random question
      * 
      * @param view
      *            The view that was clicked.
@@ -119,8 +117,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     }
 
     /**
-     * Launches the new Activity EditQuestionActivity to permit the user to
-     * submit a new question to the server
+     * Launches the new Activity EditQuestionActivity to permit the user to submit a new question to the server
      * 
      * @param view
      *            The view that was clicked.

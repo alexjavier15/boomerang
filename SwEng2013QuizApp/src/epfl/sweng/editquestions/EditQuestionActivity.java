@@ -27,7 +27,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 import epfl.sweng.R;
 import epfl.sweng.authentication.CredentialManager;
-import epfl.sweng.authentication.SharedPreferenceManager;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
@@ -60,7 +59,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     private EditText tagsEditText;
     private final String tagsHint = "Type in the question's tags";
     private Button submitButton;
-   
+
     /**
      * Starts the window adding a modified ArrayAdapter to list the answers. Creates the multiple Test Listeners for
      * when text has been edited. Shows the view.
@@ -71,7 +70,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_question);
-        SharedPreferenceManager.setContext(this);
 
         TextWatcher watcher = new TextWatcher() {
 
@@ -169,16 +167,17 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             tags.add(matcher.group(1));
         }
         questionCreated = new QuizQuestion(questionString, answers, solIndex, tags, QuizQuestion.ID, CredentialManager
-            .getInstance().getUserCredential());
+                .getInstance().getUserCredential());
 
         return questionCreated;
     }
+
     @Override
     public HttpResponse requete() {
         HttpResponse response = null;
         try {
-            response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH, 
-                JSONParser.parseQuiztoJSON(createQuestion()));
+            response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
+                    JSONParser.parseQuiztoJSON(createQuestion()));
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (NetworkErrorException e) {
@@ -192,9 +191,10 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         }
         return response;
     }
+
     @Override
     public void processHttpReponse(HttpResponse response) {
-        if (response != null&& response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+        if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
             reset();
             printSuccess();
         } else {
@@ -218,7 +218,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         Toast.makeText(this, "Your submission was successful!", Toast.LENGTH_SHORT).show();
     }
 
-   
     /**
      * Return the the reset status of {@link EditQuestionActivity}
      * 
@@ -231,8 +230,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     /**
      * When the user clicks on the submission button, this method is triggered to verify all the four requirements
      * defining a valid quiz question : 1) The question body must be a no empty {@link String} or only white spaces
-     * spaces. 2) None of the answers of a quiz question may be empty or contain only white spaces. 3) There must be
-     * at
+     * spaces. 2) None of the answers of a quiz question may be empty or contain only white spaces. 3) There must be at
      * least 2 answers. 4) One of the answers must be marked as correct.
      * 
      * @return True if all requirements defining a valid quiz question are verified, otherwise false.
@@ -242,7 +240,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         String tagsText = tagsEditText.getText().toString();
 
         return mPatternTags.matcher(tagsText).find() && !questionText.trim().equals("") && mAdapter.getCount() >= 2
-            && !mAdapter.hasEmptyAnswer() && mAdapter.hasOneCorrectAnswer();
+                && !mAdapter.hasEmptyAnswer() && mAdapter.hasOneCorrectAnswer();
     }
 
     /**
@@ -269,12 +267,9 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     }
 
     /**
-     * When the user clicks on the button labeled "Submit.", this method first verifies that the quiz question is
-     * valid.
-     * If the quiz question is valid, then it saves each answer typed in the answer slots and posts it to the SwEng
-     * quiz
-     * server. After the question is submitted, EditQuestionActivity is brought to the state identical to that when
-     * the
+     * When the user clicks on the button labeled "Submit.", this method first verifies that the quiz question is valid.
+     * If the quiz question is valid, then it saves each answer typed in the answer slots and posts it to the SwEng quiz
+     * server. After the question is submitted, EditQuestionActivity is brought to the state identical to that when the
      * user freshly started it.
      * 
      * @param view

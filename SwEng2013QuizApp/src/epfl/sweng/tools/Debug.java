@@ -1,10 +1,12 @@
 package epfl.sweng.tools;
 
 import android.util.Log;
+
 /**
  * Creates an easy identifiable System out
+ * 
  * @author LorenzoLeon
- *
+ * 
  */
 public final class Debug {
 

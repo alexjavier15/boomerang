@@ -27,7 +27,7 @@ import epfl.sweng.tools.Debug;
 public class AnswerAdapter extends ArrayAdapter<Answer> {
     private Answer mAnswerChecked = null;
     private Set<Answer> mEmptyAnswers = new HashSet<Answer>();
-   
+
     public AnswerAdapter(Activity context, int resourceId, ArrayList<Answer> entries) {
         super(context, resourceId, entries);
         setDefault();
@@ -199,7 +199,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
                     AnswerAdapter.this.notifyDataSetChanged();
                 } else {
                     Toast.makeText(AnswerAdapter.this.getContext(),
-                        "A question without an answer is useless, isn't it?", Toast.LENGTH_SHORT).show();
+                            "A question without an answer is useless, isn't it?", Toast.LENGTH_SHORT).show();
                 }
                 ((EditQuestionActivity) AnswerAdapter.this.getContext()).updateTextchanged();
             }

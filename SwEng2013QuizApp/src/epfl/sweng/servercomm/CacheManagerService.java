@@ -3,179 +3,135 @@
  */
 package epfl.sweng.servercomm;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.StreamCorruptedException;
-import java.util.LinkedList;
-import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.DefaultHttpResponseFactory;
+import org.apache.http.message.BasicStatusLine;
 import org.json.JSONException;
-
-import epfl.sweng.authentication.PreferenceKeys;
-import epfl.sweng.authentication.SharedPreferenceManager;
-import epfl.sweng.quizquestions.QuizQuestion;
-import epfl.sweng.servercomm.CacheReaderContract.QuizQuestionTable.QuizQuestionDBHelper;
-import epfl.sweng.tools.JSONParser;
+import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
-import android.app.IntentService;
-import android.content.ContentValues;
+import android.app.Service;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
+import android.os.Binder;
+import android.os.IBinder;
+import epfl.sweng.entry.QuizApp;
+import epfl.sweng.quizquestions.QuizQuestion;
+import epfl.sweng.tools.JSONParser;
 
 /**
  * @author Alex
  * 
  */
-public final class CacheManagerService extends IntentService {
-    private static final String CACHE_FILE_NAME = "cache";
-    private static final String SYNC_FILE_NAME = "sync.tmp";
-    private static SQLiteDatabase quizQuestionDB = null;
+public final class CacheManagerService extends Service {
+
+    public static final String QUESTION_CACHE_DB_NAME = "Cache.db";
+    public static final String POST_SYNC_DB_NAME = "PostSync.db";
+
+    private static QuizQuestionDBHelper sQuizQuestionDB;
+    private static QuizQuestionDBHelper sPostQuestionDB;
+
+    private final IBinder mBinder = new CacheServiceBinder();
 
     public CacheManagerService() {
-        super("CacheManagerService");
-        String cacheDir = this.getBaseContext().getFilesDir().getPath();
-        String syncFilePath = cacheDir + File.pathSeparator + SYNC_FILE_NAME;
-        
-
-        File syncfile = new File(syncFilePath);
-
-        if (!syncfile.exists()) {
-
-            try {
-                openFileOutput(SYNC_FILE_NAME, MODE_PRIVATE);
-
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-        }
-        quizQuestionDB = openOrCreateDatabase(CACHE_FILE_NAME, MODE_PRIVATE, null);
-  
-        
+        sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUESTION_CACHE_DB_NAME);
+        sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), POST_SYNC_DB_NAME);
 
     }
 
     /*
      * (non-Javadoc)
-     * @see android.app.IntentService#onHandleIntent(android.content.Intent)
+     * 
+     * @see android.app.Service#onBind(android.content.Intent)
      */
     @Override
-    protected void onHandleIntent(Intent intent) {
+    public IBinder onBind(Intent intent) {
+        // TODO Auto-generated method stub
+        return mBinder;
+    }
 
-        Bundle dataBundled = intent.getExtras();
-        Set<String> dataKeys = dataBundled.keySet();
+    public class CacheServiceBinder extends Binder {
 
-        for (String name : dataKeys) {
-            try {
-                if (name.equals("getQuestion")) {
-                    writeInDB(CACHE_FILE_NAME, dataBundled.get(name));
-                } else if (name.equals("postQuestion")) {
-                    writeDataFile(SYNC_FILE_NAME, dataBundled.get(name));
-                } else if (name.equals("sync")) {
-                    syncOfflineData();
-                } else {
-                    throw new IllegalArgumentException("The data Intent cannot be procced. Unkown data type");
-                }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (NetworkErrorException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
+        public CacheManagerService getService() {
+            return CacheManagerService.this;
         }
 
     }
 
     /**
-     * @param cacheFileName
-     * @param object
-     */
-    private void writeInDB(String cacheFileName, Object object) {
-   
-        
-    }
-
-    /**
+     * @return
      * @throws IOException
-     * @throws StreamCorruptedException
      * @throws JSONException
-     * @throws NetworkErrorException
-     * 
      */
-    private void syncOfflineData() throws StreamCorruptedException, IOException, NetworkErrorException, JSONException {
+    public HttpResponse getRandomQuestion() throws IOException, JSONException {
 
-        FileInputStream in = openFileInput(SYNC_FILE_NAME);
-        ObjectInputStream questionReader = new ObjectInputStream(in);
-        try {
-            LinkedList<QuizQuestion> questionList = new LinkedList<QuizQuestion>();
-            QuizQuestion questionObj = null;
-            do {
+        HttpResponse reponse = null;
+        QuizQuestion quizQuestion = null;
+        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
 
-                questionObj = (QuizQuestion) questionReader.readObject();
-                questionList.add(questionObj);
+        quizQuestion = sQuizQuestionDB.getRandomQuizQuestion();
+        if (quizQuestion != null) {
+            JSONObject questionObj = JSONParser.parseQuiztoJSON(quizQuestion);
+            reponse = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
+                    HttpStatus.SC_OK, null), null);
+            reponse.setEntity(new StringEntity(questionObj.toString(HttpComms.STRING_ENTITY)));
+        } else {
+            reponse = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR, null), null);
+        }
 
-            } while (questionObj.getQuestion() != null);
+        return reponse;
+    }
 
-            int listsize = questionList.size();
-            for (int i = 0; i < listsize; i++) {
+    /**
+     * @param quizQuestion
+     * @return
+     */
+    public HttpResponse addQuestionForSync(QuizQuestion quizQuestion) {
 
-                QuizQuestion question = questionList.remove();
-                HttpResponse reponse = HttpComms.getInstance().postJSONObject(HttpComms.URLPUSH,
-                    JSONParser.parseQuiztoJSON(question));
+        sPostQuestionDB.addQuizQuestion(quizQuestion);
 
-                if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
+        HttpResponse reponse = httpResFactory.newHttpResponse(new BasicStatusLine(
+                (new HttpPost()).getProtocolVersion(), HttpStatus.SC_CREATED, null), null);
 
-                    questionList.addFirst(question);
-                    SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE, false);
-                    backSyncInFailure(questionList);
-                    break;
+        return reponse;
 
-                }
+    }
 
+    public boolean syncPostCachedQuestions() throws ClientProtocolException, NetworkErrorException, IOException,
+            JSONException {
+        QuizQuestion quizQuestion = sPostQuestionDB.getFirstPostQuestion();
+        while (quizQuestion != null) {
+            HttpResponse reponse = HttpComms.getInstance().postJSONObject(HttpComms.URLPUSH,
+                    JSONParser.parseQuiztoJSON(quizQuestion));
+            if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+                sPostQuestionDB.deleteQuizQuestion(quizQuestion);
+                quizQuestion = sPostQuestionDB.getFirstPostQuestion();
+
+            } else if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+                return false;
+            } else {
+
+                throw new ClientProtocolException("Unexpected Error submiting question from database." + " "
+                        + reponse.getStatusLine());
             }
 
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
+        return true;
 
     }
 
     /**
-     * @param questionList
-     * @throws IOException
+     * @param quizQuestion
      */
-    private void backSyncInFailure(LinkedList<QuizQuestion> questionList) throws IOException {
-        deleteFile(SYNC_FILE_NAME);
-        openFileOutput(SYNC_FILE_NAME, MODE_PRIVATE);
-        for (QuizQuestion question : questionList) {
-
-            writeDataFile(SYNC_FILE_NAME, question);
-
-        }
-
-    }
-    
-
-    private void writeDataFile(String fileName, Object data) throws IOException {
-
-        FileOutputStream out = openFileOutput(fileName, MODE_APPEND);
-        ObjectOutputStream questionWriter = new ObjectOutputStream(out);
-        questionWriter.writeObject(data);
+    public void pushFetchedQuestion(QuizQuestion quizQuestion) {
+        sQuizQuestionDB.addQuizQuestion(quizQuestion);
 
     }
 

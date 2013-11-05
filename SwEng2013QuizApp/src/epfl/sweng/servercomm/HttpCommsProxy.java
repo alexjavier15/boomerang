@@ -8,25 +8,23 @@ import java.io.IOException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.protocol.ResponseContent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.accounts.NetworkErrorException;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.authentication.SharedPreferenceManager;
-
-import android.accounts.NetworkErrorException;
 
 /**
  * @author Alex
  * 
  */
-public final class HttpCommsProxy implements IHttpConnection {
+public final class HttpCommsProxy implements IHttpConnectionHelper {
 
-    private static IHttpConnection sRealHttpComms = null;
+    private static IHttpConnectionHelper sRealHttpComms = null;
     private static CacheHttpComms sCacheHttpComms = null;
     private static HttpCommsProxy proxy = null;
-    
+
     public static HttpCommsProxy getInstance() {
 
         if (proxy == null) {
@@ -47,7 +45,6 @@ public final class HttpCommsProxy implements IHttpConnection {
         if (sCacheHttpComms == null) {
             sCacheHttpComms = CacheHttpComms.getInstance();
         }
-        
 
     }
 
@@ -59,7 +56,7 @@ public final class HttpCommsProxy implements IHttpConnection {
     /**
      * @return
      */
-    private IHttpConnection getServerCommsInstance() {
+    private IHttpConnectionHelper getServerCommsInstance() {
 
         if (isOnlineMode()) {
             return sRealHttpComms;
@@ -71,11 +68,12 @@ public final class HttpCommsProxy implements IHttpConnection {
 
     /*
      * (non-Javadoc)
+     * 
      * @see epfl.sweng.servercomm.IHttpConnection#getHttpResponse(java.lang.String)
      */
     @Override
     public HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException,
-        NetworkErrorException {
+            NetworkErrorException {
 
         HttpResponse reponse = getServerCommsInstance().getHttpResponse(urlString);
         if (reponse != null) {
@@ -110,6 +108,7 @@ public final class HttpCommsProxy implements IHttpConnection {
 
     /*
      * (non-Javadoc)
+     * 
      * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
      */
     @Override
@@ -120,11 +119,12 @@ public final class HttpCommsProxy implements IHttpConnection {
 
     /*
      * (non-Javadoc)
+     * 
      * @see epfl.sweng.servercomm.IHttpConnection#postJSONObject(java.lang.String, org.json.JSONObject)
      */
     @Override
     public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
-        JSONException, NetworkErrorException {
+            JSONException, NetworkErrorException {
         // TODO Auto-generated method stub
         return getServerCommsInstance().postJSONObject(url, question);
     }
