@@ -15,9 +15,8 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <strong android:name="QuizApp" >
-        </strong>
+        android:theme="@style/AppTheme"
+        android:name="epfl.sweng.entry.QuizApp">
 
         <activity
             android:name="epfl.sweng.entry.MainActivity"

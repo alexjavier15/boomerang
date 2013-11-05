@@ -17,9 +17,11 @@ import epfl.sweng.authentication.CredentialManager;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.authentication.SharedPreferenceManager;
 import epfl.sweng.editquestions.EditQuestionActivity;
+import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
+import epfl.sweng.tools.Debug;
 
 /**
  * @author AlbanMarguet, CanGuzelhan
@@ -33,6 +35,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SharedPreferenceManager.getInstance();
         CredentialManager.getInstance().addOnchangeListener(this);
         String newValue = CredentialManager.getInstance().getUserCredential();
         checkStatus(newValue);
@@ -47,6 +50,8 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             Log.i("New session Id is: ", newValue);
             setAthenticated(true);
             ((Button) findViewById(R.id.log_inout)).setText("Log out");
+          SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE,  HttpComms.getInstance().isConnected());
+          Debug.out("is connected :"+SharedPreferenceManager.getInstance().getBooleanPreference(PreferenceKeys.ONLINE_MODE));
         }
     }
 
