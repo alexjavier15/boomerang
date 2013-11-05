@@ -16,6 +16,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 import epfl.sweng.quizquestions.QuizQuestion;
+import epfl.sweng.tools.Debug;
 
 /**
  * @author Alex
@@ -40,9 +41,9 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ",";
     private static final String SQL_CREATE_ENTRIES = "CREATE TABLE " + TABLE_NAME + " (" + _ID
-            + " INTEGER PRIMARY KEY," + COLUMN_NAME_ID + TEXT_TYPE + COMMA_SEP + COLUMN_NAME_QUESTION + TEXT_TYPE
+            + " INTEGER PRIMARY KEY," + COLUMN_NAME_ID + " INTEGER" + COMMA_SEP + COLUMN_NAME_QUESTION + TEXT_TYPE
             + COMMA_SEP + COLUMN_NAME_ANSWERS + TEXT_TYPE + COMMA_SEP + COLUMN_NAME_SOLUTION + " INTEGER,"
-            + COLUMN_NAME_TAGS + TEXT_TYPE + COMMA_SEP + COLUMN_NAME_OWNER + TEXT_TYPE + COMMA_SEP + " )";
+            + COLUMN_NAME_TAGS + TEXT_TYPE + COMMA_SEP + COLUMN_NAME_OWNER + TEXT_TYPE + " )";
 
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
@@ -87,7 +88,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME_QUESTION, quizQuestion.getQuestion());
-        values.put(COLUMN_NAME_ID, Long.toString(quizQuestion.getID()));
+        values.put(COLUMN_NAME_ID, quizQuestion.getID());
         String answersString = TextUtils.join(COMMA_SEP, quizQuestion.getAnswers());
         values.put(COLUMN_NAME_ANSWERS, answersString);
         values.put(COLUMN_NAME_SOLUTION, quizQuestion.getIndex());
@@ -101,19 +102,23 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     }
 
     public QuizQuestion getRandomQuizQuestion() {
-        SQLiteDatabase db = this.getReadableDatabase();
 
+       
+        SQLiteDatabase db = this.getReadableDatabase();
+        Debug.out("first random " + getEntryCount(db));
         Cursor cursor = db.query(TABLE_NAME, new String[] {COLUMN_NAME_ID, COLUMN_NAME_QUESTION, COLUMN_NAME_ANSWERS,
-            COLUMN_NAME_SOLUTION, COLUMN_NAME_TAGS, COLUMN_NAME_OWNER}, "*", null, null, null, "RANDOM()", "1");
+            COLUMN_NAME_SOLUTION, COLUMN_NAME_TAGS, COLUMN_NAME_OWNER}, null, null, null, null, "RANDOM()", "1");
         if (cursor != null) {
+            Debug.out(" my coursor "+cursor.toString());
+            cursor.moveToFirst();
 
             List<String> answerList = Arrays.asList(cursor.getString(ColumnPos.ANSWERS.ordinal()).split(COMMA_SEP));
             Set<String> tagsSet = new HashSet<String>(Arrays.asList(cursor.getString(ColumnPos.TAGS.ordinal()).split(
                     COMMA_SEP)));
 
             return new QuizQuestion(cursor.getString(ColumnPos.QUESTION.ordinal()), answerList,
-                    cursor.getInt(ColumnPos.SOLUTION.ordinal()), tagsSet, Integer.valueOf(cursor.getString(ColumnPos.ID
-                            .ordinal())), cursor.getString(ColumnPos.OWNER.ordinal()));
+                    cursor.getInt(ColumnPos.SOLUTION.ordinal()), tagsSet, cursor.getInt(ColumnPos.ID
+                            .ordinal()), cursor.getString(ColumnPos.OWNER.ordinal()));
 
         } else {
 
@@ -122,19 +127,19 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     }
 
     public QuizQuestion getFirstPostQuestion() {
-
         SQLiteDatabase db = this.getReadableDatabase();
+        Debug.out("first post " + getEntryCount(db));
 
         Cursor cursor = db.query(TABLE_NAME, new String[] {COLUMN_NAME_ID, COLUMN_NAME_QUESTION, COLUMN_NAME_ANSWERS,
-            COLUMN_NAME_SOLUTION, COLUMN_NAME_TAGS, COLUMN_NAME_OWNER}, "*", null, null, null, _ID + " ASC");
+            COLUMN_NAME_SOLUTION, COLUMN_NAME_TAGS, COLUMN_NAME_OWNER}, null, null, null, null, _ID + " ASC");
         if (cursor.moveToFirst()) {
             List<String> answerList = Arrays.asList(cursor.getString(ColumnPos.ANSWERS.ordinal()).split(COMMA_SEP));
             Set<String> tagsSet = new HashSet<String>(Arrays.asList(cursor.getString(ColumnPos.TAGS.ordinal()).split(
                     COMMA_SEP)));
 
             return new QuizQuestion(cursor.getString(ColumnPos.QUESTION.ordinal()), answerList,
-                    cursor.getInt(ColumnPos.SOLUTION.ordinal()), tagsSet, Integer.valueOf(cursor.getString(ColumnPos.ID
-                            .ordinal())), cursor.getString(ColumnPos.OWNER.ordinal()));
+                    cursor.getInt(ColumnPos.SOLUTION.ordinal()), tagsSet, cursor.getInt(ColumnPos.ID
+                            .ordinal()), cursor.getString(ColumnPos.OWNER.ordinal()));
         } else {
 
             return null;
@@ -147,5 +152,15 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
         db.delete(TABLE_NAME, COLUMN_NAME_ID + " = ?", new String[] {String.valueOf(quizQuestion.getID())});
         db.close();
+    }
+
+    public int getEntryCount(SQLiteDatabase db) {
+        String countQuery = "SELECT  * FROM " + TABLE_NAME;
+      
+        Cursor cursor = db.rawQuery(countQuery, null);
+
+
+        // return count
+        return cursor.getCount();
     }
 }

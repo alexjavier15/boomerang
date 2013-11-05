@@ -16,9 +16,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import epfl.sweng.entry.QuizApp;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.CacheManagerService.CacheServiceBinder;
+import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -43,9 +43,13 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      */
     private CacheHttpComms() {
         sContext = QuizApp.getContexStatic();
-        Intent intent = new Intent(sContext, CacheManagerService.class);
+        
+        Intent intent = new Intent(sContext.getApplicationContext(), CacheManagerService.class);
+        
+
 
         sContext.bindService(intent, mCacheConnection, Context.BIND_AUTO_CREATE);
+        Debug.out("service bound: "+isBound);
 
     }
 
@@ -56,11 +60,14 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
             CacheServiceBinder binder = (CacheServiceBinder) service;
             mCacheService = binder.getService();
             isBound = true;
+            Debug.out("service connected");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             isBound = false;
+            Debug.out("service disconnected");
+
         }
 
     };
@@ -131,6 +138,9 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      * @param reponse
      */
     public void pushQuestion(HttpResponse reponse) {
+        
+       
+        
         QuizQuestion quizQuestion;
         try {
             quizQuestion = JSONParser.parseJsonToQuiz(reponse, sContext);

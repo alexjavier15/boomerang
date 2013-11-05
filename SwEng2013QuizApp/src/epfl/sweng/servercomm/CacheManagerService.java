@@ -20,7 +20,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import epfl.sweng.entry.QuizApp;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.tools.JSONParser;
 

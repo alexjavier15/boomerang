@@ -5,9 +5,12 @@ package epfl.sweng.servercomm;
 
 import java.io.IOException;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -77,13 +80,22 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
         HttpResponse reponse = getServerCommsInstance().getHttpResponse(urlString);
         if (reponse != null) {
+            String entity = EntityUtils.toString(reponse.getEntity());
+            String entity2 = new String(entity);
+
+            reponse.setEntity(new StringEntity(entity));
+
             HttpResponse reponseFiltered = filerReponseforCaching(reponse);
-            if (reponse != null) {
+            if (reponse != null && isConnected()) {
 
                 sCacheHttpComms.pushQuestion(reponseFiltered);
+
+                reponse.setEntity(new StringEntity(entity2));
+
             }
 
         }
+
         return reponse;
     }
 

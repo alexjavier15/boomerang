@@ -22,5 +22,6 @@
     <string name="GASPAR_Password">GASPAR Password</string>
     <string name="log_in">Log in using Tequila</string>
     <string name="offline">Offline mode</string>
+    <string name="cache_service_name">CacheManagerService</string>
 
 </resources>

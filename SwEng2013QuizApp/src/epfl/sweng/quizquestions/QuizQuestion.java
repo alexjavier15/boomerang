@@ -25,7 +25,7 @@ public class QuizQuestion implements QuestionProvider, Serializable {
     private static final long serialVersionUID = 1L;
     public static final int ID = -1;
     private List<String> answers = new ArrayList<String>();
-    private long id;
+    private int id;
     private String question;
     private int solutionIndex;
     private Set<String> tags = new HashSet<String>();
@@ -136,7 +136,7 @@ public class QuizQuestion implements QuestionProvider, Serializable {
         return answers.get(solutionIndex);
     }
 
-    public long getID() {
+    public int getID() {
         return id;
     }
 
