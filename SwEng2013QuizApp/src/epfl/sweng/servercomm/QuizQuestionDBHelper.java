@@ -142,6 +142,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
                     cursor.getInt(ColumnPos.SOLUTION.ordinal()), tagsSet, cursor.getInt(ColumnPos.ID.ordinal()),
                     cursor.getString(ColumnPos.OWNER.ordinal()));
         } else {
+            last = -1;
             Debug.out("nomore question to sync");
 
             return null;
@@ -150,12 +151,12 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
     public void deleteQuizQuestion(QuizQuestion quizQuestion) {
         Debug.out("gAttempt to delete " + last);
+        if (last != -1) {
 
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        db.delete(TABLE_NAME, _ID + " = ?", new String[] {String.valueOf(last)});
-
-        db.close();
+            SQLiteDatabase db = this.getWritableDatabase();
+            db.delete(TABLE_NAME, _ID + " = ?", new String[] {String.valueOf(last)});
+            db.close();
+        }
     }
 
 }
