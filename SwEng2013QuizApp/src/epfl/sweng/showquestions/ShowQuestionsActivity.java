@@ -25,6 +25,7 @@ import epfl.sweng.R;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
+import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -187,7 +188,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         HttpResponse response = null;
 
         try {
-            response = HttpComms.getInstance().getHttpResponse(HttpComms.URL);
+            response = HttpCommsProxy.getInstance().getHttpResponse(HttpComms.URL);
         } catch (NetworkErrorException e) {
             e.printStackTrace();
         } catch (ClientProtocolException e) {

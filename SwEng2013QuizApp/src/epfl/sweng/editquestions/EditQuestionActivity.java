@@ -31,6 +31,7 @@ import epfl.sweng.authentication.SharedPreferenceManager;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
+import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -176,7 +177,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     public HttpResponse requete() {
         HttpResponse response = null;
         try {
-            response = HttpComms.getInstance().postJSONObject(HttpComms.URLPUSH, 
+            response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH, 
                 JSONParser.parseQuiztoJSON(createQuestion()));
         } catch (ClientProtocolException e) {
             e.printStackTrace();
