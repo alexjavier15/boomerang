@@ -6,7 +6,9 @@ package epfl.sweng.servercomm;
 import java.io.IOException;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.protocol.ResponseContent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,10 +24,9 @@ import android.accounts.NetworkErrorException;
 public final class HttpCommsProxy implements IHttpConnection {
 
     private static IHttpConnection sRealHttpComms = null;
-    private static IHttpConnection sCacheHttpComms = null;
+    private static CacheHttpComms sCacheHttpComms = null;
     private static HttpCommsProxy proxy = null;
-
-
+    
     public static HttpCommsProxy getInstance() {
 
         if (proxy == null) {
@@ -46,13 +47,15 @@ public final class HttpCommsProxy implements IHttpConnection {
         if (sCacheHttpComms == null) {
             sCacheHttpComms = CacheHttpComms.getInstance();
         }
-       
+        
+
     }
 
     public Class<?> getServerCommsClass() {
-        
+
         return getServerCommsInstance().getClass();
     }
+
     /**
      * @return
      */
@@ -74,8 +77,35 @@ public final class HttpCommsProxy implements IHttpConnection {
     public HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException,
         NetworkErrorException {
 
-        return getServerCommsInstance().getHttpResponse(urlString);
+        HttpResponse reponse = getServerCommsInstance().getHttpResponse(urlString);
+        if (reponse != null) {
+            HttpResponse reponseFiltered = filerReponseforCaching(reponse);
+            if (reponse != null) {
 
+                sCacheHttpComms.pushQuestion(reponseFiltered);
+            }
+
+        }
+        return reponse;
+    }
+
+    /**
+     * @param reponse
+     * @return
+     */
+    private HttpResponse filerReponseforCaching(HttpResponse reponse) {
+
+        switch (reponse.getStatusLine().getStatusCode()) {
+            case HttpStatus.SC_OK:
+                return reponse;
+
+            case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+                SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE, false);
+                return null;
+
+            default:
+                return null;
+        }
     }
 
     /*

@@ -23,7 +23,6 @@ public final class SharedPreferenceManager {
         }
         return sUserPreferences;
     }
-  
 
     // Fix with correct pre-condition implemetation
 
@@ -31,21 +30,31 @@ public final class SharedPreferenceManager {
         if (sContext != null) {
             sSharedPreferences = sContext.getSharedPreferences(PreferenceKeys.USER_PREFERENCE, Context.MODE_PRIVATE);
         } else {
-            throw new IllegalArgumentException("Error accessing SharedPreferences. Context can't be null." +
-            		" you must set a context before calling an instance");
+            throw new IllegalArgumentException("Error accessing SharedPreferences. Context can't be null."
+                + " you must set a context before calling an instance");
         }
 
     }
-    public static void setContext(Context context) {
-        
-        sContext=context;            
-                
-    }
     
+
+    public static void setContext(Context context) {
+        if (sContext == null && context != null) {
+            sContext = context;
+        }
+    }
+
+    /**Return the the sContext
+     *
+     * @return the sContext
+     */
+    public static Context getsContext() {
+        return sContext;
+    }
+
     public Object getSystemService(String name) {
-        
+
         return sContext.getSystemService(name);
-        
+
     }
 
     public boolean getBooleanPreference(String key) {

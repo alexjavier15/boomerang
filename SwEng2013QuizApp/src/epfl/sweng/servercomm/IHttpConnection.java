@@ -25,6 +25,11 @@ public interface IHttpConnection {
         
     HttpResponse postJSONObject(String url, JSONObject question)
         throws ClientProtocolException, IOException,  JSONException, NetworkErrorException;
+
+    /**
+     * @param reponse
+     */
+   
     
 
 }

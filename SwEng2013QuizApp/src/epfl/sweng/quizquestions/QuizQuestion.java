@@ -1,6 +1,7 @@
 package epfl.sweng.quizquestions;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,8 +18,12 @@ import epfl.sweng.tools.JSONParser;
  * 
  *         This class represents a question.
  */
-public class QuizQuestion implements QuestionProvider {
-	public static final int ID = -1;
+public class QuizQuestion implements QuestionProvider, Serializable {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    public static final int ID = -1;
 	private List<String> answers = new ArrayList<String>();
 	private long id;
 	private String question;

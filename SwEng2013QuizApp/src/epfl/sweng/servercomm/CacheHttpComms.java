@@ -95,4 +95,12 @@ public final class CacheHttpComms implements IHttpConnection {
         return false;
     }
 
+    /**
+     * @param reponse
+     */
+    public void pushQuestion(HttpResponse reponse) {
+        
+        
+    }
+
 }
