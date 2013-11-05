@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import epfl.sweng.quizquestions.QuizQuestion;
+import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -105,14 +106,18 @@ public final class CacheManagerService extends Service {
 
     public boolean syncPostCachedQuestions() throws ClientProtocolException, NetworkErrorException, IOException,
             JSONException {
+        Debug.out("Attempting to sync file");
+      
+
         QuizQuestion quizQuestion = sPostQuestionDB.getFirstPostQuestion();
         while (quizQuestion != null) {
+         
             HttpResponse reponse = HttpComms.getInstance().postJSONObject(HttpComms.URLPUSH,
                     JSONParser.parseQuiztoJSON(quizQuestion));
             if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                 sPostQuestionDB.deleteQuizQuestion(quizQuestion);
                 quizQuestion = sPostQuestionDB.getFirstPostQuestion();
-
+              
             } else if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
                 return false;
             } else {

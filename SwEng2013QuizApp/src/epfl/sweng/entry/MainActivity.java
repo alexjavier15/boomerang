@@ -1,10 +1,14 @@
 package epfl.sweng.entry;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -17,9 +21,12 @@ import epfl.sweng.authentication.CredentialManager;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.authentication.SharedPreferenceManager;
 import epfl.sweng.editquestions.EditQuestionActivity;
-import epfl.sweng.servercomm.CacheHttpComms;
+import epfl.sweng.servercomm.BackgroundServiceTask;
+import epfl.sweng.servercomm.CacheManagerService;
+import epfl.sweng.servercomm.CacheManagerService.CacheServiceBinder;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsProxy;
+import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -32,6 +39,8 @@ import epfl.sweng.tools.Debug;
 public class MainActivity extends Activity implements OnSharedPreferenceChangeListener {
 
     private boolean authenticated = true;
+    private boolean isBound;
+    private CacheManagerService mCacheService = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +50,9 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         HttpCommsProxy.getInstance();
         CredentialManager.getInstance().addOnchangeListener(this);
         String newValue = CredentialManager.getInstance().getUserCredential();
+        Intent intent = new Intent(QuizApp.getContexStatic().getApplicationContext(), CacheManagerService.class);
+        this.getApplicationContext().bindService(intent, mCacheConnection, Context.BIND_AUTO_CREATE);
+        Debug.out("service bound: " + isBound);
         checkStatus(newValue);
     }
 
@@ -69,6 +81,28 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
+  
+
+    private ServiceConnection mCacheConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            CacheServiceBinder binder = (CacheServiceBinder) service;
+            mCacheService = binder.getService();
+            isBound = true;
+            (new BackgroundServiceTask(mCacheService)).execute(null, null);
+            Debug.out("service connected");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+            Debug.out("service disconnected");
+
+        }
+
+    };
 
     /**
      * 
@@ -149,6 +183,8 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             changeOnLineState(false);
         } else {
             changeOnLineState(true);
+            (new BackgroundServiceTask(mCacheService)).execute(null, null);
+
         }
     }
 

@@ -26,7 +26,7 @@ import epfl.sweng.tools.Debug;
 public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumns {
 
     public enum ColumnPos {
-        ID, QUESTION, ANSWERS, SOLUTION, TAGS, OWNER
+        IDK, ID, QUESTION, ANSWERS, SOLUTION, TAGS, OWNER
 
     }
 
@@ -46,6 +46,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             + COLUMN_NAME_TAGS + TEXT_TYPE + COMMA_SEP + COLUMN_NAME_OWNER + TEXT_TYPE + " )";
 
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
+    private int last = -1;
 
     /**
      * @param context
@@ -103,23 +104,20 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
     public QuizQuestion getRandomQuizQuestion() {
 
-       
         SQLiteDatabase db = this.getReadableDatabase();
-        Debug.out("first random " + getEntryCount(db));
-        Cursor cursor = db.query(TABLE_NAME, new String[] {COLUMN_NAME_ID, COLUMN_NAME_QUESTION, COLUMN_NAME_ANSWERS,
-            COLUMN_NAME_SOLUTION, COLUMN_NAME_TAGS, COLUMN_NAME_OWNER}, null, null, null, null, "RANDOM()", "1");
+        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_ID, COLUMN_NAME_QUESTION,
+            COLUMN_NAME_ANSWERS, COLUMN_NAME_SOLUTION, COLUMN_NAME_TAGS, COLUMN_NAME_OWNER}, null, null, null, null,
+                "RANDOM()", "1");
         if (cursor != null) {
-            Debug.out(" my coursor "+cursor);
             cursor.moveToFirst();
 
             List<String> answerList = Arrays.asList(cursor.getString(ColumnPos.ANSWERS.ordinal()).split(COMMA_SEP));
             Set<String> tagsSet = new HashSet<String>(Arrays.asList(cursor.getString(ColumnPos.TAGS.ordinal()).split(
                     COMMA_SEP)));
-            Debug.out(" my id int "+cursor.getInt(0));
-            Debug.out(" my id string "+cursor.getString(0));
+
             return new QuizQuestion(cursor.getString(ColumnPos.QUESTION.ordinal()), answerList,
-                    cursor.getInt(ColumnPos.SOLUTION.ordinal()), tagsSet, cursor.getInt(ColumnPos.ID
-                            .ordinal()), cursor.getString(ColumnPos.OWNER.ordinal()));
+                    cursor.getInt(ColumnPos.SOLUTION.ordinal()), tagsSet, cursor.getInt(ColumnPos.ID.ordinal()),
+                    cursor.getString(ColumnPos.OWNER.ordinal()));
 
         } else {
 
@@ -129,39 +127,35 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
     public QuizQuestion getFirstPostQuestion() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Debug.out("first post " + getEntryCount(db));
 
-        Cursor cursor = db.query(TABLE_NAME, new String[] {COLUMN_NAME_ID, COLUMN_NAME_QUESTION, COLUMN_NAME_ANSWERS,
-            COLUMN_NAME_SOLUTION, COLUMN_NAME_TAGS, COLUMN_NAME_OWNER}, null, null, null, null, _ID + " ASC");
+        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_ID, COLUMN_NAME_QUESTION,
+            COLUMN_NAME_ANSWERS, COLUMN_NAME_SOLUTION, COLUMN_NAME_TAGS, COLUMN_NAME_OWNER}, null, null, null, null,
+                _ID + " ASC");
         if (cursor.moveToFirst()) {
             List<String> answerList = Arrays.asList(cursor.getString(ColumnPos.ANSWERS.ordinal()).split(COMMA_SEP));
             Set<String> tagsSet = new HashSet<String>(Arrays.asList(cursor.getString(ColumnPos.TAGS.ordinal()).split(
                     COMMA_SEP)));
-
+            last = cursor.getInt(ColumnPos.IDK.ordinal());
+            Debug.out("showing question name for debug: " + cursor.getString(ColumnPos.QUESTION.ordinal())
+                    + " and idk _ " + last);
             return new QuizQuestion(cursor.getString(ColumnPos.QUESTION.ordinal()), answerList,
-                    cursor.getInt(ColumnPos.SOLUTION.ordinal()), tagsSet, cursor.getInt(ColumnPos.ID
-                            .ordinal()), cursor.getString(ColumnPos.OWNER.ordinal()));
+                    cursor.getInt(ColumnPos.SOLUTION.ordinal()), tagsSet, cursor.getInt(ColumnPos.ID.ordinal()),
+                    cursor.getString(ColumnPos.OWNER.ordinal()));
         } else {
+            Debug.out("nomore question to sync");
 
             return null;
         }
     }
 
     public void deleteQuizQuestion(QuizQuestion quizQuestion) {
+        Debug.out("gAttempt to delete " + last);
 
         SQLiteDatabase db = this.getWritableDatabase();
 
-        db.delete(TABLE_NAME, COLUMN_NAME_ID + " = ?", new String[] {String.valueOf(quizQuestion.getID())});
+        db.delete(TABLE_NAME, _ID + " = ?", new String[] {String.valueOf(last)});
+
         db.close();
     }
 
-    public int getEntryCount(SQLiteDatabase db) {
-        String countQuery = "SELECT  * FROM " + TABLE_NAME;
-      
-        Cursor cursor = db.rawQuery(countQuery, null);
-
-
-        // return count
-        return cursor.getCount();
-    }
 }

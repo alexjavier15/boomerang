@@ -93,18 +93,19 @@ public class JSONParser {
         List<String> answers;
         int solutionIndex;
         Set<String> tags;
+        String owner;
         try {
             id = parser.getInt("id");
             question = parser.getString("question");
             answers = jsonArrayToList(parser.getJSONArray("answers"));
             solutionIndex = parser.getInt("solutionIndex");
             tags = new HashSet<String>(jsonArrayToList(parser.getJSONArray("tags")));
+            owner = parser.getString("owner");
         } catch (JSONException e) {
             throw new IOException(e.getMessage());
         }
 
-        return new QuizQuestion(question, answers, solutionIndex, tags, id, CredentialManager.getInstance()
-                .getUserCredential());
+        return new QuizQuestion(question, answers, solutionIndex, tags, id, owner);
 
     }
 
@@ -120,6 +121,7 @@ public class JSONParser {
 
         JSONObject jsonQuestion = new JSONObject();
         try {
+            jsonQuestion.put("owner", CredentialManager.getInstance().getUserCredential());
             jsonQuestion.put("id", question.getID());
             jsonQuestion.put("tags", new JSONArray(question.getTags()));
             jsonQuestion.put("solutionIndex", question.getIndex());

@@ -43,13 +43,9 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      */
     private CacheHttpComms() {
         sContext = QuizApp.getContexStatic();
-        
         Intent intent = new Intent(sContext.getApplicationContext(), CacheManagerService.class);
-        
-
-
         sContext.bindService(intent, mCacheConnection, Context.BIND_AUTO_CREATE);
-        Debug.out("service bound: "+isBound);
+        Debug.out("service bound: " + isBound);
 
     }
 
@@ -138,9 +134,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      * @param reponse
      */
     public void pushQuestion(HttpResponse reponse) {
-        
-       
-        
+
         QuizQuestion quizQuestion;
         try {
             quizQuestion = JSONParser.parseJsonToQuiz(reponse, sContext);
