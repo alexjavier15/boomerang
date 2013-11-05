@@ -82,8 +82,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         return true;
     }
 
-  
-
     private ServiceConnection mCacheConnection = new ServiceConnection() {
 
         @Override
@@ -91,8 +89,10 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             CacheServiceBinder binder = (CacheServiceBinder) service;
             mCacheService = binder.getService();
             isBound = true;
-            (new BackgroundServiceTask(mCacheService)).execute(null, null);
-            Debug.out("service connected");
+            if (HttpComms.getInstance().isConnected()) {
+                SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE, true);
+            }
+
         }
 
         @Override
@@ -142,10 +142,20 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 	 */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
-        if (key.equals("SESSION_ID")) {
+        if (key.equals(PreferenceKeys.SESSION_ID)) {
             String newValue = pref.getString(key, "");
             Log.i("MainActivity Listener new key value session id : ", newValue);
             checkStatus(newValue);
+        } else if (key.equals(PreferenceKeys.ONLINE_MODE)) {
+            if (pref.getBoolean(key, false)) {
+
+                (new BackgroundServiceTask(mCacheService)).execute(null, null);
+            } else {
+
+                CheckBox offLineMode = (CheckBox) this.findViewById(R.id.offline_mode);
+                offLineMode.setChecked(true);
+            }
+
         }
     }
 
@@ -179,20 +189,8 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     public void changeNetworkMode(View view) {
 
         CheckBox offLineMode = (CheckBox) view.findViewById(R.id.offline_mode);
-        if (offLineMode.isChecked()) {
-            changeOnLineState(false);
-        } else {
-            changeOnLineState(true);
-            (new BackgroundServiceTask(mCacheService)).execute(null, null);
-
-        }
+        SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE,
+                !offLineMode.isChecked());
     }
 
-    /**
-     * 
-     * @param state
-     */
-    public void changeOnLineState(boolean state) {
-        SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE, state);
-    }
 }

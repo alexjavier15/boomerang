@@ -112,7 +112,7 @@ public final class CacheManagerService extends Service {
         QuizQuestion quizQuestion = sPostQuestionDB.getFirstPostQuestion();
         while (quizQuestion != null) {
          
-            HttpResponse reponse = HttpComms.getInstance().postJSONObject(HttpComms.URLPUSH,
+            HttpResponse reponse = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
                     JSONParser.parseQuiztoJSON(quizQuestion));
             if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                 sPostQuestionDB.deleteQuizQuestion(quizQuestion);
