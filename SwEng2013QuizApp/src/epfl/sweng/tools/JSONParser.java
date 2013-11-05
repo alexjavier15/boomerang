@@ -120,6 +120,7 @@ public class JSONParser {
 
         JSONObject jsonQuestion = new JSONObject();
         try {
+            jsonQuestion.put("id", question.getID());
             jsonQuestion.put("tags", new JSONArray(question.getTags()));
             jsonQuestion.put("solutionIndex", question.getIndex());
             jsonQuestion.put("answers", new JSONArray(question.getAnswers()));

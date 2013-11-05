@@ -109,13 +109,14 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         Cursor cursor = db.query(TABLE_NAME, new String[] {COLUMN_NAME_ID, COLUMN_NAME_QUESTION, COLUMN_NAME_ANSWERS,
             COLUMN_NAME_SOLUTION, COLUMN_NAME_TAGS, COLUMN_NAME_OWNER}, null, null, null, null, "RANDOM()", "1");
         if (cursor != null) {
-            Debug.out(" my coursor "+cursor.toString());
+            Debug.out(" my coursor "+cursor);
             cursor.moveToFirst();
 
             List<String> answerList = Arrays.asList(cursor.getString(ColumnPos.ANSWERS.ordinal()).split(COMMA_SEP));
             Set<String> tagsSet = new HashSet<String>(Arrays.asList(cursor.getString(ColumnPos.TAGS.ordinal()).split(
                     COMMA_SEP)));
-
+            Debug.out(" my id int "+cursor.getInt(0));
+            Debug.out(" my id string "+cursor.getString(0));
             return new QuizQuestion(cursor.getString(ColumnPos.QUESTION.ordinal()), answerList,
                     cursor.getInt(ColumnPos.SOLUTION.ordinal()), tagsSet, cursor.getInt(ColumnPos.ID
                             .ordinal()), cursor.getString(ColumnPos.OWNER.ordinal()));
