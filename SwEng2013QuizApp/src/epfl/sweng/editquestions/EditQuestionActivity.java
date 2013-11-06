@@ -176,8 +176,11 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     public HttpResponse requete() {
         HttpResponse response = null;
         try {
+            QuizQuestion question = createQuestion();
+
             response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
-                    JSONParser.parseQuiztoJSON(createQuestion()));
+                    JSONParser.parseQuiztoJSON(question));
+
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (NetworkErrorException e) {

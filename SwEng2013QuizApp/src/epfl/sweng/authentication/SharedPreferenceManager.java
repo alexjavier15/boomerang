@@ -31,6 +31,8 @@ public final class SharedPreferenceManager {
 
         sContext = QuizApp.getContexStatic();
         sSharedPreferences = sContext.getSharedPreferences(PreferenceKeys.USER_PREFERENCE, Context.MODE_MULTI_PROCESS);
+        // reset de conenction at the dafault status "on line"
+        writeBooleaPreference(PreferenceKeys.ONLINE_MODE, true);
 
     }
 
@@ -86,7 +88,6 @@ public final class SharedPreferenceManager {
      */
     public void addOnChangeListener(OnSharedPreferenceChangeListener listener) {
         sSharedPreferences.registerOnSharedPreferenceChangeListener(listener);
-        
 
     }
 

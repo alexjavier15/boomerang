@@ -17,6 +17,7 @@ import epfl.sweng.authentication.CredentialManager;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.authentication.SharedPreferenceManager;
 import epfl.sweng.editquestions.EditQuestionActivity;
+import epfl.sweng.patterns.CheckProxyHelper;
 import epfl.sweng.servercomm.CacheManager;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
@@ -65,13 +66,18 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         return true;
     }
 
-    /**
+    /*
+     * (non-Javadoc)
      * 
+     * @see android.app.Activity#onStart()
      */
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void onStart() {
+        // TODO Auto-generated method stub
+        super.onStart();
+        Debug.out((new CheckProxyHelper()).getServerCommunicationClass());
         TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
+
     }
 
     /**
@@ -112,9 +118,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             CheckBox offLineMode = (CheckBox) this.findViewById(R.id.offline_mode);
             boolean isOnlineMode = pref.getBoolean(key, false);
             offLineMode.setChecked(!isOnlineMode);
-            if (isOnlineMode) {
-                CacheManager.getInstance().syncPostCachedQuestions();
-            }
+
         }
 
     }
@@ -139,8 +143,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     public void submitQuestion(View view) {
         Toast.makeText(this, "You are on the page to submit a question!", Toast.LENGTH_SHORT).show();
         Intent submitActivityIntent = new Intent(this, EditQuestionActivity.class);
-        CheckBox offLineMode = (CheckBox) this.findViewById(R.id.offline_mode);
-        offLineMode.setChecked(true);
         startActivity(submitActivityIntent);
     }
 
@@ -150,10 +152,8 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
      */
     public void changeNetworkMode(View view) {
 
-        CheckBox offLineMode = (CheckBox) view.findViewById(R.id.offline_mode);
-
         SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE,
-                !offLineMode.isChecked());
+                !((CheckBox) view).isChecked());
     }
 
 }

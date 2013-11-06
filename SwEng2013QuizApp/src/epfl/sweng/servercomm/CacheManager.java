@@ -4,6 +4,7 @@
 package epfl.sweng.servercomm;
 
 import java.io.IOException;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
@@ -40,8 +41,7 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
         SharedPreferenceManager.getInstance().addOnChangeListener(this);
         sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUESTION_CACHE_DB_NAME);
         sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), POST_SYNC_DB_NAME);
-        syncPostCachedQuestions();
-        
+
     }
 
     public static CacheManager getInstance() {
@@ -93,7 +93,8 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
 
     }
 
-    public void syncPostCachedQuestions() {
+    private void syncPostCachedQuestions() {
+
         (new BackgroundServiceTask()).execute();
 
     }
@@ -120,10 +121,14 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
             QuizQuestion quizQuestion = sPostQuestionDB.getFirstPostQuestion();
             while (quizQuestion != null) {
 
-                HttpResponse reponse = null;
+                HttpResponse response = null;
                 try {
-                    reponse = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
+                    Debug.out("go to process post");
+                    response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
                             JSONParser.parseQuiztoJSON(quizQuestion));
+                    response.getEntity().consumeContent();
+                    Debug.out("reponse got");
+
                 } catch (ClientProtocolException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -137,12 +142,12 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                if (reponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                     sPostQuestionDB.deleteQuizQuestion(quizQuestion);
                     quizQuestion = sPostQuestionDB.getFirstPostQuestion();
 
                 } else {
-                    return false;
+                    quizQuestion = null;
                 }
 
             }

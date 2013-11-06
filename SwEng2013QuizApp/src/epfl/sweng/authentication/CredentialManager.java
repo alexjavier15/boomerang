@@ -1,7 +1,5 @@
 package epfl.sweng.authentication;
 
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.util.Log;
 
 /**
  * SavedPreferences is a singleton class which creates an object where all activities can go and search for a shared

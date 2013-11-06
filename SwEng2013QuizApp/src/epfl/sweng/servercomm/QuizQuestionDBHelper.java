@@ -114,12 +114,14 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             List<String> answerList = Arrays.asList(cursor.getString(ColumnPos.ANSWERS.ordinal()).split(COMMA_SEP));
             Set<String> tagsSet = new HashSet<String>(Arrays.asList(cursor.getString(ColumnPos.TAGS.ordinal()).split(
                     COMMA_SEP)));
+            db.close();
 
             return new QuizQuestion(cursor.getString(ColumnPos.QUESTION.ordinal()), answerList,
                     cursor.getInt(ColumnPos.SOLUTION.ordinal()), tagsSet, cursor.getInt(ColumnPos.ID.ordinal()),
                     cursor.getString(ColumnPos.OWNER.ordinal()));
 
         } else {
+            db.close();
 
             return null;
         }
@@ -138,6 +140,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             last = cursor.getInt(ColumnPos.IDK.ordinal());
             Debug.out("showing question name for debug: " + cursor.getString(ColumnPos.QUESTION.ordinal())
                     + " and idk _ " + last);
+
             return new QuizQuestion(cursor.getString(ColumnPos.QUESTION.ordinal()), answerList,
                     cursor.getInt(ColumnPos.SOLUTION.ordinal()), tagsSet, cursor.getInt(ColumnPos.ID.ordinal()),
                     cursor.getString(ColumnPos.OWNER.ordinal()));

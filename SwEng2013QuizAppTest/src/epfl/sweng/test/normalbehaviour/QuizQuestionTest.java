@@ -1,12 +1,25 @@
 package epfl.sweng.test.normalbehaviour;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
+
+import android.accounts.NetworkErrorException;
+
 import junit.framework.TestCase;
 import epfl.sweng.quizquestions.QuizQuestion;
+import epfl.sweng.servercomm.HttpComms;
+import epfl.sweng.servercomm.HttpCommsProxy;
+import epfl.sweng.tools.Debug;
+import epfl.sweng.tools.JSONParser;
 
 public class QuizQuestionTest extends TestCase {
 
@@ -23,7 +36,7 @@ public class QuizQuestionTest extends TestCase {
     }
 
     public void testGettersQuestion() {
-        
+
         assertEquals(mQuestion.getID(), -1);
         assertEquals(mQuestion.getCorrectAnswer(), "Forty-two");
         assertEquals(mQuestion.checkAnswer(0), true);
@@ -34,6 +47,31 @@ public class QuizQuestionTest extends TestCase {
         Set<String> tags = new HashSet<String>(Arrays.asList("h2g2", "trivia"));
         assertEquals(mQuestion.getTags(), tags);
         assertEquals(mQuestion.getIndex(), 0);
+        HttpResponse response = null;
+
+        QuizQuestion question = createQuestion();
+        for (int i = 0; i < 10; i++) {
+            try {
+
+                response = HttpComms.getInstance().postJSONObject(HttpComms.URLPUSH,
+                        JSONParser.parseQuiztoJSON(question));
+                System.out.println(response.getStatusLine());
+               response.getEntity().consumeContent();
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (NetworkErrorException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        assertTrue(response != null);
     }
 
 }

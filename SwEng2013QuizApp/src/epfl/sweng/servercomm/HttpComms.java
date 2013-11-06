@@ -18,6 +18,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import epfl.sweng.authentication.CredentialManager;
 import epfl.sweng.authentication.SharedPreferenceManager;
+import epfl.sweng.tools.Debug;
 
 /**
  * @author LorenzoLeon & Noortch
@@ -57,6 +58,7 @@ public final class HttpComms implements IHttpConnectionHelper {
                 request.addHeader(HEADER, authenticationValue);
 
             }
+            Debug.out("sending to SwengClient");
             return SwengHttpClientFactory.getInstance().execute(request);
         } else {
             throw new NetworkErrorException("A network error has ocurred when trying to contact the server");

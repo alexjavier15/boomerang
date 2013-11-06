@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import android.accounts.NetworkErrorException;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.authentication.SharedPreferenceManager;
+import epfl.sweng.tools.Debug;
 
 /**
  * @author Alex
@@ -111,8 +112,9 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         return reponse;
     }
 
-    /**Check the status the {@link HttpResponse} against an expected status. If the status is not as expected
-     * The proxy switch to the offline state.
+    /**
+     * Check the status the {@link HttpResponse} against an expected status. If the status is not as expected The proxy
+     * switch to the offline state.
      * 
      * @param reponse
      * @param expectedStatus
@@ -125,6 +127,8 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
     }
 
     private boolean isOnlineMode() {
+        Debug.out("client status : "
+                + SharedPreferenceManager.getInstance().getBooleanPreference(PreferenceKeys.ONLINE_MODE));
 
         return SharedPreferenceManager.getInstance().getBooleanPreference(PreferenceKeys.ONLINE_MODE);
 
@@ -137,7 +141,6 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
      */
     @Override
     public boolean isConnected() {
-        // TODO Auto-generated method stub
         return getServerCommsInstance().isConnected();
     }
 

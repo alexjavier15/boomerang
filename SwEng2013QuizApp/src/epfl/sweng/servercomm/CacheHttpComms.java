@@ -13,7 +13,6 @@ import org.json.JSONObject;
 import android.accounts.NetworkErrorException;
 import android.content.Context;
 import epfl.sweng.quizquestions.QuizQuestion;
-import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -23,8 +22,6 @@ import epfl.sweng.tools.JSONParser;
 public final class CacheHttpComms implements IHttpConnectionHelper {
     private static CacheHttpComms sCache = null;
     private static Context sContext = null;
-    private CacheManager mCacheService = null;
-    private boolean isBound;
 
     public static CacheHttpComms getInstance() {
         if (sCache == null) {
@@ -38,12 +35,9 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      */
     private CacheHttpComms() {
         sContext = QuizApp.getContexStatic();
-        mCacheService = CacheManager.getInstance();
-        Debug.out("service bound: " + isBound);
 
     }
 
-    
     /*
      * (non-Javadoc)
      * 
@@ -54,10 +48,10 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
             NetworkErrorException {
         HttpResponse reponse = null;
 
-        if (urlString.equals(HttpComms.URL) && isBound) {
+        if (urlString.equals(HttpComms.URL)) {
 
             try {
-                reponse = mCacheService.getRandomQuestion();
+                reponse = CacheManager.getInstance().getRandomQuestion();
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -88,7 +82,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
                 e.printStackTrace();
             }
 
-            return mCacheService.addQuestionForSync(quizQuestion);
+            return CacheManager.getInstance().addQuestionForSync(quizQuestion);
 
         } else {
             throw new UnsupportedOperationException("Unsupported operation in offline mode");
@@ -114,7 +108,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
         QuizQuestion quizQuestion;
         try {
             quizQuestion = JSONParser.parseJsonToQuiz(reponse, sContext);
-            mCacheService.pushFetchedQuestion(quizQuestion);
+            CacheManager.getInstance().pushFetchedQuestion(quizQuestion);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
