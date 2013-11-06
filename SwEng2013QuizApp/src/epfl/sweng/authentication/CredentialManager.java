@@ -35,11 +35,6 @@ public final class CredentialManager {
         return mUserPreferences.removePreference(PreferenceKeys.SESSION_ID);
     }
 
-    public void addOnchangeListener(OnSharedPreferenceChangeListener listener) {
-        Log.i("SavedPreferences", "register listener");
-        mUserPreferences.addOnChangeListener(listener);
-    }
-
     public boolean setUserCredential(String value) {
         return mUserPreferences.writeStringPreference(PreferenceKeys.SESSION_ID, value);
 

@@ -129,7 +129,7 @@ public final class HttpComms implements IHttpConnectionHelper {
     public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
             JSONException, NetworkErrorException {
 
-        HttpPost post = new HttpPost(URLPUSH);
+        HttpPost post = new HttpPost(url);
         post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
         post.setHeader("Content-type", "application/json");
         HttpResponse response = execute(post);

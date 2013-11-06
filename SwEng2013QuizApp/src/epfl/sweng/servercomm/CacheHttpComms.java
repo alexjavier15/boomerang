@@ -11,13 +11,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
 import epfl.sweng.quizquestions.QuizQuestion;
-import epfl.sweng.servercomm.CacheManagerService.CacheServiceBinder;
 import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
@@ -28,7 +23,7 @@ import epfl.sweng.tools.JSONParser;
 public final class CacheHttpComms implements IHttpConnectionHelper {
     private static CacheHttpComms sCache = null;
     private static Context sContext = null;
-    private CacheManagerService mCacheService = null;
+    private CacheManager mCacheService = null;
     private boolean isBound;
 
     public static CacheHttpComms getInstance() {
@@ -43,31 +38,12 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      */
     private CacheHttpComms() {
         sContext = QuizApp.getContexStatic();
-        Intent intent = new Intent(sContext.getApplicationContext(), CacheManagerService.class);
-        sContext.bindService(intent, mCacheConnection, Context.BIND_AUTO_CREATE);
+        mCacheService = CacheManager.getInstance();
         Debug.out("service bound: " + isBound);
 
     }
 
-    private ServiceConnection mCacheConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            CacheServiceBinder binder = (CacheServiceBinder) service;
-            mCacheService = binder.getService();
-            isBound = true;
-            Debug.out("service connected");
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            isBound = false;
-            Debug.out("service disconnected");
-
-        }
-
-    };
-
+    
     /*
      * (non-Javadoc)
      * 

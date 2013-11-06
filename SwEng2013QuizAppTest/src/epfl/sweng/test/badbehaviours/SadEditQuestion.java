@@ -3,6 +3,9 @@ package epfl.sweng.test.badbehaviours;
 import org.apache.http.HttpStatus;
 
 import epfl.sweng.editquestions.EditQuestionActivity;
+import epfl.sweng.patterns.CheckProxyHelper;
+import epfl.sweng.servercomm.CacheHttpComms;
+import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.test.template.TestTemplate;
@@ -35,7 +38,10 @@ public class SadEditQuestion extends TestTemplate<EditQuestionActivity> {
 	}
 
 	public void testServerNotAccessible() {
+	    
+	    CheckProxyHelper check = new CheckProxyHelper();
 		getActivityAndWaitFor(TTChecks.EDIT_QUESTIONS_SHOWN);
+        assertTrue(check.getServerCommunicationClass() == HttpComms.class);
 
 		getSolo().enterText(getSolo().getEditText("text body"),
 				"What did I do?");
@@ -55,5 +61,6 @@ public class SadEditQuestion extends TestTemplate<EditQuestionActivity> {
 
 		assertTrue("Submission not successful",
 				getSolo().searchText(errorMessage));
+		assertTrue(check.getServerCommunicationClass() == CacheHttpComms.class);
 	}
 }

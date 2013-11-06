@@ -30,7 +30,7 @@ public final class SharedPreferenceManager {
     private SharedPreferenceManager() {
 
         sContext = QuizApp.getContexStatic();
-        sSharedPreferences = sContext.getSharedPreferences(PreferenceKeys.USER_PREFERENCE, Context.MODE_PRIVATE);
+        sSharedPreferences = sContext.getSharedPreferences(PreferenceKeys.USER_PREFERENCE, Context.MODE_MULTI_PROCESS);
 
     }
 
@@ -63,8 +63,11 @@ public final class SharedPreferenceManager {
 
     }
 
-    public boolean writeBooleaPreference(String key, boolean value) {
-        return sSharedPreferences.edit().putBoolean(key, value).commit();
+    public synchronized boolean writeBooleaPreference(String key, boolean value) {
+        boolean res = sSharedPreferences.edit().putBoolean(key, value).commit();
+        sSharedPreferences.edit().apply();
+
+        return res;
 
     }
 
@@ -83,6 +86,7 @@ public final class SharedPreferenceManager {
      */
     public void addOnChangeListener(OnSharedPreferenceChangeListener listener) {
         sSharedPreferences.registerOnSharedPreferenceChangeListener(listener);
+        
 
     }
 

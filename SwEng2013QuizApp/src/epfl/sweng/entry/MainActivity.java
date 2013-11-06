@@ -1,14 +1,10 @@
 package epfl.sweng.entry;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -21,12 +17,7 @@ import epfl.sweng.authentication.CredentialManager;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.authentication.SharedPreferenceManager;
 import epfl.sweng.editquestions.EditQuestionActivity;
-import epfl.sweng.servercomm.BackgroundServiceTask;
-import epfl.sweng.servercomm.CacheManagerService;
-import epfl.sweng.servercomm.CacheManagerService.CacheServiceBinder;
-import epfl.sweng.servercomm.HttpComms;
-import epfl.sweng.servercomm.HttpCommsProxy;
-import epfl.sweng.servercomm.QuizApp;
+import epfl.sweng.servercomm.CacheManager;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -39,21 +30,16 @@ import epfl.sweng.tools.Debug;
 public class MainActivity extends Activity implements OnSharedPreferenceChangeListener {
 
     private boolean authenticated = true;
-    private boolean isBound;
-    private CacheManagerService mCacheService = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SharedPreferenceManager.getInstance();
-        HttpCommsProxy.getInstance();
-        CredentialManager.getInstance().addOnchangeListener(this);
+        SharedPreferenceManager.getInstance().addOnChangeListener(this);
+
         String newValue = CredentialManager.getInstance().getUserCredential();
-        Intent intent = new Intent(QuizApp.getContexStatic().getApplicationContext(), CacheManagerService.class);
-        this.getApplicationContext().bindService(intent, mCacheConnection, Context.BIND_AUTO_CREATE);
-        Debug.out("service bound: " + isBound);
         checkStatus(newValue);
+
     }
 
     private void checkStatus(String newValue) {
@@ -65,10 +51,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             Log.i("New session Id is: ", newValue);
             setAthenticated(true);
             ((Button) findViewById(R.id.log_inout)).setText("Log out");
-            SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE,
-                    HttpComms.getInstance().isConnected());
-            Debug.out("is connected :"
-                    + SharedPreferenceManager.getInstance().getBooleanPreference(PreferenceKeys.ONLINE_MODE));
+            CacheManager.getInstance();
         }
     }
 
@@ -81,28 +64,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
-    private ServiceConnection mCacheConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            CacheServiceBinder binder = (CacheServiceBinder) service;
-            mCacheService = binder.getService();
-            isBound = true;
-            if (HttpComms.getInstance().isConnected()) {
-                SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE, true);
-            }
-
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            isBound = false;
-            Debug.out("service disconnected");
-
-        }
-
-    };
 
     /**
      * 
@@ -142,21 +103,20 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 	 */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
+        Debug.out("listener notify");
         if (key.equals(PreferenceKeys.SESSION_ID)) {
             String newValue = pref.getString(key, "");
             Log.i("MainActivity Listener new key value session id : ", newValue);
             checkStatus(newValue);
         } else if (key.equals(PreferenceKeys.ONLINE_MODE)) {
-            if (pref.getBoolean(key, false)) {
-
-                (new BackgroundServiceTask(mCacheService)).execute(null, null);
-            } else {
-
-                CheckBox offLineMode = (CheckBox) this.findViewById(R.id.offline_mode);
-                offLineMode.setChecked(true);
+            CheckBox offLineMode = (CheckBox) this.findViewById(R.id.offline_mode);
+            boolean isOnlineMode = pref.getBoolean(key, false);
+            offLineMode.setChecked(!isOnlineMode);
+            if (isOnlineMode) {
+                CacheManager.getInstance().syncPostCachedQuestions();
             }
-
         }
+
     }
 
     /**
@@ -179,6 +139,8 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     public void submitQuestion(View view) {
         Toast.makeText(this, "You are on the page to submit a question!", Toast.LENGTH_SHORT).show();
         Intent submitActivityIntent = new Intent(this, EditQuestionActivity.class);
+        CheckBox offLineMode = (CheckBox) this.findViewById(R.id.offline_mode);
+        offLineMode.setChecked(true);
         startActivity(submitActivityIntent);
     }
 
@@ -189,6 +151,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     public void changeNetworkMode(View view) {
 
         CheckBox offLineMode = (CheckBox) view.findViewById(R.id.offline_mode);
+
         SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE,
                 !offLineMode.isChecked());
     }

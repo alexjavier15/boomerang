@@ -21,6 +21,7 @@ import epfl.sweng.authentication.SharedPreferenceManager;
  * @author Alex
  * 
  */
+
 public final class HttpCommsProxy implements IHttpConnectionHelper {
 
     private static IHttpConnectionHelper sRealHttpComms = null;
@@ -84,11 +85,9 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
             reponse.setEntity(new StringEntity(entity));
 
-            HttpResponse reponseFiltered = filerReponseforCaching(reponse);
-            if (reponse != null && isConnected()) {
-
-                sCacheHttpComms.pushQuestion(reponseFiltered);
-
+            checkReponseStatus(reponse, HttpStatus.SC_OK);
+            if (isConnected()) {
+                sCacheHttpComms.pushQuestion(reponse);
                 reponse.setEntity(new StringEntity(entity2));
 
             }
@@ -98,23 +97,37 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         return reponse;
     }
 
-    /**
-     * @param reponse
-     * @return
+    /*
+     * (non-Javadoc)
+     * 
+     * @see epfl.sweng.servercomm.IHttpConnection#postJSONObject(java.lang.String, org.json.JSONObject)
      */
-    private HttpResponse filerReponseforCaching(HttpResponse reponse) {
+    @Override
+    public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
+            JSONException, NetworkErrorException {
+        HttpResponse reponse = getServerCommsInstance().postJSONObject(url, question);
+        checkReponseStatus(reponse, HttpStatus.SC_CREATED);
 
-        switch (reponse.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_OK:
-                return reponse;
+        return reponse;
+    }
 
-            case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-                SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE, false);
-                return null;
-
-            default:
-                return null;
+    /**Check the status the {@link HttpResponse} against an expected status. If the status is not as expected
+     * The proxy switch to the offline state.
+     * 
+     * @param reponse
+     * @param expectedStatus
+     */
+    private void checkReponseStatus(HttpResponse reponse, int expectedStatus) {
+        if (reponse.getStatusLine().getStatusCode() != expectedStatus) {
+            SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE, false);
         }
+
+    }
+
+    private boolean isOnlineMode() {
+
+        return SharedPreferenceManager.getInstance().getBooleanPreference(PreferenceKeys.ONLINE_MODE);
+
     }
 
     /*
@@ -126,24 +139,6 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
     public boolean isConnected() {
         // TODO Auto-generated method stub
         return getServerCommsInstance().isConnected();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.servercomm.IHttpConnection#postJSONObject(java.lang.String, org.json.JSONObject)
-     */
-    @Override
-    public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
-            JSONException, NetworkErrorException {
-        // TODO Auto-generated method stub
-        return getServerCommsInstance().postJSONObject(url, question);
-    }
-
-    private boolean isOnlineMode() {
-
-        return SharedPreferenceManager.getInstance().getBooleanPreference(PreferenceKeys.ONLINE_MODE);
-
     }
 
 }
