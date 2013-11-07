@@ -327,7 +327,16 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 
     private int auditAnswers() {
         int numberErrors = 0;
-        // TODO
+        int numberOfAnswers = 0;
+        for (int i = 0; i < mListView.getChildCount(); i++) {
+        	Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
+        	if (check.getText().equals(R.string.heavy_check_mark)) {
+        		numberOfAnswers++;
+        	}
+        }
+        if (numberOfAnswers > 1) {
+        	numberErrors++;
+        }
         return numberErrors;
     }
 
