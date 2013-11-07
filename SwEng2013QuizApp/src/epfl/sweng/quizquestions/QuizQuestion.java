@@ -59,7 +59,7 @@ public class QuizQuestion implements QuestionProvider, Serializable {
         this.solutionIndex = solutionIndex;
         this.tags = tags;
         this.owner = owner;
-        if (auditErrors() > 0) {
+        if (auditErrors() != 0) {
             throw new IllegalArgumentException();
         }
     }
@@ -90,7 +90,7 @@ public class QuizQuestion implements QuestionProvider, Serializable {
         this.tags = initTags;
         this.id = initId;
         this.owner = initOwner;
-        if (auditErrors() > 0) {
+        if (auditErrors() != 0) {
             throw new IllegalArgumentException();
         }
     }
