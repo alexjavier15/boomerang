@@ -362,7 +362,16 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 
     private int auditSubmitButton() {
         int numberErrors = 0;
-        // TODO
+        QuizQuestion currentQQ = createQuestion();
+        if (currentQQ.auditErrors() != 0) {
+        	if (submitButton.isEnabled()) {
+        		numberErrors++;
+        	}
+        } else {
+        	if (!submitButton.isEnabled()) {
+        		numberErrors++;
+        	}
+        }
         return numberErrors;
     }
 
