@@ -59,6 +59,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     private EditText tagsEditText;
     private final String tagsHint = "Type in the question's tags";
     private Button submitButton;
+    private Button addAnswerButton;
 
     /**
      * Starts the window adding a modified ArrayAdapter to list the answers. Creates the multiple Test Listeners for
@@ -106,6 +107,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         tagsEditText = (EditText) findViewById(R.id.edit_tagsText);
         tagsEditText.addTextChangedListener(watcher);
         submitButton = (Button) findViewById(R.id.submit_button);
+        addAnswerButton = (Button) findViewById(R.id.add_answer);
         mReset = false;
         TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
     }
@@ -321,7 +323,25 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 
     private int auditButtons() {
         int numberErrors = 0;
-        // TODO
+        if (!addAnswerButton.getText().equals("+") || addAnswerButton.getVisibility() != View.VISIBLE) {
+        	numberErrors++;
+        }
+        if (!submitButton.getText().equals("Submit") || submitButton.getVisibility() != View.VISIBLE) {
+        	numberErrors++;
+        }
+        for (int i = 0; i < mListView.getChildCount(); i++) {
+        	Button removeAnswer = (Button) mListView.getChildAt(i).findViewById(R.id.edit_cancelAnswer);
+        	if (!removeAnswer.getText().equals("-") || removeAnswer.getVisibility() != View.VISIBLE) {
+        		numberErrors++;
+        	}
+        	Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
+        	CharSequence checkTxt = check.getText();
+        	String juste = getString(R.string.heavy_check_mark);
+        	String faux = getString(R.string.heavy_ballot_x);
+        	if (!(checkTxt.equals(juste) || checkTxt.equals(faux)) || check.getVisibility() != View.VISIBLE) {
+        		numberErrors++;
+        	}
+        }
         return numberErrors;
     }
 
