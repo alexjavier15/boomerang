@@ -1,8 +1,6 @@
 package epfl.sweng.test.normalbehaviour;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,8 +15,6 @@ import android.accounts.NetworkErrorException;
 import junit.framework.TestCase;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
-import epfl.sweng.servercomm.HttpCommsProxy;
-import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 public class QuizQuestionTest extends TestCase {

@@ -59,9 +59,9 @@ public class QuizQuestion implements QuestionProvider, Serializable {
         this.solutionIndex = solutionIndex;
         this.tags = tags;
         this.owner = owner;
-        if (auditErrors() != 0) {
-            throw new IllegalArgumentException();
-        }
+//        if (auditErrors() != 0) {
+//            throw new IllegalArgumentException();
+//        }
     }
 
     public QuizQuestion(final String jsonInput) throws JSONException {
@@ -90,9 +90,9 @@ public class QuizQuestion implements QuestionProvider, Serializable {
         this.tags = initTags;
         this.id = initId;
         this.owner = initOwner;
-        if (auditErrors() != 0) {
-            throw new IllegalArgumentException();
-        }
+//        if (auditErrors() != 0) {
+//            throw new IllegalArgumentException();
+//        }
     }
 
     public int auditErrors() {
@@ -159,6 +159,19 @@ public class QuizQuestion implements QuestionProvider, Serializable {
      */
     public String getOwner() {
         return owner;
+    }
+    
+    // For JUnit test cases
+    public void setQuestion(String q) {
+    	this.question = q;
+    }
+    
+    public void setAnswers(List<String> a) {
+    	this.answers = a;
+    }
+    
+    public void setTags(Set<String> tags) {
+    	this.tags = tags;
     }
 
 }
