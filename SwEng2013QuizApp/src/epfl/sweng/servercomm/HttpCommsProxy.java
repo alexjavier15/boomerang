@@ -23,20 +23,23 @@ import epfl.sweng.tools.Debug;
  */
 
 public final class HttpCommsProxy implements IHttpConnectionHelper {
-
 	private static IHttpConnectionHelper sRealHttpComms = null;
 	private static CacheHttpComms sCacheHttpComms = null;
 	private static HttpCommsProxy proxy = null;
 
 	public static HttpCommsProxy getInstance() {
+
 		if (proxy == null) {
 			return new HttpCommsProxy();
+
 		} else {
 			return proxy;
 		}
+
 	}
 
 	private HttpCommsProxy() {
+
 		if (sRealHttpComms == null) {
 			sRealHttpComms = HttpComms.getInstance();
 		}
@@ -44,6 +47,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 		if (sCacheHttpComms == null) {
 			sCacheHttpComms = CacheHttpComms.getInstance();
 		}
+
 	}
 
 	public Class<?> getServerCommsClass() {
@@ -55,8 +59,10 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 	 * @return
 	 */
 	private IHttpConnectionHelper getServerCommsInstance() {
+
 		if (isOnlineMode()) {
 			return sRealHttpComms;
+
 		} else {
 			return sCacheHttpComms;
 		}
@@ -70,11 +76,12 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 	 */
 	@Override
 	public HttpResponse getHttpResponse(String urlString)
-			throws ClientProtocolException, IOException, NetworkErrorException {
+		throws ClientProtocolException, IOException, NetworkErrorException {
 
 		HttpResponse reponse = getServerCommsInstance().getHttpResponse(
 				urlString);
 		if (reponse != null) {
+			// Httpresponse can't be read twice
 			String entity = EntityUtils.toString(reponse.getEntity());
 			String entity2 = new String(entity);
 
@@ -84,7 +91,9 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 			if (isConnected()) {
 				sCacheHttpComms.pushQuestion(reponse);
 				reponse.setEntity(new StringEntity(entity2));
+
 			}
+
 		}
 
 		return reponse;
@@ -99,11 +108,16 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 	 */
 	@Override
 	public HttpResponse postJSONObject(String url, JSONObject question)
-			throws ClientProtocolException, IOException, JSONException,
+		throws ClientProtocolException, IOException, JSONException,
 			NetworkErrorException {
 		HttpResponse reponse = getServerCommsInstance().postJSONObject(url,
 				question);
-		checkReponseStatus(reponse, HttpStatus.SC_CREATED);
+
+		if (!checkReponseStatus(reponse, HttpStatus.SC_CREATED)) {
+			sCacheHttpComms.postJSONObject(url, question);
+			QuizApp.getPreferences().edit()
+					.putBoolean(PreferenceKeys.ONLINE_MODE, false);
+		}
 
 		return reponse;
 	}
@@ -115,11 +129,8 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 	 * @param reponse
 	 * @param expectedStatus
 	 */
-	private void checkReponseStatus(HttpResponse reponse, int expectedStatus) {
-		if (reponse.getStatusLine().getStatusCode() != expectedStatus) {
-			QuizApp.getPreferences().edit()
-					.putBoolean(PreferenceKeys.ONLINE_MODE, false);
-		}
+	private boolean checkReponseStatus(HttpResponse reponse, int expectedStatus) {
+		return reponse.getStatusLine().getStatusCode() != expectedStatus;
 	}
 
 	private boolean isOnlineMode() {

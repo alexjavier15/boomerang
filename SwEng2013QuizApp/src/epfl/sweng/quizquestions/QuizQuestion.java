@@ -170,8 +170,8 @@ public class QuizQuestion implements QuestionProvider, Serializable {
     	this.answers = a;
     }
     
-    public void setTags(Set<String> tags) {
-    	this.tags = tags;
+    public void setTags(Set<String> tagsIn) {
+    	this.tags = tagsIn;
     }
 
 }

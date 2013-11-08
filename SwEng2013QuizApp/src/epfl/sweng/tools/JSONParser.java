@@ -28,7 +28,7 @@ public class JSONParser {
 
     public static final int HTTP_ERROR = 404;
 
-    private static JSONObject getParser(HttpResponse response) throws IOException {
+    public static JSONObject getParser(HttpResponse response) throws IOException {
         if (response == null) {
             throw new HttpResponseException(HTTP_ERROR, "Empty response");
         }

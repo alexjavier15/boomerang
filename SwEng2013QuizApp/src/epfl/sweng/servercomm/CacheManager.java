@@ -29,7 +29,6 @@ import epfl.sweng.tools.JSONParser;
  * 
  */
 public final class CacheManager implements OnSharedPreferenceChangeListener {
-
 	public static final String QUESTION_CACHE_DB_NAME = "Cache.db";
 	public static final String POST_SYNC_DB_NAME = "PostSync.db";
 	private static QuizQuestionDBHelper sQuizQuestionDB;
@@ -63,8 +62,11 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
 		HttpResponse reponse = null;
 		QuizQuestion quizQuestion = null;
 		DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
+		String question = sQuizQuestionDB.getRandomQuizQuestion();
+		if (question != null) {
+			quizQuestion = new QuizQuestion(question);
+		}
 
-		quizQuestion = sQuizQuestionDB.getRandomQuizQuestion();
 		if (quizQuestion != null) {
 			JSONObject questionObj = JSONParser.parseQuiztoJSON(quizQuestion);
 			reponse = httpResFactory.newHttpResponse(new BasicStatusLine(
@@ -82,12 +84,12 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
 	}
 
 	/**
-	 * @param quizQuestion
+	 * @param question
 	 * @return
 	 */
-	public HttpResponse addQuestionForSync(QuizQuestion quizQuestion) {
+	public HttpResponse addQuestionForSync(String question) {
 
-		sPostQuestionDB.addQuizQuestion(quizQuestion);
+		sPostQuestionDB.addQuizQuestion(question);
 
 		DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
 		HttpResponse reponse = httpResFactory.newHttpResponse(
@@ -105,10 +107,10 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
 	}
 
 	/**
-	 * @param quizQuestion
+	 * @param question
 	 */
-	public void pushFetchedQuestion(QuizQuestion quizQuestion) {
-		sQuizQuestionDB.addQuizQuestion(quizQuestion);
+	public void pushFetchedQuestion(String question) {
+		sQuizQuestionDB.addQuizQuestion(question);
 
 	}
 
@@ -124,40 +126,50 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
 		protected Boolean doInBackground(Void... params) {
 			Debug.out("Attempting to sync file");
 
-			QuizQuestion quizQuestion = sPostQuestionDB.getFirstPostQuestion();
-			while (quizQuestion != null) {
-
-				HttpResponse response = null;
-				try {
-					Debug.out("go to process post");
-					response = HttpCommsProxy.getInstance().postJSONObject(
-							HttpComms.URLPUSH,
-							JSONParser.parseQuiztoJSON(quizQuestion));
-					response.getEntity().consumeContent();
-					Debug.out("reponse got");
-
-				} catch (ClientProtocolException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NetworkErrorException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-					sPostQuestionDB.deleteQuizQuestion(quizQuestion);
-					quizQuestion = sPostQuestionDB.getFirstPostQuestion();
-
-				} else {
-					quizQuestion = null;
-				}
-
+			QuizQuestion quizQuestion = null;
+			try {
+				quizQuestion = new QuizQuestion(
+						sPostQuestionDB.getFirstPostQuestion());
+			} catch (JSONException e1) {
+				e1.printStackTrace();
 			}
+
+			do {
+				if (quizQuestion != null) {
+					HttpResponse response = null;
+					try {
+						Debug.out("go to process post");
+						response = HttpCommsProxy.getInstance().postJSONObject(
+								HttpComms.URLPUSH,
+								JSONParser.parseQuiztoJSON(quizQuestion));
+						response.getEntity().consumeContent();
+						Debug.out("reponse got");
+
+					} catch (ClientProtocolException e) {
+						e.printStackTrace();
+					} catch (NetworkErrorException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+
+					if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+						sPostQuestionDB.deleteQuizQuestion();
+
+						try {
+							quizQuestion = new QuizQuestion(
+									sPostQuestionDB.getFirstPostQuestion());
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+
+					}
+				}
+
+			} while (quizQuestion != null);
+
 			return true;
 		}
 
@@ -166,6 +178,7 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
 		 * 
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
+
 		@Override
 		protected void onPostExecute(Boolean result) {
 			// TODO Auto-generated method stub
@@ -175,7 +188,6 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
 						.putBoolean(PreferenceKeys.ONLINE_MODE, false);
 			}
 		}
-
 	}
 
 	/*
