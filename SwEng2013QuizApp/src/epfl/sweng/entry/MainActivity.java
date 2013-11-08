@@ -125,6 +125,11 @@ public class MainActivity extends Activity implements
 					.findViewById(R.id.offline_mode);
 			boolean isOnlineMode = pref.getBoolean(key, false);
 			offLineMode.setChecked(!isOnlineMode);
+			if (isOnlineMode) {
+				TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
+			} else {
+				TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
+			}
 
 		}
 
