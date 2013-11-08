@@ -9,8 +9,8 @@ package epfl.sweng.authentication;
  */
 public final class PreferenceKeys {
 
-    public final static String USER_PREFERENCE = "user_session";
-    public final static String SESSION_ID = "SESSION_ID";
-    public final static String ONLINE_MODE = "ONLINE";
+	public final static String USER_PREFERENCE = "user_session";
+	public final static String SESSION_ID = "SESSION_ID";
+	public final static String ONLINE_MODE = "ONLINE";
 
 }

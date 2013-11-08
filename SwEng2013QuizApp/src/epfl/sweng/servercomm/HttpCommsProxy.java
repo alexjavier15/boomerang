@@ -15,7 +15,6 @@ import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
 import epfl.sweng.authentication.PreferenceKeys;
-import epfl.sweng.authentication.SharedPreferenceManager;
 import epfl.sweng.tools.Debug;
 
 /**
@@ -25,123 +24,120 @@ import epfl.sweng.tools.Debug;
 
 public final class HttpCommsProxy implements IHttpConnectionHelper {
 
-    private static IHttpConnectionHelper sRealHttpComms = null;
-    private static CacheHttpComms sCacheHttpComms = null;
-    private static HttpCommsProxy proxy = null;
+	private static IHttpConnectionHelper sRealHttpComms = null;
+	private static CacheHttpComms sCacheHttpComms = null;
+	private static HttpCommsProxy proxy = null;
 
-    public static HttpCommsProxy getInstance() {
+	public static HttpCommsProxy getInstance() {
+		if (proxy == null) {
+			return new HttpCommsProxy();
+		} else {
+			return proxy;
+		}
+	}
 
-        if (proxy == null) {
-            return new HttpCommsProxy();
+	private HttpCommsProxy() {
+		if (sRealHttpComms == null) {
+			sRealHttpComms = HttpComms.getInstance();
+		}
 
-        } else {
-            return proxy;
-        }
+		if (sCacheHttpComms == null) {
+			sCacheHttpComms = CacheHttpComms.getInstance();
+		}
+	}
 
-    }
+	public Class<?> getServerCommsClass() {
 
-    private HttpCommsProxy() {
+		return getServerCommsInstance().getClass();
+	}
 
-        if (sRealHttpComms == null) {
-            sRealHttpComms = HttpComms.getInstance();
-        }
+	/**
+	 * @return
+	 */
+	private IHttpConnectionHelper getServerCommsInstance() {
+		if (isOnlineMode()) {
+			return sRealHttpComms;
+		} else {
+			return sCacheHttpComms;
+		}
+	}
 
-        if (sCacheHttpComms == null) {
-            sCacheHttpComms = CacheHttpComms.getInstance();
-        }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * epfl.sweng.servercomm.IHttpConnection#getHttpResponse(java.lang.String)
+	 */
+	@Override
+	public HttpResponse getHttpResponse(String urlString)
+			throws ClientProtocolException, IOException, NetworkErrorException {
 
-    }
+		HttpResponse reponse = getServerCommsInstance().getHttpResponse(
+				urlString);
+		if (reponse != null) {
+			String entity = EntityUtils.toString(reponse.getEntity());
+			String entity2 = new String(entity);
 
-    public Class<?> getServerCommsClass() {
+			reponse.setEntity(new StringEntity(entity));
 
-        return getServerCommsInstance().getClass();
-    }
+			checkReponseStatus(reponse, HttpStatus.SC_OK);
+			if (isConnected()) {
+				sCacheHttpComms.pushQuestion(reponse);
+				reponse.setEntity(new StringEntity(entity2));
+			}
+		}
 
-    /**
-     * @return
-     */
-    private IHttpConnectionHelper getServerCommsInstance() {
+		return reponse;
+	}
 
-        if (isOnlineMode()) {
-            return sRealHttpComms;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * epfl.sweng.servercomm.IHttpConnection#postJSONObject(java.lang.String,
+	 * org.json.JSONObject)
+	 */
+	@Override
+	public HttpResponse postJSONObject(String url, JSONObject question)
+			throws ClientProtocolException, IOException, JSONException,
+			NetworkErrorException {
+		HttpResponse reponse = getServerCommsInstance().postJSONObject(url,
+				question);
+		checkReponseStatus(reponse, HttpStatus.SC_CREATED);
 
-        } else {
-            return sCacheHttpComms;
-        }
-    }
+		return reponse;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.servercomm.IHttpConnection#getHttpResponse(java.lang.String)
-     */
-    @Override
-    public HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException,
-            NetworkErrorException {
+	/**
+	 * Check the status the {@link HttpResponse} against an expected status. If
+	 * the status is not as expected The proxy switch to the offline state.
+	 * 
+	 * @param reponse
+	 * @param expectedStatus
+	 */
+	private void checkReponseStatus(HttpResponse reponse, int expectedStatus) {
+		if (reponse.getStatusLine().getStatusCode() != expectedStatus) {
+			QuizApp.getPreferences().edit()
+					.putBoolean(PreferenceKeys.ONLINE_MODE, false);
+		}
+	}
 
-        HttpResponse reponse = getServerCommsInstance().getHttpResponse(urlString);
-        if (reponse != null) {
-            String entity = EntityUtils.toString(reponse.getEntity());
-            String entity2 = new String(entity);
+	private boolean isOnlineMode() {
+		Debug.out("client status : "
+				+ QuizApp.getPreferences().getBoolean(
+						PreferenceKeys.ONLINE_MODE, false));
 
-            reponse.setEntity(new StringEntity(entity));
+		return QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE,
+				false);
+	}
 
-            checkReponseStatus(reponse, HttpStatus.SC_OK);
-            if (isConnected()) {
-                sCacheHttpComms.pushQuestion(reponse);
-                reponse.setEntity(new StringEntity(entity2));
-
-            }
-
-        }
-
-        return reponse;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.servercomm.IHttpConnection#postJSONObject(java.lang.String, org.json.JSONObject)
-     */
-    @Override
-    public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
-            JSONException, NetworkErrorException {
-        HttpResponse reponse = getServerCommsInstance().postJSONObject(url, question);
-        checkReponseStatus(reponse, HttpStatus.SC_CREATED);
-
-        return reponse;
-    }
-
-    /**
-     * Check the status the {@link HttpResponse} against an expected status. If the status is not as expected The proxy
-     * switch to the offline state.
-     * 
-     * @param reponse
-     * @param expectedStatus
-     */
-    private void checkReponseStatus(HttpResponse reponse, int expectedStatus) {
-        if (reponse.getStatusLine().getStatusCode() != expectedStatus) {
-            SharedPreferenceManager.getInstance().writeBooleaPreference(PreferenceKeys.ONLINE_MODE, false);
-        }
-
-    }
-
-    private boolean isOnlineMode() {
-        Debug.out("client status : "
-                + SharedPreferenceManager.getInstance().getBooleanPreference(PreferenceKeys.ONLINE_MODE));
-
-        return SharedPreferenceManager.getInstance().getBooleanPreference(PreferenceKeys.ONLINE_MODE);
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
-     */
-    @Override
-    public boolean isConnected() {
-        return getServerCommsInstance().isConnected();
-    }
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
+	 */
+	@Override
+	public boolean isConnected() {
+		return getServerCommsInstance().isConnected();
+	}
 }
