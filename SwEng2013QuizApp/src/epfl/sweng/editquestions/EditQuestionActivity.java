@@ -304,7 +304,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         return auditAnswers() + auditButtons() + auditEditTexts() + auditSubmitButton();
     }
 
-    private int auditEditTexts() {
+    public int auditEditTexts() {
         int numberErrors = 0;
         if (!questionEditText.getHint().equals(questionHint) || questionEditText.getVisibility() != View.VISIBLE) {
             numberErrors++;
@@ -321,7 +321,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         return numberErrors;
     }
 
-    private int auditButtons() {
+    public int auditButtons() {
         int numberErrors = 0;
         if (!addAnswerButton.getText().equals("+") || addAnswerButton.getVisibility() != View.VISIBLE) {
         	numberErrors++;
@@ -345,7 +345,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         return numberErrors;
     }
 
-    private int auditAnswers() {
+    public int auditAnswers() {
         int numberErrors = 0;
         int numberOfAnswers = 0;
         for (int i = 0; i < mListView.getChildCount(); i++) {
@@ -360,7 +360,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         return numberErrors;
     }
 
-    private int auditSubmitButton() {
+    public int auditSubmitButton() {
         int numberErrors = 0;
         QuizQuestion currentQQ = createQuestion();
         if (currentQQ.auditErrors() != 0) {

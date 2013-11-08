@@ -25,6 +25,7 @@ public class EditQuestionsActivityTest extends
 		super(EditQuestionActivity.class);
 	}
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		MockHttpClient mock = new MockHttpClient();
