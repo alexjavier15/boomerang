@@ -29,13 +29,13 @@ public class QuizQuestionAuditTest extends TestCase {
 	}
 	
 	private QuizQuestion createQuestion() {
-        String question = "What is the answer to life, the universe, and everything?";
+        String questioni = "What is the answer to life, the universe, and everything?";
         ArrayList<String> answers = new ArrayList<String>();
         answers.add("Forty-two");
         answers.add("Twenty-seven");
         int sol = 0;
         Set<String> tags = new HashSet<String>(Arrays.asList("h2g2", "trivia"));
-        return new QuizQuestion(question, answers, sol, tags, -1, "");
+        return new QuizQuestion(questioni, answers, sol, tags, -1, "");
     }
 	
 }

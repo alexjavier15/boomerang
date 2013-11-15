@@ -52,18 +52,14 @@ public class QuizQuestionTest extends TestCase {
                 response = HttpComms.getInstance().postJSONObject(HttpComms.URLPUSH,
                         JSONParser.parseQuiztoJSON(question));
                 System.out.println(response.getStatusLine());
-               response.getEntity().consumeContent();
+                response.getEntity().consumeContent();
             } catch (ClientProtocolException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (NetworkErrorException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
