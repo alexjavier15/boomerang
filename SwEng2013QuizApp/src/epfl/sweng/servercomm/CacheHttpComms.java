@@ -65,6 +65,8 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
             JSONException, NetworkErrorException {
         if (url.equals(HttpComms.URLPUSH)) {
             return CacheManager.getInstance().addQuestionForSync(question.toString());
+        } else if (url.equals(HttpComms.URLQUERYPOST)){
+        	return CacheManager.getInstance().pushQueryQuestion(question);
         } else {
             throw new UnsupportedOperationException("Unsupported operation in offline mode");
         }

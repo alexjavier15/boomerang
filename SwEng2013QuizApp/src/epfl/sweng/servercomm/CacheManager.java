@@ -31,8 +31,10 @@ import epfl.sweng.tools.JSONParser;
 public final class CacheManager implements OnSharedPreferenceChangeListener {
 	public static final String QUESTION_CACHE_DB_NAME = "Cache.db";
 	public static final String POST_SYNC_DB_NAME = "PostSync.db";
+	public static final String QUERY_CACHE_DB_NAME = "QueryCache.db";
 	private static QuizQuestionDBHelper sQuizQuestionDB;
 	private static QuizQuestionDBHelper sPostQuestionDB;
+	private static QuizQuestionDBHelper sQueryQuestionDB;
 	private static CacheManager sCacheManager = null;
 
 	private CacheManager() {
@@ -41,6 +43,8 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
 				QUESTION_CACHE_DB_NAME);
 		sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(),
 				POST_SYNC_DB_NAME);
+		sQueryQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(),
+				QUERY_CACHE_DB_NAME);
 
 	}
 
@@ -58,11 +62,22 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
 	 * @throws JSONException
 	 */
 	public HttpResponse getRandomQuestion() throws IOException, JSONException {
+		
+		String question = sQuizQuestionDB.getRandomQuizQuestion();	
 
+		return wrapQuizQuestion(question);
+	}
+	
+	public HttpResponse getNextQueryQuestion() throws IOException, JSONException {
+		String question = sQueryQuestionDB.getRandomQuizQuestion();//TODO not random
+		return wrapQuizQuestion(question);
+		
+	}
+	
+	private HttpResponse wrapQuizQuestion(String question) throws IOException, JSONException{
 		HttpResponse reponse = null;
 		QuizQuestion quizQuestion = null;
 		DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
-		String question = sQuizQuestionDB.getRandomQuizQuestion();
 		if (question != null) {
 			quizQuestion = new QuizQuestion(question);
 		}
@@ -98,6 +113,10 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
 
 		return reponse;
 
+	}
+	public void pushQueryQuestion(String query){
+		
+		sQueryQuestionDB.addQuizQuestion(query);
 	}
 
 	private void syncPostCachedQuestions() {
