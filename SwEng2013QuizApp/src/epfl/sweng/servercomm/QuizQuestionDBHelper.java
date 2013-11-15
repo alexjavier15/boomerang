@@ -51,11 +51,6 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
-        Debug.out("creating");
-        Debug.out(db.getVersion());
-
-
-
 
     }
 
@@ -69,7 +64,6 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         Debug.out("upgrading");
         db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
-
     }
 
     public void addQuizQuestion(String question) {

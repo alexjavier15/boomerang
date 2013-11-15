@@ -33,6 +33,7 @@ public final class HttpComms implements IHttpConnectionHelper {
 	public final static String URL_SWENG_SWERVER_LOGIN = "https://sweng-quiz.appspot.com/login";
 	public final static String URL_TEQUILA = "https://tequila.epfl.ch/cgi-bin/tequila/login";
 	public final static String URLPUSH = "https://sweng-quiz.appspot.com/quizquestions/";
+	public final static String URLQUERYPOST = "https://sweng-quiz.appspot.com/search";
 	private static HttpComms singleHTTPComs = null;
 	private String authenticationValue = null;
 

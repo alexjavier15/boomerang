@@ -28,6 +28,7 @@ import epfl.sweng.tools.Debug;
  * @author AlbanMarguet, CanGuzelhan
  * 
  */
+
 public class MainActivity extends Activity implements OnSharedPreferenceChangeListener {
 
     private boolean authenticated = true;

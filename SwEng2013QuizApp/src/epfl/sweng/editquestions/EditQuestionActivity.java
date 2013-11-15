@@ -109,7 +109,12 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         submitButton = (Button) findViewById(R.id.submit_button);
         addAnswerButton = (Button) findViewById(R.id.add_answer);
         mReset = false;
-        TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
+    }
+    
+    @Override
+    protected void onStart() {
+    	super.onStart();
+    	TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
     }
 
     @Override
@@ -321,7 +326,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         return numberErrors;
     }
 
-    public int auditButtons() {
+    private int auditButtons() {
         int numberErrors = 0;
         if (!addAnswerButton.getText().equals("+") || addAnswerButton.getVisibility() != View.VISIBLE) {
         	numberErrors++;
@@ -345,7 +350,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         return numberErrors;
     }
 
-    public int auditAnswers() {
+    private int auditAnswers() {
         int numberErrors = 0;
         int numberOfAnswers = 0;
         for (int i = 0; i < mListView.getChildCount(); i++) {
@@ -360,7 +365,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         return numberErrors;
     }
 
-    public int auditSubmitButton() {
+    private int auditSubmitButton() {
         int numberErrors = 0;
         QuizQuestion currentQQ = createQuestion();
         if (currentQQ.auditErrors() != 0) {

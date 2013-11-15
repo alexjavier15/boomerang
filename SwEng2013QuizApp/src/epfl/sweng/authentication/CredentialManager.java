@@ -30,6 +30,10 @@ public final class CredentialManager {
 	public String getUserCredential() {
 		return mUserPreferences.getString(PreferenceKeys.SESSION_ID, "");
 	}
+	
+	public boolean getOnlineStatus() {
+	    return mUserPreferences.getBoolean(PreferenceKeys.ONLINE_MODE, false);
+	}
 
 	public boolean removeUserCredential() {
 		return mUserPreferences.edit().clear().commit();
