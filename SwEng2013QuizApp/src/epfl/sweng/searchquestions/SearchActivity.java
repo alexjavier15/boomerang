@@ -25,7 +25,7 @@ public class SearchActivity extends Activity {
 	}
 
 	protected void onStart() {
-		TestCoordinator.check(TTChecks.);
+		TestCoordinator.check(TTChecks.SEARCH_ACTIVITY_SHOWN);
 	}
 
 	public void search() {
