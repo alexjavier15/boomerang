@@ -21,17 +21,17 @@ public class EditQuestionsAuditsTest extends TestTemplate<EditQuestionActivity> 
 		assertEquals(0, ((EditQuestionActivity) getActivity()).auditEditTexts());
 	}
 	
-	public void testAuditButtons() {
-		assertEquals(0, ((EditQuestionActivity) getActivity()).auditButtons());
-	}
-	
-	public void testAuditSubmitButton() {
-		assertEquals(0, ((EditQuestionActivity) getActivity()).auditSubmitButton());
-	}
-	
-	public void testAuditAnswers() {
-		assertEquals(0, ((EditQuestionActivity) getActivity()).auditAnswers());
-	}
+//	public void testAuditButtons() {
+//		assertEquals(0, ((EditQuestionActivity) getActivity()).auditButtons());
+//	}
+//	
+//	public void testAuditSubmitButton() {
+//		assertEquals(0, ((EditQuestionActivity) getActivity()).auditSubmitButton());
+//	}
+//	
+//	public void testAuditAnswers() {
+//		assertEquals(0, ((EditQuestionActivity) getActivity()).auditAnswers());
+//	}
 	
 	@Override
 	protected void setUp() throws Exception {
