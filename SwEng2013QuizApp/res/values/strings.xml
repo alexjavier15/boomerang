@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="app_name">SwEng2013QuizApp</string>
@@ -23,5 +24,7 @@
     <string name="log_in">Log in using Tequila</string>
     <string name="offline">Offline mode</string>
     <string name="cache_service_name">CacheManagerService</string>
+    <string name="title_activity_search">SearchActivity</string>
+    <string name="query_hint">Type in the search query</string>
 
 </resources>
