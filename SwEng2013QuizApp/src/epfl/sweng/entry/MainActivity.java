@@ -86,7 +86,7 @@ public class MainActivity extends Activity implements
 	protected void onResume() {
 		super.onResume();
 		checkStatus(CredentialManager.getInstance().getUserCredential());
-		checkModeStatus(CredentialManager.getInstance().getOnlineStatus());
+		//checkModeStatus(CredentialManager.getInstance().getOnlineStatus());
 	}
 
 	/**
