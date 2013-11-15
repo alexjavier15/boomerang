@@ -112,9 +112,9 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     }
     
     @Override
-    protected void onResume() {
-    	super.onResume();
-        TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
+    protected void onStart() {
+    	super.onStart();
+    	TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
     }
 
     @Override
