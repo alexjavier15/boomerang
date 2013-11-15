@@ -1,5 +1,7 @@
 package epfl.sweng.searchquestions;
 
+import java.util.EmptyStackException;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,13 +15,15 @@ import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 public class SearchActivity extends Activity {
 
 	private EditText searchQuery = null;
-	private int maxLengthOfQuery = 500;
+	private Button searchButton = null;
+	private final int maxLengthOfQuery = 500;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,26 +33,28 @@ public class SearchActivity extends Activity {
 		TextWatcher watcher = new TextWatcher() {
 			
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void onTextChanged(CharSequence s, int start, int before, int count) { }
 			
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-				// TODO Auto-generated method stub
-				
-			}
+					int after) { }
 			
 			@Override
 			public void afterTextChanged(Editable s) {
+				if (isQueryValid()) {
+					searchButton.setEnabled(true);
+				} else {
+					searchButton.setEnabled(false);
+				}
 				TestCoordinator.check(TTChecks.QUERY_EDITED);
 			}
 		};
 	
 		searchQuery = (EditText) findViewById(R.id.edit_search_query);
 		searchQuery.addTextChangedListener(watcher);
+		
+		searchButton = (Button) findViewById(R.id.search_button);
+		searchButton.setEnabled(false);
 	}
 
 	@Override
@@ -83,23 +89,21 @@ public class SearchActivity extends Activity {
 		return text.length() <= maxLengthOfQuery && matcher1.matches() && matcher2.matches() && nestedText(text);
 	}
 	
+	@SuppressWarnings("finally")
 	private boolean nestedText(String text) {
-		int compteur = 0;
-		for (char c: text.toCharArray()) {
-			switch (c) {
-				case '(':
-					compteur++;
-					break;
-				case ')':
-					compteur--;
-					if (compteur < 0) {
-						return false;
-					}
-					break;
-				default:
-					break;
+		Stack<Character> stack = new Stack<Character>();
+		try {
+			for (char c: text.toCharArray()) {
+				if (c == '(') {
+					stack.push(c);
+				} else if (c == ')') {
+					stack.pop();
+				}
 			}
+		} catch (EmptyStackException e) {
+			e.printStackTrace();
+		} finally {
+			return stack.isEmpty();
 		}
-		return compteur == 0;
 	}
 }
