@@ -86,8 +86,7 @@ public class MainActivity extends Activity implements
 	protected void onResume() {
 		super.onResume();
 		checkStatus(CredentialManager.getInstance().getUserCredential());
-		checkModeStatus(CredentialManager.getInstance()
-				.getOnlineStatus());
+		checkModeStatus(CredentialManager.getInstance().getOnlineStatus());
 	}
 
 	/**
@@ -186,6 +185,6 @@ public class MainActivity extends Activity implements
 		QuizApp.getPreferences()
 				.edit()
 				.putBoolean(PreferenceKeys.ONLINE_MODE,
-						!((CheckBox) view).isChecked());
+						!((CheckBox) view).isChecked()).commit();
 	}
 }
