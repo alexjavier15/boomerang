@@ -32,11 +32,14 @@ public class MainActivity extends Activity implements
 		OnSharedPreferenceChangeListener {
 
 	private boolean authenticated = true;
+	private CheckBox checkbox = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		checkbox = (CheckBox) findViewById(R.id.offline_mode);
 	}
 
 	private void checkStatus(String newValue) {
@@ -136,15 +139,13 @@ public class MainActivity extends Activity implements
 	}
 
 	private void checkModeStatus(boolean key) {
-		CheckBox offLineMode = (CheckBox) this
-				.findViewById(R.id.offline_mode);
 		boolean isOnlineMode = key;
-		offLineMode.setChecked(!isOnlineMode);
-		if (isOnlineMode) {
-			TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
-		} else {
-			TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
-		}
+		checkbox.setChecked(!isOnlineMode);
+//		if (isOnlineMode) {
+//			TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
+//		} else {
+//			TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
+//		}
 	}
 
 	/**
@@ -183,8 +184,13 @@ public class MainActivity extends Activity implements
 	 */
 	public void changeNetworkMode(View view) {
 		QuizApp.getPreferences()
-				.edit()
-				.putBoolean(PreferenceKeys.ONLINE_MODE,
-						!((CheckBox) view).isChecked()).commit();
+			.edit()
+			.putBoolean(PreferenceKeys.ONLINE_MODE,
+				!checkbox.isChecked()).commit();
+		if (checkbox.isChecked()) {
+			TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
+		} else {
+			TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
+		}
 	}
 }
