@@ -37,23 +37,20 @@ public class MainActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		QuizApp.getPreferences().registerOnSharedPreferenceChangeListener(this);
-
-		String newValue = CredentialManager.getInstance().getUserCredential();
-		checkStatus(newValue);
-
 	}
 
 	private void checkStatus(String newValue) {
 		if (newValue.equals("")) {
-			Log.i("Session Id has been removed: logged out", newValue);
+			Log.i("Session Id has been removed: logged out",
+					newValue);
 			setAthenticated(false);
 			((Button) findViewById(R.id.log_inout))
 					.setText("Log in using Tequila");
 		} else {
 			Log.i("New session Id is: ", newValue);
 			setAthenticated(true);
-			((Button) findViewById(R.id.log_inout)).setText("Log out");
+			((Button) findViewById(R.id.log_inout))
+					.setText("Log out");
 			CacheManager.getInstance();
 		}
 	}
@@ -77,9 +74,20 @@ public class MainActivity extends Activity implements
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		Debug.out((new CheckProxyHelper()).getServerCommunicationClass());
+		QuizApp.getPreferences()
+				.registerOnSharedPreferenceChangeListener(this);
+		Debug.out((new CheckProxyHelper())
+				.getServerCommunicationClass());
 		TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
 
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		checkStatus(CredentialManager.getInstance().getUserCredential());
+		checkModeStatus(CredentialManager.getInstance()
+				.getOnlineStatus());
 	}
 
 	/**
@@ -87,10 +95,11 @@ public class MainActivity extends Activity implements
 	 * question
 	 * 
 	 * @param view
-	 *            The view that was clicked.
+	 *                The view that was clicked.
 	 */
 	public void askQuestion(View view) {
-		Toast.makeText(this, "You are on the page to show a random question!",
+		Toast.makeText(this,
+				"You are on the page to show a random question!",
 				Toast.LENGTH_SHORT).show();
 		Intent showQuestionActivityIntent = new Intent(this,
 				ShowQuestionsActivity.class);
@@ -118,21 +127,25 @@ public class MainActivity extends Activity implements
 		Debug.out("listener notify");
 		if (key.equals(PreferenceKeys.SESSION_ID)) {
 			String newValue = pref.getString(key, "");
-			Log.i("MainActivity Listener new key value session id : ", newValue);
+			Log.i("MainActivity Listener new key value session id : ",
+					newValue);
 			checkStatus(newValue);
 		} else if (key.equals(PreferenceKeys.ONLINE_MODE)) {
-			CheckBox offLineMode = (CheckBox) this
-					.findViewById(R.id.offline_mode);
-			boolean isOnlineMode = pref.getBoolean(key, false);
-			offLineMode.setChecked(!isOnlineMode);
-			if (isOnlineMode) {
-				TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
-			} else {
-				TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
-			}
-
+			checkModeStatus(pref.getBoolean(key, false));
 		}
 
+	}
+
+	private void checkModeStatus(boolean key) {
+		CheckBox offLineMode = (CheckBox) this
+				.findViewById(R.id.offline_mode);
+		boolean isOnlineMode = key;
+		offLineMode.setChecked(!isOnlineMode);
+		if (isOnlineMode) {
+			TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
+		} else {
+			TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
+		}
 	}
 
 	/**
@@ -141,9 +154,12 @@ public class MainActivity extends Activity implements
 	 */
 	private void setAthenticated(boolean newState) {
 		authenticated = newState;
-		((Button) findViewById(R.id.ShowQuestionButton)).setEnabled(newState);
-		((Button) findViewById(R.id.SubmitQuestionButton)).setEnabled(newState);
-		((CheckBox) findViewById(R.id.offline_mode)).setEnabled(newState);
+		((Button) findViewById(R.id.ShowQuestionButton))
+				.setEnabled(newState);
+		((Button) findViewById(R.id.SubmitQuestionButton))
+				.setEnabled(newState);
+		((CheckBox) findViewById(R.id.offline_mode))
+				.setEnabled(newState);
 	}
 
 	/**
@@ -151,10 +167,11 @@ public class MainActivity extends Activity implements
 	 * submit a new question to the server
 	 * 
 	 * @param view
-	 *            The view that was clicked.
+	 *                The view that was clicked.
 	 */
 	public void submitQuestion(View view) {
-		Toast.makeText(this, "You are on the page to submit a question!",
+		Toast.makeText(this,
+				"You are on the page to submit a question!",
 				Toast.LENGTH_SHORT).show();
 		Intent submitActivityIntent = new Intent(this,
 				EditQuestionActivity.class);
