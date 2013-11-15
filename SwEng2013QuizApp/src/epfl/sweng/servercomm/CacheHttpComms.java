@@ -26,6 +26,8 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
         }
         return sCache;
     }
+    
+    
 
     /*
      * (non-Javadoc)

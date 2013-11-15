@@ -12,7 +12,6 @@ public class CheckProxyHelper implements ICheckProxyHelper {
     @Override
     public Class<?> getProxyClass() {
         return HttpCommsProxy.getInstance().getClass();
-
     }
 
 }

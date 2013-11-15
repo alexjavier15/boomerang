@@ -79,7 +79,7 @@ public class MainActivity extends Activity implements
 		Debug.out((new CheckProxyHelper())
 				.getServerCommunicationClass());
 		TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
-
+		
 	}
 
 	@Override
