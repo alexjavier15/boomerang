@@ -23,9 +23,9 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
     }
 
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String TABLE_NAME = "quizQuestions";
-    public static final String COLUMN_NAME_JSON_QUESTION = "";
+    public static final String COLUMN_NAME_JSON_QUESTION = "jsonQuestion";
     private static final String TEXT_TYPE = " TEXT";
     private static final String SQL_CREATE_ENTRIES = "CREATE TABLE " + TABLE_NAME + " (" + _ID
             + " INTEGER PRIMARY KEY," + COLUMN_NAME_JSON_QUESTION  + TEXT_TYPE + " )";
@@ -51,6 +51,11 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
+        Debug.out("creating");
+        Debug.out(db.getVersion());
+
+
+
 
     }
 
@@ -61,6 +66,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Debug.out("upgrading");
         db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
 

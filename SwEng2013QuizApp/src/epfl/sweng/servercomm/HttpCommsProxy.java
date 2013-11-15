@@ -116,7 +116,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 		if (!checkReponseStatus(reponse, HttpStatus.SC_CREATED)) {
 			sCacheHttpComms.postJSONObject(url, question);
 			QuizApp.getPreferences().edit()
-					.putBoolean(PreferenceKeys.ONLINE_MODE, false);
+					.putBoolean(PreferenceKeys.ONLINE_MODE, false).apply();
 		}
 
 		return reponse;
