@@ -109,6 +109,11 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         submitButton = (Button) findViewById(R.id.submit_button);
         addAnswerButton = (Button) findViewById(R.id.add_answer);
         mReset = false;
+    }
+    
+    @Override
+    protected void onResume() {
+    	super.onResume();
         TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
     }
 
