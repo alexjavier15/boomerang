@@ -26,5 +26,6 @@
     <string name="cache_service_name">CacheManagerService</string>
     <string name="title_activity_search">SearchActivity</string>
     <string name="query_hint">Type in the search query</string>
+    <string name="search_text">Search</string>
 
 </resources>

@@ -1,19 +1,54 @@
 package epfl.sweng.searchquestions;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import epfl.sweng.R;
+import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
-import epfl.sweng.testing.TestingTransaction;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class SearchActivity extends Activity {
 
+	private EditText searchQuery = null;
+	private int maxLengthOfQuery = 500;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
+		
+		TextWatcher watcher = new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				TestCoordinator.check(TTChecks.QUERY_EDITED);
+			}
+		};
+	
+		searchQuery = (EditText) findViewById(R.id.edit_search_query);
+		searchQuery.addTextChangedListener(watcher);
 	}
 
 	@Override
@@ -29,7 +64,42 @@ public class SearchActivity extends Activity {
 	}
 
 	public void search() {
-
+		Toast.makeText(this,
+				"You are on the page to enter a specific query for a random question",
+				Toast.LENGTH_SHORT).show();
+		Intent showQuestionActivityIntent = new Intent(this,
+				ShowQuestionsActivity.class);
+		this.startActivity(showQuestionActivityIntent);
 	}
-
+	
+	private boolean isQueryValid() {
+		String text = searchQuery.getText().toString();
+		// Only alphanumeric or " ", "(", ")", "*", "+"
+		Pattern pattern1 = Pattern.compile("([A-Za-z0-9 \\(\\)\\*\\+]+)");
+		Matcher matcher1 = pattern1.matcher(text);
+		// At least one alphanumeric character
+		Pattern pattern2 = Pattern.compile("([A-Za-z0-9]+)");
+		Matcher matcher2 = pattern2.matcher(text);
+		return text.length() <= maxLengthOfQuery && matcher1.matches() && matcher2.matches() && nestedText(text);
+	}
+	
+	private boolean nestedText(String text) {
+		int compteur = 0;
+		for (char c: text.toCharArray()) {
+			switch (c) {
+				case '(':
+					compteur++;
+					break;
+				case ')':
+					compteur--;
+					if (compteur < 0) {
+						return false;
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		return compteur == 0;
+	}
 }
