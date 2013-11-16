@@ -43,7 +43,7 @@ public class QueryConManager extends ConnectionManager {
 	@Override
 	public HttpResponse requete() {
 		HttpResponse response = null;
-		if (qCount == questionIndex) {
+		if ((qCount == 0) || (qCount == questionIndex && hasNext)) {
 			try {
 				JSONObject joll = JSONParser.parseKeyValuePairtoJSON("query",
 						query);
@@ -116,7 +116,7 @@ public class QueryConManager extends ConnectionManager {
 		}
 	}
 	
-	public String getErrorMessage(){
+	public String getErrorMessage() {
 		if (qCount>0) {
 			return ERROR_NO_MORE;
 		} else {
