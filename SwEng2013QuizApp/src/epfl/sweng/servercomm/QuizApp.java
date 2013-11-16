@@ -26,7 +26,7 @@ public class QuizApp extends Application {
 
 	public static SharedPreferences getPreferences() {
 		return getContexStatic().getSharedPreferences(
-				PreferenceKeys.SESSION_ID, MODE_PRIVATE);
+				PreferenceKeys.USER_PREFERENCE, MODE_PRIVATE);
 	}
 
 	@Override
