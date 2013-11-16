@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
@@ -17,17 +18,16 @@ import android.accounts.NetworkErrorException;
  */
 public interface IHttpConnectionHelper {
 
-	HttpResponse getHttpResponse(String urlString)
-		throws ClientProtocolException, IOException, NetworkErrorException,
-		NullPointerException;
+    HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException, NetworkErrorException,
+            JSONException;
 
-	boolean isConnected();
+    boolean isConnected();
 
-	HttpResponse postJSONObject(String url, JSONObject question)
-		throws ClientProtocolException, IOException, NetworkErrorException;
+    HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
+            NetworkErrorException, JSONException;
 
-	/**
-	 * @param reponse
-	 */
+    /**
+     * @param reponse
+     */
 
 }

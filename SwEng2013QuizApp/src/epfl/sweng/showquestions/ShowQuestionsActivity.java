@@ -35,113 +35,106 @@ import epfl.sweng.tools.JSONParser;
 
 public class ShowQuestionsActivity extends Activity {
 
-	private ArrayAdapter<String> adapter;
-	private ListView answerChoices;
-	private OnItemClickListener answerListener = null;
-	private QuizQuestion currrentQuestion;
-	private int lastChoice = -1;
-	private TextView tags;
-	private TextView text;
-	private ConnectionManager conManager = null;
+    private ArrayAdapter<String> adapter;
+    private ListView answerChoices;
+    private OnItemClickListener answerListener = null;
+    private QuizQuestion currrentQuestion;
+    private int lastChoice = -1;
+    private TextView tags;
+    private TextView text;
+    private ConnectionManager conManager = null;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_show_questions);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_show_questions);
 
-		((Button) findViewById(R.id.next_question)).setEnabled(false);
-		answerChoices = (ListView) findViewById(R.id.answer_choices);
+        ((Button) findViewById(R.id.next_question)).setEnabled(false);
+        answerChoices = (ListView) findViewById(R.id.answer_choices);
 
-		tags = (TextView) findViewById(R.id.show_tags);
+        tags = (TextView) findViewById(R.id.show_tags);
 
-		text = (TextView) findViewById(R.id.show_question);
-		Debug.out(text);
+        text = (TextView) findViewById(R.id.show_question);
+        Debug.out(text);
 
-		answerListener = new OnItemClickListener() {
+        answerListener = new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> listAdapter, View view,
-					int selectedAnswer, long arg3) {
+            @Override
+            public void onItemClick(AdapterView<?> listAdapter, View view, int selectedAnswer, long arg3) {
 
-				ListView list = (ListView) listAdapter;
-				TextView textListener = (TextView) list
-						.getChildAt(selectedAnswer);
+                ListView list = (ListView) listAdapter;
+                TextView textListener = (TextView) list.getChildAt(selectedAnswer);
 
-				if (lastChoice != -1) {
-					TextView lastChild = (TextView) list.getChildAt(lastChoice);
-					if (lastChild != null) {
-						String lastAnswer = lastChild.getText().toString();
-						if (lastAnswer.contains("\u2718")) {
-							lastAnswer = lastAnswer.substring(0,
-									lastAnswer.length() - 1);
-						}
-						lastChild.setText(lastAnswer);
-					}
-				}
+                if (lastChoice != -1) {
+                    TextView lastChild = (TextView) list.getChildAt(lastChoice);
+                    if (lastChild != null) {
+                        String lastAnswer = lastChild.getText().toString();
+                        if (lastAnswer.contains("\u2718")) {
+                            lastAnswer = lastAnswer.substring(0, lastAnswer.length() - 1);
+                        }
+                        lastChild.setText(lastAnswer);
+                    }
+                }
 
-				String question = getResources().getString(
-						R.string.heavy_ballot_x);
+                String question = getResources().getString(R.string.heavy_ballot_x);
 
-				if (currrentQuestion.checkAnswer(selectedAnswer)) {
-					question = getResources().getString(
-							R.string.heavy_check_mark);
-					((Button) findViewById(R.id.next_question))
-							.setEnabled(true);
-					list.setOnItemClickListener(null);
-				}
+                if (currrentQuestion.checkAnswer(selectedAnswer)) {
+                    question = getResources().getString(R.string.heavy_check_mark);
+                    ((Button) findViewById(R.id.next_question)).setEnabled(true);
+                    list.setOnItemClickListener(null);
+                }
 
-				TestCoordinator.check(TTChecks.ANSWER_SELECTED);
+                TestCoordinator.check(TTChecks.ANSWER_SELECTED);
 
-				String newText = textListener.getText().toString() + question;
-				textListener.setText(newText);
-				lastChoice = selectedAnswer;
+                String newText = textListener.getText().toString() + question;
+                textListener.setText(newText);
+                lastChoice = selectedAnswer;
 
-			}
+            }
 
-		};
-		answerChoices.setOnItemClickListener(answerListener);
-		if (getIntent().hasExtra("query_mode")) {
-			conManager = new QueryConManager(this);
-		} else {
-			conManager = new RandomManager(this);
-		}
-	}
+        };
+        answerChoices.setOnItemClickListener(answerListener);
+        if (getIntent().hasExtra("query_mode")) {
+            conManager = new QueryConManager(this);
+        } else {
+            conManager = new RandomManager(this);
+        }
+    }
 
-	/**
-	 * Inflate the menu; this adds items to the action bar if it is present.
-	 * 
-	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.show_questions, menu);
-		return true;
-	}
+    /**
+     * Inflate the menu; this adds items to the action bar if it is present.
+     * 
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.show_questions, menu);
+        return true;
+    }
 
-	@Override
-	protected void onStart() {
-		askNextQuestion(this.getCurrentFocus());
-	}
+    @Override
+    protected void onStart() {
+        askNextQuestion(this.getCurrentFocus());
+    }
 
-	/**
-	 * Launches a new async task which will fetch a new question when clicking
-	 * on the button labeled "Next Question"
-	 * 
-	 * @param view
-	 */
+    /**
+     * Launches a new async task which will fetch a new question when clicking on the button labeled "Next Question"
+     * 
+     * @param view
+     */
 
-	public void askNextQuestion(View view) {
-		answerChoices.setOnItemClickListener(answerListener);
-		((Button) findViewById(R.id.next_question)).setEnabled(false);
-		new HttpCommsBackgroundTask(conManager, true).execute();
-	}
-	
-	public void parseResponse(HttpResponse response) {
-		QuizQuestion quizQuestion = null;
+    public void askNextQuestion(View view) {
+        answerChoices.setOnItemClickListener(answerListener);
+        ((Button) findViewById(R.id.next_question)).setEnabled(false);
+        new HttpCommsBackgroundTask(conManager, true).execute();
+    }
+
+    public void parseResponse(HttpResponse response) {
+        QuizQuestion quizQuestion = null;
 
         if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 
             try {
-            	quizQuestion = new QuizQuestion(JSONParser.getParser(response).toString());
+                quizQuestion = new QuizQuestion(JSONParser.getParser(response).toString());
                 Debug.out(quizQuestion);
             } catch (IOException e) {
                 Log.e(getLocalClassName(), e.getMessage());
@@ -156,68 +149,67 @@ public class ShowQuestionsActivity extends Activity {
                 toast(conManager.getErrorMessage());
             }
         } else {
-        	toast(conManager.getErrorMessage());
+            toast(conManager.getErrorMessage());
         }
         TestCoordinator.check(TTChecks.QUESTION_SHOWN);
-	}
+    }
 
-	/**
-	 * Get the tags of the question to display them on the screen
-	 * 
-	 * @param set
-	 *            : set of Strings
-	 * @return the tags
-	 */
-	private String displayTags(Set<String> set) {
-		if (set.size() > 0) {
-			System.out.println("Va afficher les tags");
-			String tagsInString = "";
-			int counter = 0;
+    /**
+     * Get the tags of the question to display them on the screen
+     * 
+     * @param set
+     *            : set of Strings
+     * @return the tags
+     */
+    private String displayTags(Set<String> set) {
+        if (set.size() > 0) {
+            System.out.println("Va afficher les tags");
+            String tagsInString = "";
+            int counter = 0;
 
-			for (String s : set) {
-				counter++;
-				if (counter == set.size()) {
-					tagsInString += s;
-				} else {
-					tagsInString += s + ", ";
-				}
-			}
+            for (String s : set) {
+                counter++;
+                if (counter == set.size()) {
+                    tagsInString += s;
+                } else {
+                    tagsInString += s + ", ";
+                }
+            }
 
-			return tagsInString;
-		} else {
-			return "No tags for this question";
-		}
-	}
+            return tagsInString;
+        } else {
+            return "No tags for this question";
+        }
+    }
 
-	void setQuestion(QuizQuestion quizQuestion) {
-		currrentQuestion = quizQuestion;
+    void setQuestion(QuizQuestion quizQuestion) {
+        currrentQuestion = quizQuestion;
 
-		text.setText(quizQuestion.getQuestion());
-		tags.setText(displayTags(quizQuestion.getTags()));
-		adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
+        text.setText(quizQuestion.getQuestion());
+        tags.setText(displayTags(quizQuestion.getTags()));
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
 
-		answerChoices.setAdapter(adapter);
+        answerChoices.setAdapter(adapter);
 
-		adapter.setNotifyOnChange(true);
-	}
+        adapter.setNotifyOnChange(true);
+    }
 
-	public TextView getText() {
-		return text;
-	}
+    public TextView getText() {
+        return text;
+    }
 
-	public void setText(TextView view) {
-		text = view;
-	}
+    public void setText(TextView view) {
+        text = view;
+    }
 
-	public void toast(String message) {
-		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-	}
+    public void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
 
-	public void block() {
-		answerChoices.setClickable(false);
-		((Button) findViewById(R.id.next_question)).setEnabled(false);
-		
-	}
+    public void block() {
+        answerChoices.setClickable(false);
+        ((Button) findViewById(R.id.next_question)).setEnabled(false);
+
+    }
 
 }

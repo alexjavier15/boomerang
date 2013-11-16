@@ -110,11 +110,11 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         addAnswerButton = (Button) findViewById(R.id.add_answer);
         mReset = false;
     }
-    
+
     @Override
     protected void onStart() {
-    	super.onStart();
-    	TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
+        super.onStart();
+        TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
     }
 
     @Override
@@ -179,35 +179,30 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         return questionCreated;
     }
 
-	@Override
-	public HttpResponse requete() {
-		HttpResponse response = null;
 
-		try {
-			QuizQuestion question = createQuestion();
+    @Override
+    public HttpResponse requete() {
+        HttpResponse response = null;
+        try {
+            QuizQuestion question = createQuestion();
 
-			response = HttpCommsProxy.getInstance().postJSONObject(
-					HttpComms.URL_SWENG_PUSH,
-					JSONParser.parseQuiztoJSON(question));
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NetworkErrorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH,
+                    JSONParser.parseQuiztoJSON(question));
 
-		return response;
-	}
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (NetworkErrorException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return response;
+    }
 
     @Override
     public void processHttpReponse(HttpResponse response) {
@@ -336,23 +331,23 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     private int auditButtons() {
         int numberErrors = 0;
         if (!addAnswerButton.getText().equals("+") || addAnswerButton.getVisibility() != View.VISIBLE) {
-        	numberErrors++;
+            numberErrors++;
         }
         if (!submitButton.getText().equals("Submit") || submitButton.getVisibility() != View.VISIBLE) {
-        	numberErrors++;
+            numberErrors++;
         }
         for (int i = 0; i < mListView.getChildCount(); i++) {
-        	Button removeAnswer = (Button) mListView.getChildAt(i).findViewById(R.id.edit_cancelAnswer);
-        	if (!removeAnswer.getText().equals("-") || removeAnswer.getVisibility() != View.VISIBLE) {
-        		numberErrors++;
-        	}
-        	Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
-        	CharSequence checkTxt = check.getText();
-        	String juste = getString(R.string.heavy_check_mark);
-        	String faux = getString(R.string.heavy_ballot_x);
-        	if (!(checkTxt.equals(juste) || checkTxt.equals(faux)) || check.getVisibility() != View.VISIBLE) {
-        		numberErrors++;
-        	}
+            Button removeAnswer = (Button) mListView.getChildAt(i).findViewById(R.id.edit_cancelAnswer);
+            if (!removeAnswer.getText().equals("-") || removeAnswer.getVisibility() != View.VISIBLE) {
+                numberErrors++;
+            }
+            Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
+            CharSequence checkTxt = check.getText();
+            String juste = getString(R.string.heavy_check_mark);
+            String faux = getString(R.string.heavy_ballot_x);
+            if (!(checkTxt.equals(juste) || checkTxt.equals(faux)) || check.getVisibility() != View.VISIBLE) {
+                numberErrors++;
+            }
         }
         return numberErrors;
     }
@@ -361,13 +356,13 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         int numberErrors = 0;
         int numberOfAnswers = 0;
         for (int i = 0; i < mListView.getChildCount(); i++) {
-        	Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
-        	if (check.getText().equals(R.string.heavy_check_mark)) {
-        		numberOfAnswers++;
-        	}
+            Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
+            if (check.getText().equals(R.string.heavy_check_mark)) {
+                numberOfAnswers++;
+            }
         }
         if (numberOfAnswers > 1) {
-        	numberErrors++;
+            numberErrors++;
         }
         return numberErrors;
     }
@@ -376,13 +371,13 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         int numberErrors = 0;
         QuizQuestion currentQQ = createQuestion();
         if (currentQQ.auditErrors() != 0) {
-        	if (submitButton.isEnabled()) {
-        		numberErrors++;
-        	}
+            if (submitButton.isEnabled()) {
+                numberErrors++;
+            }
         } else {
-        	if (!submitButton.isEnabled()) {
-        		numberErrors++;
-        	}
+            if (!submitButton.isEnabled()) {
+                numberErrors++;
+            }
         }
         return numberErrors;
     }
