@@ -2,7 +2,6 @@ package epfl.sweng.authentication;
 
 import epfl.sweng.servercomm.QuizApp;
 import android.content.SharedPreferences;
-import android.os.Debug;
 
 /**
  * SavedPreferences is a singleton class which creates an object where all

@@ -11,6 +11,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
 import android.app.Activity;
@@ -127,7 +128,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
     private HttpResponse postTequilaToken(HttpResponse tokenResponse) throws JSONException, IOException,
             NetworkErrorException {
-        token = JSONParser.parseJsonGetKey(tokenResponse, "token");
+        token = JSONParser.getParser(tokenResponse).getString("token");
         String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
         String password = ((EditText) findViewById(R.id.GasparPassword_EditText)).getText().toString();
         NameValuePair[] namList = {new BasicNameValuePair("requestkey", token),
@@ -159,7 +160,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     private HttpResponse confirm(HttpResponse response) throws ClientProtocolException, IOException, JSONException,
             NetworkErrorException, AuthenticationException {
         response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_SWERVER_LOGIN,
-                JSONParser.parseTokentoJSON(token));
+                (new JSONObject()).put("token", token));
 
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             state = AUTHENTICATED;
@@ -212,7 +213,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         if (response != null) {
 
             try {
-                String sessionID = JSONParser.parseJsonGetKey(response, "session");
+                String sessionID = JSONParser.getParser(response).getString("session");
                 CredentialManager.getInstance().setUserCredential(sessionID);
                 Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
                 Debug.out(sessionID);
@@ -227,6 +228,9 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
                 failedAuthenReset();
                 Log.e(getLocalClassName(), e.getMessage());
 
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         } else {
             failedAuthenReset();

@@ -89,8 +89,10 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
 
     /**
      * @param reponse
+     * @throws JSONException 
+     * @throws NullPointerException 
      */
-    public void pushQuestion(HttpResponse reponse) {
+    public void pushQuestion(HttpResponse reponse) throws NullPointerException, JSONException {
 
         JSONObject quizQuestion;
         try {

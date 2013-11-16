@@ -6,7 +6,9 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
 
 import android.accounts.NetworkErrorException;
 import android.app.Activity;
@@ -203,6 +205,15 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
         return response;
@@ -215,10 +226,13 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         if (httpResponse != null && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 
             try {
-                quizQuestion = JSONParser.parseJsonToQuiz(httpResponse, getApplicationContext());
+                quizQuestion = new QuizQuestion(JSONParser.getParser(httpResponse).toString());
                 Debug.out(quizQuestion);
             } catch (IOException e) {
                 Log.e(getLocalClassName(), e.getMessage());
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
             if (quizQuestion != null) {
                 setQuestion(quizQuestion);

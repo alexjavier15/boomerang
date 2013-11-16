@@ -51,7 +51,7 @@ public final class HttpComms implements IHttpConnectionHelper {
 	}
 
 	private HttpResponse execute(HttpUriRequest request)
-		throws ClientProtocolException, IOException, NetworkErrorException {
+		throws  NetworkErrorException, ClientProtocolException, IOException {
 
 		if (isConnected()) {
 			if (checkLoginStatus()) {
