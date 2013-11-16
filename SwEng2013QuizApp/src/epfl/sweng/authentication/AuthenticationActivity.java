@@ -97,27 +97,27 @@ public class AuthenticationActivity extends Activity implements
 		 * fields! state = ERROR_OVERLOAD; return null; }
 		 */
 		switch (state) {
-		case UNAUTHENTICATED:
-			Log.i("Authentication state: ", "UNAUTHENTICATED, requesting token");
-			return stateMachine(requestAuthToken(response));
-		case TOKEN:
-			Log.i("Authentication state: ", "TOKEN, posting token");
-			return stateMachine(postTequilaToken(response));
-		case TEQUILA:
-			Log.i("Authentication state: ",
-					"TEQUILA, checking tequila response");
-			return stateMachine(checkTequila(response));
-		case CONFIRMATION:
-			Log.i("Authentication state: ",
-					"CONFIRMATION, confirming with server");
-			return stateMachine(confirm(response));
-		case AUTHENTICATED:
-			Log.i("Authentication state: ",
-					"AUTHENTICATED, returning session id");
-			return response;
-		default:
-			// nullPointerException => failedAuthenReset()
-			return null;
+			case UNAUTHENTICATED:
+				Log.i("Authentication state: ", "UNAUTHENTICATED, requesting token");
+				return stateMachine(requestAuthToken(response));
+			case TOKEN:
+				Log.i("Authentication state: ", "TOKEN, posting token");
+				return stateMachine(postTequilaToken(response));
+			case TEQUILA:
+				Log.i("Authentication state: ",
+						"TEQUILA, checking tequila response");
+				return stateMachine(checkTequila(response));
+			case CONFIRMATION:
+				Log.i("Authentication state: ",
+						"CONFIRMATION, confirming with server");
+				return stateMachine(confirm(response));
+			case AUTHENTICATED:
+				Log.i("Authentication state: ",
+						"AUTHENTICATED, returning session id");
+				return response;
+			default:
+				// nullPointerException => failedAuthenReset()
+				return null;
 		}
 	}
 

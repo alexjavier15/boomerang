@@ -179,26 +179,35 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         return questionCreated;
     }
 
-    @Override
-    public HttpResponse requete() {
-        HttpResponse response = null;
-        try {
-            QuizQuestion question = createQuestion();
+	@Override
+	public HttpResponse requete() {
+		HttpResponse response = null;
 
-            response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH,
-                    JSONParser.parseQuiztoJSON(question));
+		try {
+			QuizQuestion question = createQuestion();
 
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (NetworkErrorException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        return response;
-    }
+			response = HttpCommsProxy.getInstance().postJSONObject(
+					HttpComms.URL_SWENG_PUSH,
+					JSONParser.parseQuiztoJSON(question));
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NetworkErrorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return response;
+	}
 
     @Override
     public void processHttpReponse(HttpResponse response) {

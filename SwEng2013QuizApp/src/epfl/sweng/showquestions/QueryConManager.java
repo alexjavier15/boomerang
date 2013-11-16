@@ -45,15 +45,12 @@ public class QueryConManager extends ConnectionManager {
 		HttpResponse response = null;
 		if ((qCount == 0) || (qCount == questionIndex && hasNext)) {
 			try {
-				JSONObject joll = JSONParser.parseKeyValuePairtoJSON("query",
+				JSONObject joll = (new JSONObject()).put("query",
 						query);
 				if (hasNext) {
 					joll.put("from", next);
 				}
 				postQuery(joll);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

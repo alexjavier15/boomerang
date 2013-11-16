@@ -90,15 +90,4 @@ public class JSONParser {
 
 		return jsonQuestion;
 	}
-
-	public static JSONObject parseKeyValuePairtoJSON(String key, String value)
-		throws IOException {
-		JSONObject jsontoken = new JSONObject();
-		try {
-			jsontoken.put(key, value);
-		} catch (JSONException e) {
-			throw new IOException(e.getMessage());
-		}
-		return jsontoken;
-	}
 }

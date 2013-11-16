@@ -127,6 +127,10 @@ public final class CacheManager {
 
     }
 
+    /**
+     * This Background task attempts to sync the post cache to the sweng server.
+     *
+     */
     private class BackgroundServiceTask extends AsyncTask<Void, Boolean, Boolean> {
 
         /*
