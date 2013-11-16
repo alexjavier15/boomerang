@@ -27,6 +27,12 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
         return sCache;
     }
 
+    private CacheHttpComms() {
+
+        CacheManager.getInstance();
+
+    }
+
     /*
      * (non-Javadoc)
      * 

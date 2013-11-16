@@ -59,40 +59,42 @@ public class QuizQuestion implements QuestionProvider, Serializable {
         this.solutionIndex = solutionIndex;
         this.tags = tags;
         this.owner = owner;
-//        if (auditErrors() != 0) {
-//            throw new IllegalArgumentException();
-//        }
+        // if (auditErrors() != 0) {
+        // throw new IllegalArgumentException();
+        // }
     }
 
     public QuizQuestion(final String jsonInput) throws JSONException {
-        JSONObject parser = new JSONObject(jsonInput);
-        int initId = -1;
-        String initQuestion = "";
-        List<String> initAnswers = null;
-        int initSolutionIndex = -1;
-        Set<String> initTags = null;
-        String initOwner = "";
-        try {
-            initId = parser.getInt("id");
-            initQuestion = parser.getString("question");
-            initAnswers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
-            initSolutionIndex = parser.getInt("solutionIndex");
-            initTags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
-            initOwner = parser.getString("owner");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (jsonInput != null) {
+            JSONObject parser = new JSONObject(jsonInput);
+            int initId = -1;
+            String initQuestion = "";
+            List<String> initAnswers = null;
+            int initSolutionIndex = -1;
+            Set<String> initTags = null;
+            String initOwner = "";
+            try {
+                initId = parser.getInt("id");
+                initQuestion = parser.getString("question");
+                initAnswers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
+                initSolutionIndex = parser.getInt("solutionIndex");
+                initTags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
+                initOwner = parser.getString("owner");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            this.question = initQuestion;
+            this.answers = initAnswers;
+            this.solutionIndex = initSolutionIndex;
+            this.tags = initTags;
+            this.id = initId;
+            this.owner = initOwner;
         }
-        this.question = initQuestion;
-        this.answers = initAnswers;
-        this.solutionIndex = initSolutionIndex;
-        this.tags = initTags;
-        this.id = initId;
-        this.owner = initOwner;
-//        if (auditErrors() != 0) {
-//            throw new IllegalArgumentException();
-//        }
+        // if (auditErrors() != 0) {
+        // throw new IllegalArgumentException();
+        // }
     }
 
     public int auditErrors() {
@@ -160,18 +162,18 @@ public class QuizQuestion implements QuestionProvider, Serializable {
     public String getOwner() {
         return owner;
     }
-    
+
     // For JUnit test cases
     public void setQuestion(String q) {
-    	this.question = q;
+        this.question = q;
     }
-    
+
     public void setAnswers(List<String> a) {
-    	this.answers = a;
+        this.answers = a;
     }
-    
+
     public void setTags(Set<String> tagsIn) {
-    	this.tags = tagsIn;
+        this.tags = tagsIn;
     }
 
 }

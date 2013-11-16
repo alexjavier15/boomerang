@@ -15,6 +15,8 @@ import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
 import epfl.sweng.authentication.PreferenceKeys;
+import epfl.sweng.testing.TestCoordinator;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
 import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
@@ -24,178 +26,166 @@ import epfl.sweng.tools.JSONParser;
  */
 
 public final class HttpCommsProxy implements IHttpConnectionHelper {
-	private static IHttpConnectionHelper sRealHttpComms = null;
-	private static CacheHttpComms sCacheHttpComms = null;
-	private static HttpCommsProxy proxy = null;
-	private boolean hasNext = false;
-	private String next = null;
-	private QueryHelper mQueryHelper = null;
+    private static IHttpConnectionHelper sRealHttpComms = null;
+    private static CacheHttpComms sCacheHttpComms = null;
+    private static CacheManager sCacheManager = null;
+    private static HttpCommsProxy proxy = null;
+    private QueryHelper mQueryHelper = null;
 
-	public static HttpCommsProxy getInstance() {
+    public static HttpCommsProxy getInstance() {
 
-		if (proxy == null) {
-			return new HttpCommsProxy();
+        if (proxy == null) {
+            return new HttpCommsProxy();
 
-		} else {
-			return proxy;
-		}
+        } else {
+            return proxy;
+        }
 
-	}
+    }
 
-	private HttpCommsProxy() {
+    private HttpCommsProxy() {
 
-		if (sRealHttpComms == null) {
-			sRealHttpComms = HttpComms.getInstance();
-		}
+        if (sRealHttpComms == null) {
+            sRealHttpComms = HttpComms.getInstance();
+        }
 
-		if (sCacheHttpComms == null) {
-			sCacheHttpComms = CacheHttpComms.getInstance();
-		}
+        if (sCacheHttpComms == null) {
+            sCacheHttpComms = CacheHttpComms.getInstance();
+        }
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, sRealHttpComms.isConnected());
+        sCacheManager = CacheManager.getInstance();
+    }
 
-	}
+    public Class<?> getServerCommsClass() {
 
-	public Class<?> getServerCommsClass() {
+        return getServerCommsInstance().getClass();
+    }
 
-		return getServerCommsInstance().getClass();
-	}
+    /**
+     * @return
+     */
+    private IHttpConnectionHelper getServerCommsInstance() {
 
-	/**
-	 * @return
-	 */
-	private IHttpConnectionHelper getServerCommsInstance() {
+        if (isOnlineMode()) {
+            return sRealHttpComms;
 
-		if (isOnlineMode()) {
-			return sRealHttpComms;
+        } else {
+            return sCacheHttpComms;
+        }
+    }
 
-		} else {
-			return sCacheHttpComms;
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see epfl.sweng.servercomm.IHttpConnection#getHttpResponse(java.lang.String )
+     */
+    @Override
+    public HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException,
+            NetworkErrorException {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * epfl.sweng.servercomm.IHttpConnection#getHttpResponse(java.lang.String
-	 * )
-	 */
-	@Override
-	public HttpResponse getHttpResponse(String urlString)
-			throws ClientProtocolException, IOException,
-			NetworkErrorException {
+        HttpResponse reponse = getServerCommsInstance().getHttpResponse(urlString);
+        if (reponse != null) {
 
-		HttpResponse reponse = getServerCommsInstance()
-				.getHttpResponse(urlString);
-		if (reponse != null) {
-			// Httpresponse can't be read twice
-			String entity = EntityUtils.toString(reponse
-					.getEntity());
-			String entity2 = new String(entity);
+            if (isOnlineMode() && checkReponseStatus(reponse, HttpStatus.SC_OK)) {
+                // Httpresponse can't be read twice
+                String entity = EntityUtils.toString(reponse.getEntity());
+                String entity2 = new String(entity);
 
-			reponse.setEntity(new StringEntity(entity));
+                reponse.setEntity(new StringEntity(entity));
+                sCacheHttpComms.pushQuestion(reponse);
+                reponse.setEntity(new StringEntity(entity2));
 
-			checkReponseStatus(reponse, HttpStatus.SC_OK);
-			if (isConnected()) {
-				sCacheHttpComms.pushQuestion(reponse);
-				reponse.setEntity(new StringEntity(entity2));
+            } else {
+                setAndNotifyOnlineMode(false);
 
-			}
+            }
 
-		}
+        }
 
-		return reponse;
-	}
+        return reponse;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * epfl.sweng.servercomm.IHttpConnection#postJSONObject(java.lang.String
-	 * , org.json.JSONObject)
-	 */
-	@Override
-	public HttpResponse postJSONObject(String url, JSONObject question)
-			throws ClientProtocolException, IOException,
-			JSONException, NetworkErrorException {
-		HttpResponse response = getServerCommsInstance()
-				.postJSONObject(url, question);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see epfl.sweng.servercomm.IHttpConnection#postJSONObject(java.lang.String , org.json.JSONObject)
+     */
+    @Override
+    public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
+            JSONException, NetworkErrorException {
+        HttpResponse response = getServerCommsInstance().postJSONObject(url, question);
 
-		if (!checkReponseStatus(response, HttpStatus.SC_CREATED)) {
-			sCacheHttpComms.postJSONObject(url, question);
+        if (!checkReponseStatus(response, HttpStatus.SC_CREATED)) {
+            sCacheHttpComms.postJSONObject(url, question);
 
-			QuizApp.getPreferences()
-					.edit()
-					.putBoolean(PreferenceKeys.ONLINE_MODE,
-							false).commit();
-		}
-		if (url.equals(HttpComms.URLQUERYPOST)) {
-			if (checkReponseStatus(response, HttpStatus.SC_OK)) {
-				JSONObject jObject = JSONParser
-						.getParser(response);
-				JSONArray questions = jObject
-						.getJSONArray("questions");
-				for (int i = 0; i < questions.length(); i++) {
-					String questionString = questions
-							.getJSONObject(i)
-							.toString();
-					CacheManager.getInstance()
-							.pushFetchedQuestion(
-									questionString);
-					CacheManager.getInstance()
-							.pushQueryQuestion(
-									questionString);
-				}
-				if (jObject.has("next")) {
-					hasNext = true;
-					next = jObject.getString("next");
-				}
-			}
+            setAndNotifyOnlineMode(false);
+        }
+        if (url.equals(HttpComms.URLQUERYPOST)) {
+            if (checkReponseStatus(response, HttpStatus.SC_OK)) {
+                JSONObject jObject = JSONParser.getParser(response);
+                JSONArray questions = jObject.getJSONArray("questions");
+                for (int i = 0; i < questions.length(); i++) {
+                    String questionString = questions.getJSONObject(i).toString();
+                    sCacheManager.pushFetchedQuestion(questionString);
+                    sCacheManager.pushQueryQuestion(questionString);
+                }
+                if (jObject.has("next")) {
+                    jObject.getString("next");
+                }
+            }
 
-		}
+        }
 
-		return response;
-	}
+        return response;
+    }
 
-	/**
-	 * Check the status the {@link HttpResponse} against an expected status.
-	 * If the status is not as expected The proxy switch to the offline
-	 * state.
-	 * 
-	 * @param reponse
-	 * @param expectedStatus
-	 */
-	private boolean checkReponseStatus(HttpResponse reponse,
-			int expectedStatus) {
-		return reponse.getStatusLine().getStatusCode() != expectedStatus;
-	}
+    /**
+     * Check the status the {@link HttpResponse} against an expected status. If the status is not as expected The proxy
+     * switch to the offline state.
+     * 
+     * @param reponse
+     * @param expectedStatus
+     */
+    private boolean checkReponseStatus(HttpResponse reponse, int expectedStatus) {
+        return reponse.getStatusLine().getStatusCode() == expectedStatus;
+    }
 
-	private boolean isOnlineMode() {
-		Debug.out("client status : "
-				+ QuizApp.getPreferences().getBoolean(
-						PreferenceKeys.ONLINE_MODE,
-						false));
+    private boolean isOnlineMode() {
+        Debug.out("client status : " + QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true));
 
-		return QuizApp.getPreferences().getBoolean(
-				PreferenceKeys.ONLINE_MODE, false);
-	}
+        return QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
-	 */
-	@Override
-	public boolean isConnected() {
-		return getServerCommsInstance().isConnected();
-	}
+    public void setAndNotifyOnlineMode(boolean isOnlineMode) {
 
-	public HttpResponse poll(boolean isQueryMode, String mQuery) throws ClientProtocolException, IOException,
-			NetworkErrorException {
-		if (isQueryMode && mQuery != null) {
-			if (mQueryHelper != null)
-			return mQueryHelper.processQuery(mQuery);
-		} 
-		
-		return getHttpResponse(HttpComms.URL);
-	}
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, isOnlineMode).apply();
+        if (isOnlineMode) {
+            TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
+            sCacheManager.init();
+        } else {
+            TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
+        }
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
+     */
+    @Override
+    public boolean isConnected() {
+        return getServerCommsInstance().isConnected();
+    }
+
+    public HttpResponse poll(boolean isQueryMode, String mQuery) throws ClientProtocolException, IOException,
+            NetworkErrorException {
+        if (isQueryMode && mQuery != null) {
+            if (mQueryHelper != null) {
+                return mQueryHelper.processQuery(mQuery);
+            }
+        }
+
+        return getHttpResponse(HttpComms.URL);
+    }
 }

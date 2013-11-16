@@ -17,7 +17,7 @@ import epfl.sweng.authentication.CredentialManager;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.editquestions.EditQuestionActivity;
 import epfl.sweng.patterns.CheckProxyHelper;
-import epfl.sweng.servercomm.CacheManager;
+import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
@@ -37,22 +37,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        QuizApp.getPreferences().registerOnSharedPreferenceChangeListener(this);
-     
 
-    }
-
-    private void checkStatus(String newValue) {
-        if (newValue.equals("")) {
-            Log.i("Session Id has been removed: logged out", newValue);
-            setAthenticated(false);
-            ((Button) findViewById(R.id.log_inout)).setText("Log in using Tequila");
-        } else {
-            Log.i("New session Id is: ", newValue);
-            setAthenticated(true);
-            ((Button) findViewById(R.id.log_inout)).setText("Log out");
-            CacheManager.getInstance();
-        }
     }
 
     /**
@@ -72,13 +57,48 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
      */
     @Override
     protected void onStart() {
-        // TODO Auto-generated method stub
+
         super.onStart();
+        setUpPreferences();
+        QuizApp.getPreferences().registerOnSharedPreferenceChangeListener(this);
         String newValue = CredentialManager.getInstance().getUserCredential();
         checkStatus(newValue);
-        Debug.out((new CheckProxyHelper()).getServerCommunicationClass());
+
         TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
 
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onResume()
+     */
+    @Override
+    protected void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+        Debug.out((new CheckProxyHelper()).getServerCommunicationClass());
+        HttpCommsProxy.getInstance();
+
+    }
+
+    private void setUpPreferences() {
+
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
+
+    }
+
+    private void checkStatus(String newValue) {
+        if (newValue.equals("")) {
+            Log.i("Session Id has been removed: logged out", newValue);
+            setAthenticated(false);
+            ((Button) findViewById(R.id.log_inout)).setText("Log in using Tequila");
+        } else {
+            Log.i("New session Id is: ", newValue);
+            setAthenticated(true);
+            ((Button) findViewById(R.id.log_inout)).setText("Log out");
+
+        }
     }
 
     /**
@@ -90,8 +110,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     public void askQuestion(View view) {
         Toast.makeText(this, "You are on the page to show a random question!", Toast.LENGTH_SHORT).show();
         Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
-        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
-
         this.startActivity(showQuestionActivityIntent);
     }
 
@@ -117,16 +135,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             String newValue = pref.getString(key, "");
             Log.i("MainActivity Listener new key value session id : ", newValue);
             checkStatus(newValue);
-        } else if (key.equals(PreferenceKeys.ONLINE_MODE)) {
-            CheckBox offLineMode = (CheckBox) this.findViewById(R.id.offline_mode);
-            boolean isOnlineMode = pref.getBoolean(key, false);
-            offLineMode.setChecked(!isOnlineMode);
-            if (isOnlineMode) {
-                TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
-            } else {
-                TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
-            }
-
         }
 
     }
@@ -159,6 +167,9 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
      * @param view
      */
     public void changeNetworkMode(View view) {
-        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, !((CheckBox) view).isChecked()).apply();
+
+        CheckBox offlineCheckBox = (CheckBox) view;
+        HttpCommsProxy.getInstance().setAndNotifyOnlineMode(!offlineCheckBox.isChecked());
+
     }
 }

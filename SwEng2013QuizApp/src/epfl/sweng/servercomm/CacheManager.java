@@ -16,9 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
+import android.util.Log;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.tools.Debug;
@@ -28,7 +27,7 @@ import epfl.sweng.tools.JSONParser;
  * @author Alex
  * 
  */
-public final class CacheManager implements OnSharedPreferenceChangeListener {
+public final class CacheManager {
     public static final String QUESTION_CACHE_DB_NAME = "Cache.db";
     public static final String POST_SYNC_DB_NAME = "PostSync.db";
     public static final String QUERY_CACHE_DB_NAME = "QueryCache.db";
@@ -38,16 +37,17 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
     private static CacheManager sCacheManager = null;
 
     private CacheManager() {
-        QuizApp.getPreferences().registerOnSharedPreferenceChangeListener(this);
+
         sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUESTION_CACHE_DB_NAME);
         sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), POST_SYNC_DB_NAME);
         sQueryQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUERY_CACHE_DB_NAME);
-
+        init();
     }
 
     public static CacheManager getInstance() {
         if (sCacheManager == null) {
             sCacheManager = new CacheManager();
+
         }
         return sCacheManager;
 
@@ -66,7 +66,7 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
     }
 
     public HttpResponse getNextQueryQuestion() throws IOException, JSONException {
-        String question = sQueryQuestionDB.getRandomQuizQuestion();// TODO not random
+        String question = sQueryQuestionDB.getRandomQuizQuestion();
         return wrapQuizQuestion(question);
 
     }
@@ -139,42 +139,37 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
             Debug.out("Attempting to sync file");
 
             QuizQuestion quizQuestion = null;
-            try {
-                quizQuestion = new QuizQuestion(sPostQuestionDB.getFirstPostQuestion());
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            }
+
+            String jsonString = sPostQuestionDB.getFirstPostQuestion();
 
             do {
                 if (quizQuestion != null) {
                     HttpResponse response = null;
                     try {
                         Debug.out("go to process post");
+                        quizQuestion = new QuizQuestion(jsonString);
                         response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
                                 JSONParser.parseQuiztoJSON(quizQuestion));
-                        response.getEntity().consumeContent();
+                        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+                            sPostQuestionDB.deleteQuizQuestion();
+                            quizQuestion = new QuizQuestion(sPostQuestionDB.getFirstPostQuestion());
+                            response.getEntity().consumeContent();
+                        }
                         Debug.out("reponse got");
 
                     } catch (ClientProtocolException e) {
                         e.printStackTrace();
+
                     } catch (NetworkErrorException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+                        Log.e(this.getClass().getName(), e.getMessage());
                         sPostQuestionDB.deleteQuizQuestion();
 
-                        try {
-                            quizQuestion = new QuizQuestion(sPostQuestionDB.getFirstPostQuestion());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
                     }
+
                 }
 
             } while (quizQuestion != null);
@@ -204,13 +199,14 @@ public final class CacheManager implements OnSharedPreferenceChangeListener {
      * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#
      * onSharedPreferenceChanged(android.content. SharedPreferences, java.lang.String)
      */
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(PreferenceKeys.ONLINE_MODE)) {
-            if (sharedPreferences.getBoolean(key, false) == true) {
-                Debug.out("start sync");
-                syncPostCachedQuestions();
-            }
+
+    public void init() {
+        Debug.out("onChange in chache manager called");
+
+        if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
+
+            syncPostCachedQuestions();
+
         }
     }
 }
