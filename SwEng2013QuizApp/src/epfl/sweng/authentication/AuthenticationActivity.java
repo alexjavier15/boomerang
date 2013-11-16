@@ -137,7 +137,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         state = TEQUILA;
         Debug.out(urlEntity.toString());
 
-        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA, urlEntity);
+        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA_LOGIN, urlEntity);
 
     }
 
@@ -159,7 +159,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     private HttpResponse confirm(HttpResponse response) throws ClientProtocolException, IOException, JSONException,
             NetworkErrorException, AuthenticationException {
         response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_SWERVER_LOGIN,
-                JSONParser.parseTokentoJSON(token));
+                JSONParser.parseKeyValuePairtoJSON("token",token));
 
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             state = AUTHENTICATED;

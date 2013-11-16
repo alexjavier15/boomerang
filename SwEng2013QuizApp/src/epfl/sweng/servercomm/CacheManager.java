@@ -148,7 +148,7 @@ public final class CacheManager {
                     try {
                         Debug.out("go to process post");
                         quizQuestion = new QuizQuestion(jsonString);
-                        response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
+                        response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH,
                                 JSONParser.parseQuiztoJSON(quizQuestion));
                         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                             sPostQuestionDB.deleteQuizQuestion();

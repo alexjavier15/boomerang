@@ -29,11 +29,11 @@ public final class HttpComms implements IHttpConnectionHelper {
 
 	public final static String HEADER = "Authorization";
 	public final static int STRING_ENTITY = 1;
-	public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
+	public final static String URL_SWENG_RANDOM_GET = "https://sweng-quiz.appspot.com/quizquestions/random";
 	public final static String URL_SWENG_SWERVER_LOGIN = "https://sweng-quiz.appspot.com/login";
-	public final static String URL_TEQUILA = "https://tequila.epfl.ch/cgi-bin/tequila/login";
-	public final static String URLPUSH = "https://sweng-quiz.appspot.com/quizquestions/";
-	public final static String URLQUERYPOST = "https://sweng-quiz.appspot.com/search";
+	public final static String URL_TEQUILA_LOGIN = "https://tequila.epfl.ch/cgi-bin/tequila/login";
+	public final static String URL_SWENG_PUSH = "https://sweng-quiz.appspot.com/quizquestions/";
+	public final static String URL_SWENG_QUERY_POST = "https://sweng-quiz.appspot.com/search";
 	private static HttpComms singleHTTPComs = null;
 	private String authenticationValue = null;
 
@@ -124,7 +124,6 @@ public final class HttpComms implements IHttpConnectionHelper {
 	 * @param question
 	 *            The question that we want to post on the server.
 	 * @return boolean true if the server has received the Question
-	 * @throws JSONException
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 * @throws NetworkErrorException
@@ -132,11 +131,14 @@ public final class HttpComms implements IHttpConnectionHelper {
 	// TODO do so no code is repeated
 	@Override
 	public HttpResponse postJSONObject(String url, JSONObject question)
-		throws ClientProtocolException, IOException, JSONException,
-			NetworkErrorException {
+		throws ClientProtocolException, IOException, NetworkErrorException {
 
 		HttpPost post = new HttpPost(url);
-		post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
+		try {
+			post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
+		} catch (JSONException e) {
+			throw new IOException(e.getMessage());
+		}
 		post.setHeader("Content-type", "application/json");
 		HttpResponse response = execute(post);
 

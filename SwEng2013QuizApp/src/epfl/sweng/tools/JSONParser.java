@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import epfl.sweng.authentication.CredentialManager;
 import epfl.sweng.quizquestions.QuizQuestion;
 
@@ -21,128 +20,138 @@ import epfl.sweng.quizquestions.QuizQuestion;
  * 
  * @author LorenzoLeon
  * 
- *         This class is used to parse JSON Objects to QuizQuestion and vice versa.
+ *         This class is used to parse JSON Objects to QuizQuestion and vice
+ *         versa.
  * 
  */
 public class JSONParser {
 
-    public static final int HTTP_ERROR = 404;
+	public static final int HTTP_ERROR = 404;
 
-    public static JSONObject getParser(HttpResponse response) throws IOException {
-        if (response == null) {
-            throw new HttpResponseException(HTTP_ERROR, "Empty response");
-        }
-        BasicResponseHandler responseHandler = new BasicResponseHandler();
-        JSONObject jO = null;
-        try {
-            jO = new JSONObject(responseHandler.handleResponse(response));
-        } catch (JSONException e) {
-            throw new IOException(e.getMessage());
-        }
-        return jO;
-    }
+	public static JSONObject getParser(HttpResponse response)
+		throws IOException {
+		if (response == null) {
+			throw new HttpResponseException(HTTP_ERROR, "Empty response");
+		}
+		BasicResponseHandler responseHandler = new BasicResponseHandler();
+		JSONObject jO = null;
+		try {
+			jO = new JSONObject(responseHandler.handleResponse(response));
+		} catch (JSONException e) {
+			throw new IOException(e.getMessage());
+		}
+		return jO;
+	}
 
-    /**
-     * Parses a JSONArray to a StringArray
-     * 
-     * @param array
-     * @return String[]
-     * @throws IOException
-     * @throws JSONException
-     */
-    public static List<String> jsonArrayToList(JSONArray array) throws IOException {
-        int size = array.length();
-        List<String> stringList = new ArrayList<String>(size);
+	/**
+	 * Parses a JSONArray to a StringArray
+	 * 
+	 * @param array
+	 * @return String[]
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public static List<String> jsonArrayToList(JSONArray array)
+		throws IOException {
+		int size = array.length();
+		List<String> stringList = new ArrayList<String>(size);
 
-        for (int i = 0; i < size; i++) {
-            try {
-                stringList.add(array.getString(i));
-            } catch (JSONException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
+		for (int i = 0; i < size; i++) {
+			try {
+				stringList.add(array.getString(i));
+			} catch (JSONException e) {
+				throw new IOException(e.getMessage());
+			}
+		}
 
-        return stringList;
-    }
+		return stringList;
+	}
 
-    public static String parseJsonGetKey(HttpResponse response, String key) throws IOException {
-        JSONObject parser = getParser(response);
-        try {
-            return parser.getString(key);
-        } catch (JSONException e) {
-            throw new IOException(e.getMessage());
-        }
-    }
+	public static String parseJsonGetKey(HttpResponse response, String key)
+		throws IOException {
+		JSONObject parser = getParser(response);
+		try {
+			return parser.getString(key);
+		} catch (JSONException e) {
+			throw new IOException(e.getMessage());
+		}
+	}
 
-    // FIX ME! RMEOVE ME!
+	// FIX ME! RMEOVE ME!
 
-    /**
-     * Parses a JSONObject from an HttpResponse to a QuizQuestion
-     * 
-     * @param response
-     * @return QuizQuestion
-     * @throws HttpResponseException
-     * @throws JSONException
-     * @throws IOException
-     */
-    public static QuizQuestion parseJsonToQuiz(HttpResponse response, Context context) throws IOException {
-        JSONObject parser = getParser(response);
+	/**
+	 * Parses a JSONObject from an HttpResponse to a QuizQuestion
+	 * 
+	 * @param response
+	 * @return QuizQuestion
+	 * @throws HttpResponseException
+	 * @throws JSONException
+	 * @throws IOException
+	 */
+	public static QuizQuestion parseJsonToQuiz(HttpResponse response)
+		throws IOException {
+		JSONObject parser = getParser(response);
 
-        int id;
-        String question;
-        List<String> answers;
-        int solutionIndex;
-        Set<String> tags;
-        String owner;
-        try {
-            id = parser.getInt("id");
-            question = parser.getString("question");
-            answers = jsonArrayToList(parser.getJSONArray("answers"));
-            solutionIndex = parser.getInt("solutionIndex");
-            tags = new HashSet<String>(jsonArrayToList(parser.getJSONArray("tags")));
-            owner = parser.getString("owner");
-        } catch (JSONException e) {
-            throw new IOException(e.getMessage());
-        }
+		int id;
+		String question;
+		List<String> answers;
+		int solutionIndex;
+		Set<String> tags;
+		String owner;
+		try {
+			id = parser.getInt("id");
+			question = parser.getString("question");
+			answers = jsonArrayToList(parser.getJSONArray("answers"));
+			solutionIndex = parser.getInt("solutionIndex");
+			tags = new HashSet<String>(
+					jsonArrayToList(parser.getJSONArray("tags")));
+			owner = parser.getString("owner");
+		} catch (JSONException e) {
+			throw new IOException(e.getMessage());
+		}
 
-        return new QuizQuestion(question, answers, solutionIndex, tags, id, owner);
+		return new QuizQuestion(question, answers, solutionIndex, tags, id,
+				owner);
 
-    }
+	}
 
-    /**
-     * Parses a QuizQuestion to a JSONObject
-     * 
-     * @param question
-     * @return jsonObject
-     * @throws IOException
-     * @throws JSONException
-     */
-    public static JSONObject parseQuiztoJSON(QuizQuestion question) throws IOException {
+	/**
+	 * Parses a QuizQuestion to a JSONObject
+	 * 
+	 * @param question
+	 * @return jsonObject
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public static JSONObject parseQuiztoJSON(QuizQuestion question)
+		throws IOException {
 
-        JSONObject jsonQuestion = new JSONObject();
-        try {
-            jsonQuestion.put("owner", CredentialManager.getInstance().getUserCredential());
-            jsonQuestion.put("id", question.getID());
-            jsonQuestion.put("tags", new JSONArray(question.getTags()));
-            jsonQuestion.put("solutionIndex", question.getIndex());
-            jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
-            jsonQuestion.put("question", question.getQuestion());
-        } catch (JSONException e) {
-            throw new IOException(e.getMessage());
-        }
+		JSONObject jsonQuestion = new JSONObject();
+		try {
+			jsonQuestion.put("owner", CredentialManager.getInstance()
+					.getUserCredential());
+			jsonQuestion.put("id", question.getID());
+			jsonQuestion.put("tags", new JSONArray(question.getTags()));
+			jsonQuestion.put("solutionIndex", question.getIndex());
+			jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
+			jsonQuestion.put("question", question.getQuestion());
+		} catch (JSONException e) {
+			throw new IOException(e.getMessage());
+		}
 
-        Debug.out(jsonQuestion);
+		Debug.out(jsonQuestion);
 
-        return jsonQuestion;
-    }
+		return jsonQuestion;
+	}
 
-    public static JSONObject parseTokentoJSON(String token) throws IOException {
-        JSONObject jsontoken = new JSONObject();
-        try {
-            jsontoken.put("token", token);
-        } catch (JSONException e) {
-            throw new IOException(e.getMessage());
-        }
-        return jsontoken;
-    }
+	public static JSONObject parseKeyValuePairtoJSON(String key, String value)
+		throws IOException {
+		JSONObject jsontoken = new JSONObject();
+		try {
+			jsontoken.put(key, value);
+		} catch (JSONException e) {
+			throw new IOException(e.getMessage());
+		}
+		return jsontoken;
+	}
 }

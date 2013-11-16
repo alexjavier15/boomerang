@@ -185,7 +185,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         try {
             QuizQuestion question = createQuestion();
 
-            response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
+            response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH,
                     JSONParser.parseQuiztoJSON(question));
 
         } catch (ClientProtocolException e) {
@@ -193,8 +193,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         } catch (NetworkErrorException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
