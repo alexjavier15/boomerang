@@ -307,7 +307,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         return auditAnswers() + auditButtons() + auditEditTexts() + auditSubmitButton();
     }
 
-    public int auditEditTexts() {
+    private int auditEditTexts() {
         int numberErrors = 0;
         if (!questionEditText.getHint().equals(questionHint) || questionEditText.getVisibility() != View.VISIBLE) {
             numberErrors++;

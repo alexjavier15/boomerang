@@ -17,6 +17,7 @@ import epfl.sweng.authentication.CredentialManager;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.editquestions.EditQuestionActivity;
 import epfl.sweng.patterns.CheckProxyHelper;
+import epfl.sweng.servercomm.CacheManager;
 import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
@@ -137,6 +138,12 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             Log.i("MainActivity Listener new key value session id : ", newValue);
             checkStatus(newValue);
         }
+        if (pref.getBoolean(key, true)) {
+            TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
+            CacheManager.getInstance().init();
+        } else {
+            TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
+        }
 
     }
 
@@ -170,7 +177,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     public void changeNetworkMode(View view) {
 
         CheckBox offlineCheckBox = (CheckBox) view;
-        HttpCommsProxy.getInstance().setAndNotifyOnlineMode(!offlineCheckBox.isChecked());
-
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, !offlineCheckBox.isChecked()).apply();
+       
     }
 }

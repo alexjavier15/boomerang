@@ -18,7 +18,8 @@ import android.accounts.NetworkErrorException;
 public interface IHttpConnectionHelper {
 
 	HttpResponse getHttpResponse(String urlString)
-		throws ClientProtocolException, IOException, NetworkErrorException;
+		throws ClientProtocolException, IOException, NetworkErrorException,
+		NullPointerException;
 
 	boolean isConnected();
 

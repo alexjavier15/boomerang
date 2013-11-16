@@ -2,10 +2,7 @@ package epfl.sweng.tools;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -29,18 +26,19 @@ public class JSONParser {
 	public static final int HTTP_ERROR = 404;
 
 	public static JSONObject getParser(HttpResponse response)
-		throws IOException {
-		if (response == null) {
-			throw new HttpResponseException(HTTP_ERROR, "Empty response");
-		}
+		throws HttpResponseException, IOException {
+
 		BasicResponseHandler responseHandler = new BasicResponseHandler();
-		JSONObject jO = null;
+		String jsonResponse = responseHandler.handleResponse(response);
+
+		JSONObject jo;
 		try {
-			jO = new JSONObject(responseHandler.handleResponse(response));
+			jo = new JSONObject(jsonResponse);
 		} catch (JSONException e) {
 			throw new IOException(e.getMessage());
 		}
-		return jO;
+		return jo;
+
 	}
 
 	/**
@@ -67,54 +65,6 @@ public class JSONParser {
 		return stringList;
 	}
 
-	public static String parseJsonGetKey(HttpResponse response, String key)
-		throws IOException {
-		JSONObject parser = getParser(response);
-		try {
-			return parser.getString(key);
-		} catch (JSONException e) {
-			throw new IOException(e.getMessage());
-		}
-	}
-
-	// FIX ME! RMEOVE ME!
-
-	/**
-	 * Parses a JSONObject from an HttpResponse to a QuizQuestion
-	 * 
-	 * @param response
-	 * @return QuizQuestion
-	 * @throws HttpResponseException
-	 * @throws JSONException
-	 * @throws IOException
-	 */
-	public static QuizQuestion parseJsonToQuiz(HttpResponse response)
-		throws IOException {
-		JSONObject parser = getParser(response);
-
-		int id;
-		String question;
-		List<String> answers;
-		int solutionIndex;
-		Set<String> tags;
-		String owner;
-		try {
-			id = parser.getInt("id");
-			question = parser.getString("question");
-			answers = jsonArrayToList(parser.getJSONArray("answers"));
-			solutionIndex = parser.getInt("solutionIndex");
-			tags = new HashSet<String>(
-					jsonArrayToList(parser.getJSONArray("tags")));
-			owner = parser.getString("owner");
-		} catch (JSONException e) {
-			throw new IOException(e.getMessage());
-		}
-
-		return new QuizQuestion(question, answers, solutionIndex, tags, id,
-				owner);
-
-	}
-
 	/**
 	 * Parses a QuizQuestion to a JSONObject
 	 * 
@@ -124,20 +74,17 @@ public class JSONParser {
 	 * @throws JSONException
 	 */
 	public static JSONObject parseQuiztoJSON(QuizQuestion question)
-		throws IOException {
+		throws JSONException {
 
 		JSONObject jsonQuestion = new JSONObject();
-		try {
-			jsonQuestion.put("owner", CredentialManager.getInstance()
-					.getUserCredential());
-			jsonQuestion.put("id", question.getID());
-			jsonQuestion.put("tags", new JSONArray(question.getTags()));
-			jsonQuestion.put("solutionIndex", question.getIndex());
-			jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
-			jsonQuestion.put("question", question.getQuestion());
-		} catch (JSONException e) {
-			throw new IOException(e.getMessage());
-		}
+
+		jsonQuestion.put("owner", CredentialManager.getInstance()
+				.getUserCredential());
+		jsonQuestion.put("id", question.getID());
+		jsonQuestion.put("tags", new JSONArray(question.getTags()));
+		jsonQuestion.put("solutionIndex", question.getIndex());
+		jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
+		jsonQuestion.put("question", question.getQuestion());
 
 		Debug.out(jsonQuestion);
 

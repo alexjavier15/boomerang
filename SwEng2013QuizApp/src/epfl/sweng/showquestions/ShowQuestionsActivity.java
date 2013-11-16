@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.json.JSONException;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -140,10 +141,13 @@ public class ShowQuestionsActivity extends Activity {
         if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 
             try {
-                quizQuestion = JSONParser.parseJsonToQuiz(response);
+            	quizQuestion = new QuizQuestion(JSONParser.getParser(response).toString());
                 Debug.out(quizQuestion);
             } catch (IOException e) {
                 Log.e(getLocalClassName(), e.getMessage());
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
             if (quizQuestion != null) {
                 setQuestion(quizQuestion);

@@ -18,6 +18,7 @@ import epfl.sweng.tools.JSONParser;
  * 
  */
 public final class CacheHttpComms implements IHttpConnectionHelper {
+
 	private static CacheHttpComms sCache = null;
 
 	public static CacheHttpComms getInstance() {
