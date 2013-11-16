@@ -24,7 +24,7 @@ public class JSONParser {
 
     public static final int HTTP_ERROR = 404;
 
-    public static JSONObject getParser(HttpResponse response) throws NullPointerException, JSONException,
+    public static JSONObject getParser(HttpResponse response) throws  JSONException,
             HttpResponseException, IOException {
 
         BasicResponseHandler responseHandler = new BasicResponseHandler();

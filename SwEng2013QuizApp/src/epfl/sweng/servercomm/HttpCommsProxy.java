@@ -79,29 +79,21 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
      * @see epfl.sweng.servercomm.IHttpConnection#getHttpResponse(java.lang.String )
      */
     @Override
-    public HttpResponse getHttpResponse(String urlString) throws NetworkErrorException, NullPointerException,
-            JSONException, ParseException, IOException {
+    public HttpResponse getHttpResponse(String urlString) throws NetworkErrorException, JSONException, ParseException,
+            IOException {
 
         HttpResponse response = getServerCommsInstance().getHttpResponse(urlString);
-        if (response != null) {
 
-            if (isOnlineMode() && checkResponseStatus(response, HttpStatus.SC_OK)) {
-                // Httpresponse can't be read twice
-                String entity = EntityUtils.toString(response.getEntity());
-
-                response.setEntity(new StringEntity(entity));
-                sCacheHttpComms.pushQuestion(response);
-                response.setEntity(new StringEntity(entity));
-
-            } else {
-
-                QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, false);
-
-            }
+        if (isOnlineMode() && checkResponseStatus(response, HttpStatus.SC_OK)) {
+            String entity = EntityUtils.toString(response.getEntity());
+            response.setEntity(new StringEntity(entity));
+            sCacheHttpComms.pushQuestion(response);
+            response.setEntity(new StringEntity(entity));
 
         }
 
         return response;
+
     }
 
     /*
@@ -116,7 +108,6 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
         if (!checkResponseStatus(response, HttpStatus.SC_CREATED)) {
             sCacheHttpComms.postJSONObject(url, question);
-            QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, false);
         }
         if (url.equals(HttpComms.URLQUERYPOST)) {
             if (checkResponseStatus(response, HttpStatus.SC_OK)) {
@@ -135,6 +126,11 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         }
 
         return response;
+    }
+
+    public void setOnlineMode(boolean isOnline) {
+
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, isOnline).apply();
     }
 
     /**

@@ -8,6 +8,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 import org.json.JSONException;
 
 import android.accounts.NetworkErrorException;
@@ -24,10 +25,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import epfl.sweng.R;
+import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
+import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 import epfl.sweng.tools.Debug;
@@ -205,9 +208,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (NullPointerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -228,10 +228,16 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             try {
                 quizQuestion = new QuizQuestion(JSONParser.getParser(httpResponse).toString());
                 Debug.out(quizQuestion);
-            } catch (IOException e) {
-                Log.e(getLocalClassName(), e.getMessage());
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (HttpResponseException e) {
+                if (e.getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+                    HttpCommsProxy.getInstance().setOnlineMode(false);
+                }
+                e.printStackTrace();
+            } catch (IOException e) {
+                HttpCommsProxy.getInstance().setOnlineMode(false);
                 e.printStackTrace();
             }
             if (quizQuestion != null) {
