@@ -2,6 +2,7 @@ package epfl.sweng.authentication;
 
 import epfl.sweng.servercomm.QuizApp;
 import android.content.SharedPreferences;
+import android.os.Debug;
 
 /**
  * SavedPreferences is a singleton class which creates an object where all
@@ -28,11 +29,12 @@ public final class CredentialManager {
 	}
 
 	public String getUserCredential() {
+
 		return mUserPreferences.getString(PreferenceKeys.SESSION_ID, "");
 	}
 	
 	public boolean getOnlineStatus() {
-	    return mUserPreferences.getBoolean(PreferenceKeys.ONLINE_MODE, false);
+	    return mUserPreferences.getBoolean(PreferenceKeys.ONLINE_MODE, true);
 	}
 
 	public boolean removeUserCredential() {

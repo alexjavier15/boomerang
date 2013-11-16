@@ -5,6 +5,7 @@ import org.apache.http.HttpResponse;
 public final class QueryHelper {
 
     private static QueryHelper instance = null;
+
     public static QueryHelper getInstance() {
         if (instance == null) {
             instance = new QueryHelper();
