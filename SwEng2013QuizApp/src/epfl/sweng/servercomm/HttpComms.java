@@ -29,11 +29,11 @@ public final class HttpComms implements IHttpConnectionHelper {
 
     public final static String HEADER = "Authorization";
     public final static int STRING_ENTITY = 1;
-    public final static String URL = "https://sweng-quiz.appspot.com/quizquestions/random";
+    public final static String URL_SWENG_RANDOM_GET = "https://sweng-quiz.appspot.com/quizquestions/random";
     public final static String URL_SWENG_SWERVER_LOGIN = "https://sweng-quiz.appspot.com/login";
-    public final static String URL_TEQUILA = "https://tequila.epfl.ch/cgi-bin/tequila/login";
-    public final static String URLPUSH = "https://sweng-quiz.appspot.com/quizquestions/";
-    public final static String URLQUERYPOST = "https://sweng-quiz.appspot.com/search";
+    public final static String URL_TEQUILA_LOGIN = "https://tequila.epfl.ch/cgi-bin/tequila/login";
+    public final static String URL_SWENG_PUSH = "https://sweng-quiz.appspot.com/quizquestions/";
+    public final static String URL_SWENG_QUERY_POST = "https://sweng-quiz.appspot.com/search";
     private static HttpComms singleHTTPComs = null;
     private String authenticationValue = null;
 
@@ -50,8 +50,8 @@ public final class HttpComms implements IHttpConnectionHelper {
 
     }
 
-    private HttpResponse execute(HttpUriRequest request) throws NetworkErrorException, ClientProtocolException,
-            IOException {
+    private HttpResponse execute(HttpUriRequest request)
+        throws  NetworkErrorException, ClientProtocolException, IOException {
 
         if (isConnected()) {
             if (checkLoginStatus()) {
@@ -61,7 +61,8 @@ public final class HttpComms implements IHttpConnectionHelper {
             Debug.out("sending to SwengClient");
             return SwengHttpClientFactory.getInstance().execute(request);
         } else {
-            throw new NetworkErrorException("A network error has ocurred when trying to contact the server");
+            throw new NetworkErrorException(
+                    "A network error has ocurred when trying to contact the server");
         }
     }
 
@@ -76,7 +77,7 @@ public final class HttpComms implements IHttpConnectionHelper {
     }
 
     /**
-     * Gets an HttpResponse from the specified server
+     * Gets an HttpResponse from the server in parameter
      * 
      * @param urlString
      *            The URL of the server on which we want to connect to.
@@ -86,8 +87,8 @@ public final class HttpComms implements IHttpConnectionHelper {
      * @throws NetworkErrorException
      */
     @Override
-    public HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException,
-            NetworkErrorException {
+    public HttpResponse getHttpResponse(String urlString)
+        throws ClientProtocolException, IOException, NetworkErrorException {
         HttpGet request = new HttpGet(urlString);
 
         return execute(request);
@@ -96,17 +97,17 @@ public final class HttpComms implements IHttpConnectionHelper {
 
     @Override
     public boolean isConnected() {
-        ConnectivityManager connMgr = (ConnectivityManager) QuizApp.getContexStatic().getSystemService(
-                Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connMgr = (ConnectivityManager) QuizApp
+                .getContexStatic().getSystemService(
+                        Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
         return networkInfo != null && networkInfo.isConnected();
 
     }
 
-    
-    public HttpResponse postEntity(String url, HttpEntity entity) throws ClientProtocolException, IOException,
-            NetworkErrorException {
+    public HttpResponse postEntity(String url, HttpEntity entity)
+        throws ClientProtocolException, IOException, NetworkErrorException {
 
         HttpPost post = new HttpPost(url);
         post.setEntity(entity);
@@ -115,27 +116,29 @@ public final class HttpComms implements IHttpConnectionHelper {
     }
 
     /**
-     * Wrap the specified JSONObject in a {@link HttpPost} object and execute the post request on the specified url
-     * server returning the {@link HttpResponse} obtained result of the request. This method throws a
-     * {@link NetworkErrorException} if not the client doesn't have a valid network connection.
+     * Posts a JSONObject question on the server in parameter Returns true if
+     * the question is valid, false if not
      * 
      * @param url
      *            URL of the server on which we want to post the question.
      * @param question
      *            The question that we want to post on the server.
-     * @return The result {@link HttpResponse}
+     * @return boolean true if the server has received the Question
      * @throws ClientProtocolException
      * @throws IOException
-     * @throws JSONException
      * @throws NetworkErrorException
      */
     // TODO do so no code is repeated
     @Override
-    public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
-            JSONException, NetworkErrorException {
+    public HttpResponse postJSONObject(String url, JSONObject question)
+        throws ClientProtocolException, IOException, NetworkErrorException {
 
         HttpPost post = new HttpPost(url);
-        post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
+        try {
+            post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
+        } catch (JSONException e) {
+            throw new IOException(e.getMessage());
+        }
         post.setHeader("Content-type", "application/json");
         HttpResponse response = execute(post);
 

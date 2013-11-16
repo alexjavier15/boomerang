@@ -18,6 +18,7 @@ import epfl.sweng.tools.JSONParser;
  * 
  */
 public final class CacheHttpComms implements IHttpConnectionHelper {
+
     private static CacheHttpComms sCache = null;
 
     public static CacheHttpComms getInstance() {
@@ -43,7 +44,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
             NetworkErrorException {
         HttpResponse reponse = null;
 
-        if (urlString.equals(HttpComms.URL)) {
+        if (urlString.equals(HttpComms.URL_SWENG_RANDOM_GET)) {
 
             try {
                 reponse = CacheManager.getInstance().getRandomQuestion();
@@ -66,10 +67,10 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      */
     @Override
     public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
-            JSONException, NetworkErrorException {
-        if (url.equals(HttpComms.URLPUSH)) {
+            NetworkErrorException {
+        if (url.equals(HttpComms.URL_SWENG_PUSH)) {
             return CacheManager.getInstance().addQuestionForSync(question.toString());
-        } else if (url.equals(HttpComms.URLQUERYPOST)) {
+        } else if (url.equals(HttpComms.URL_SWENG_QUERY_POST)) {
             return null; // CacheManager.getInstance().pushQueryQuestion(question);
         } else {
             throw new UnsupportedOperationException("Unsupported operation in offline mode");
@@ -89,10 +90,9 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
 
     /**
      * @param reponse
-     * @throws JSONException 
-     * @throws NullPointerException 
+     * @throws JSONException
      */
-    public void pushQuestion(HttpResponse reponse) throws NullPointerException, JSONException {
+    public void pushQuestion(HttpResponse reponse) throws JSONException {
 
         JSONObject quizQuestion;
         try {

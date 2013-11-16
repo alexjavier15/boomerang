@@ -17,20 +17,27 @@ import epfl.sweng.quizquestions.QuizQuestion;
  * 
  * @author LorenzoLeon
  * 
- *         This class is used to parse JSON Objects to QuizQuestion and vice versa.
+ *         This class is used to parse JSON Objects to QuizQuestion and vice
+ *         versa.
  * 
  */
 public class JSONParser {
 
     public static final int HTTP_ERROR = 404;
 
-    public static JSONObject getParser(HttpResponse response) throws  JSONException,
-            HttpResponseException, IOException {
+    public static JSONObject getParser(HttpResponse response)
+        throws HttpResponseException, IOException {
 
         BasicResponseHandler responseHandler = new BasicResponseHandler();
         String jsonResponse = responseHandler.handleResponse(response);
-      
-        return new JSONObject(jsonResponse);
+
+        JSONObject jo;
+        try {
+            jo = new JSONObject(jsonResponse);
+        } catch (JSONException e) {
+            throw new IOException(e.getMessage());
+        }
+        return jo;
 
     }
 
@@ -42,7 +49,8 @@ public class JSONParser {
      * @throws IOException
      * @throws JSONException
      */
-    public static List<String> jsonArrayToList(JSONArray array) throws IOException {
+    public static List<String> jsonArrayToList(JSONArray array)
+        throws IOException {
         int size = array.length();
         List<String> stringList = new ArrayList<String>(size);
 
@@ -65,11 +73,13 @@ public class JSONParser {
      * @throws IOException
      * @throws JSONException
      */
-    public static JSONObject parseQuiztoJSON(QuizQuestion question) throws JSONException {
+    public static JSONObject parseQuiztoJSON(QuizQuestion question)
+        throws JSONException {
 
         JSONObject jsonQuestion = new JSONObject();
 
-        jsonQuestion.put("owner", CredentialManager.getInstance().getUserCredential());
+        jsonQuestion.put("owner", CredentialManager.getInstance()
+                .getUserCredential());
         jsonQuestion.put("id", question.getID());
         jsonQuestion.put("tags", new JSONArray(question.getTags()));
         jsonQuestion.put("solutionIndex", question.getIndex());
@@ -81,5 +91,14 @@ public class JSONParser {
         return jsonQuestion;
     }
 
- 
+    public static JSONObject parseKeyValuePairtoJSON(String key, String value)
+        throws IOException {
+        JSONObject jsontoken = new JSONObject();
+        try {
+            jsontoken.put(key, value);
+        } catch (JSONException e) {
+            throw new IOException(e.getMessage());
+        }
+        return jsontoken;
+    }
 }

@@ -24,7 +24,7 @@ public interface IHttpConnectionHelper {
     boolean isConnected();
 
     HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
-            JSONException, NetworkErrorException;
+            NetworkErrorException, JSONException;
 
     /**
      * @param reponse
