@@ -10,12 +10,14 @@ import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.tools.Debug;
+import epfl.sweng.tools.JSONParser;
 
 /**
  * @author Alex
@@ -23,10 +25,11 @@ import epfl.sweng.tools.Debug;
  */
 
 public final class HttpCommsProxy implements IHttpConnectionHelper {
-
     private static IHttpConnectionHelper sRealHttpComms = null;
     private static CacheHttpComms sCacheHttpComms = null;
+    private static CacheManager sCacheManager = null;
     private static HttpCommsProxy proxy = null;
+    private QueryHelper mQueryHelper = null;
 
     public static HttpCommsProxy getInstance() {
 
@@ -49,7 +52,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
             sCacheHttpComms = CacheHttpComms.getInstance();
         }
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, sRealHttpComms.isConnected());
-        CacheManager.getInstance();
+        sCacheManager = CacheManager.getInstance();
     }
 
     public Class<?> getServerCommsClass() {
@@ -77,7 +80,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
      */
     @Override
     public HttpResponse getHttpResponse(String urlString) throws NetworkErrorException, NullPointerException,
-            ParseException, IOException, JSONException {
+            JSONException, ParseException, IOException {
 
         HttpResponse response = getServerCommsInstance().getHttpResponse(urlString);
         if (response != null) {
@@ -89,10 +92,6 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
                 response.setEntity(new StringEntity(entity));
                 sCacheHttpComms.pushQuestion(response);
                 response.setEntity(new StringEntity(entity));
-
-            } else {
-
-                QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, false);
 
             }
 
@@ -107,19 +106,28 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
      * @see epfl.sweng.servercomm.IHttpConnection#postJSONObject(java.lang.String , org.json.JSONObject)
      */
     @Override
-    public HttpResponse postJSONObject(String url, JSONObject jObject) throws ClientProtocolException, IOException,
-            NetworkErrorException, JSONException {
-        HttpResponse response = getServerCommsInstance().postJSONObject(url, jObject);
+    public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
+            JSONException, NetworkErrorException {
+        HttpResponse response = getServerCommsInstance().postJSONObject(url, question);
 
-        if (url.equals(HttpComms.URL_SWENG_QUERY_POST)) {
-            if (!checkResponseStatus(response, HttpStatus.SC_OK)) {
-                QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, false);
-
-            }
-        } else if (url.equals(HttpComms.URL_SWENG_PUSH) && !checkResponseStatus(response, HttpStatus.SC_CREATED)) {
-
-            sCacheHttpComms.postJSONObject(url, jObject);
+        if (!checkResponseStatus(response, HttpStatus.SC_CREATED)) {
+            sCacheHttpComms.postJSONObject(url, question);
             QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, false);
+        }
+        if (url.equals(HttpComms.URLQUERYPOST)) {
+            if (checkResponseStatus(response, HttpStatus.SC_OK)) {
+                JSONObject jObject = JSONParser.getParser(response);
+                JSONArray questions = jObject.getJSONArray("questions");
+                for (int i = 0; i < questions.length(); i++) {
+                    String questionString = questions.getJSONObject(i).toString();
+                    sCacheManager.pushFetchedQuestion(questionString);
+                    sCacheManager.pushQueryQuestion(questionString);
+                }
+                if (jObject.has("next")) {
+                    jObject.getString("next");
+                }
+            }
+
         }
 
         return response;
@@ -129,11 +137,11 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
      * Check the status the {@link HttpResponse} against an expected status. If the status is not as expected The proxy
      * switch to the offline state.
      * 
-     * @param reponse
+     * @param response
      * @param expectedStatus
      */
-    private boolean checkResponseStatus(HttpResponse reponse, int expectedStatus) {
-        return reponse.getStatusLine().getStatusCode() == expectedStatus;
+    private boolean checkResponseStatus(HttpResponse response, int expectedStatus) {
+        return response.getStatusLine().getStatusCode() == expectedStatus;
     }
 
     private boolean isOnlineMode() {
@@ -152,14 +160,24 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         return getServerCommsInstance().isConnected();
     }
 
-    public void saveQuery(String string, int questionIndex) {
-        // TODO Auto-generated method stub
+    public HttpResponse poll(boolean isQueryMode, String mQuery) throws ClientProtocolException, IOException,
+            NetworkErrorException, NullPointerException, ParseException, JSONException {
+        if (isQueryMode && mQuery != null) {
+            if (mQueryHelper != null) {
+                return mQueryHelper.processQuery(mQuery);
+            }
+        }
 
+        return getHttpResponse(HttpComms.URL);
     }
 
-    public HttpResponse getQueryQuestion(int questionIndex) {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * @param b
+     */
+    public void setOnlineMode(boolean isOnline) {
+
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, isOnline).apply();
+
     }
 
 }

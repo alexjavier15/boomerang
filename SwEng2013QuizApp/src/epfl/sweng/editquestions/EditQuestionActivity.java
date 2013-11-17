@@ -179,27 +179,25 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         return questionCreated;
     }
 
-
     @Override
     public HttpResponse requete() {
         HttpResponse response = null;
         try {
             QuizQuestion question = createQuestion();
 
-            response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH,
+            response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
                     JSONParser.parseQuiztoJSON(question));
 
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
+            HttpCommsProxy.getInstance().setOnlineMode(false);
         } catch (NetworkErrorException e) {
-            e.printStackTrace();
+            HttpCommsProxy.getInstance().setOnlineMode(false);
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            HttpCommsProxy.getInstance().setOnlineMode(false);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+        } catch (IllegalArgumentException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
         }
         return response;
     }
@@ -210,6 +208,11 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             reset();
             printSuccess();
         } else {
+            if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+
+            }
             printFail();
         }
         TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);

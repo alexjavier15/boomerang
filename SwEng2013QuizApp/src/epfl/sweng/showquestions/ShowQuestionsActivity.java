@@ -2,11 +2,15 @@ package epfl.sweng.showquestions;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.ParseException;
+import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
+import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +26,8 @@ import android.widget.Toast;
 import epfl.sweng.R;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
+import epfl.sweng.servercomm.HttpCommsProxy;
+import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 import epfl.sweng.tools.Debug;
@@ -33,8 +39,9 @@ import epfl.sweng.tools.JSONParser;
  * 
  */
 
-public class ShowQuestionsActivity extends Activity {
+public class ShowQuestionsActivity extends Activity implements HttpcommunicationsAdapter {
 
+    public static final String ERROR_MESSAGE = "There was an error retrieving the question";
     private ArrayAdapter<String> adapter;
     private ListView answerChoices;
     private OnItemClickListener answerListener = null;
@@ -42,7 +49,8 @@ public class ShowQuestionsActivity extends Activity {
     private int lastChoice = -1;
     private TextView tags;
     private TextView text;
-    private ConnectionManager conManager = null;
+    private boolean isQueryMode = false;
+    private String mQuery = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,11 +102,11 @@ public class ShowQuestionsActivity extends Activity {
 
         };
         answerChoices.setOnItemClickListener(answerListener);
-        if (getIntent().hasExtra("query_mode")) {
-            conManager = new QueryConManager(this);
-        } else {
-            conManager = new RandomManager(this);
+        isQueryMode = getIntent().getBooleanExtra("query_mode", false);
+        if (isQueryMode) {
+            mQuery = getIntent().getStringExtra("query");
         }
+        processHttpReponse(fetchFirstQuestion());
     }
 
     /**
@@ -111,47 +119,47 @@ public class ShowQuestionsActivity extends Activity {
         return true;
     }
 
-    @Override
-    protected void onStart() {
-        askNextQuestion(this.getCurrentFocus());
+    /**
+     * Obtains a random question thru an AsyncTask but blocks the thread until the response is received.
+     * 
+     * @param query
+     * 
+     * @return HttpResponse
+     */
+
+    public HttpResponse fetchFirstQuestion() {
+        HttpResponse response = null;
+
+        Debug.out("Start fetching");
+        try {
+            response = new HttpCommsBackgroundTask(this, false).execute().get();
+        } catch (InterruptedException e) {
+            Log.e(getLocalClassName(), "AsyncTask thread exception");
+        } catch (ExecutionException e) {
+            Log.e(getLocalClassName(), "AsyncTask thread exception");
+        }
+
+        return response;
     }
 
     /**
-     * Launches a new async task which will fetch a new question when clicking on the button labeled "Next Question"
+     * Launches fetchNewQuestion() when clicking on the button labeled "Next Question"
      * 
      * @param view
      */
-
     public void askNextQuestion(View view) {
         answerChoices.setOnItemClickListener(answerListener);
         ((Button) findViewById(R.id.next_question)).setEnabled(false);
-        new HttpCommsBackgroundTask(conManager, true).execute();
+        fetchNewQuestion();
     }
 
-    public void parseResponse(HttpResponse response) {
-        QuizQuestion quizQuestion = null;
+    /**
+     * Launches the HTTPGET operation to display a new random question
+     */
+    public void fetchNewQuestion() {
 
-        if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+        new HttpCommsBackgroundTask(this, true).execute();
 
-            try {
-                quizQuestion = new QuizQuestion(JSONParser.getParser(response).toString());
-                Debug.out(quizQuestion);
-            } catch (IOException e) {
-                Log.e(getLocalClassName(), e.getMessage());
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            if (quizQuestion != null) {
-                setQuestion(quizQuestion);
-            } else {
-                text.append("No question can be obtained !");
-                toast(conManager.getErrorMessage());
-            }
-        } else {
-            toast(conManager.getErrorMessage());
-        }
-        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
     }
 
     /**
@@ -182,7 +190,68 @@ public class ShowQuestionsActivity extends Activity {
         }
     }
 
-    void setQuestion(QuizQuestion quizQuestion) {
+    @Override
+    public HttpResponse requete() {
+        HttpResponse response = null;
+
+        try {
+            response = HttpCommsProxy.getInstance().poll(isQueryMode, mQuery);
+        } catch (ClientProtocolException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+            e.printStackTrace();
+        } catch (NetworkErrorException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+            e.printStackTrace();
+        } catch (IOException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+            e.printStackTrace();
+        } catch (ParseException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+            e.printStackTrace();
+        } catch (JSONException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+    @Override
+    public void processHttpReponse(HttpResponse httpResponse) {
+        QuizQuestion quizQuestion = null;
+
+        if (httpResponse != null && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+
+            try {
+                quizQuestion = new QuizQuestion(JSONParser.getParser(httpResponse).toString());
+                Debug.out(quizQuestion);
+            } catch (IOException e) {
+                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+                Log.e(getLocalClassName(), e.getMessage());
+            } catch (JSONException e) {
+                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+                e.printStackTrace();
+            }
+            if (quizQuestion != null) {
+                setQuestion(quizQuestion);
+            } else {
+                text.append("No question can be obtained !");
+                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+            }
+        } else {
+            if (httpResponse.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+
+            }
+            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+        }
+        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+    }
+
+    private void setQuestion(QuizQuestion quizQuestion) {
         currrentQuestion = quizQuestion;
 
         text.setText(quizQuestion.getQuestion());
@@ -201,15 +270,4 @@ public class ShowQuestionsActivity extends Activity {
     public void setText(TextView view) {
         text = view;
     }
-
-    public void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-    }
-
-    public void block() {
-        answerChoices.setClickable(false);
-        ((Button) findViewById(R.id.next_question)).setEnabled(false);
-
-    }
-
 }

@@ -19,12 +19,12 @@ import android.accounts.NetworkErrorException;
 public interface IHttpConnectionHelper {
 
     HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException, NetworkErrorException,
-            JSONException;
+            NullPointerException, JSONException;
 
     boolean isConnected();
 
     HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
-            NetworkErrorException, JSONException;
+            JSONException, NetworkErrorException;
 
     /**
      * @param reponse

@@ -19,14 +19,6 @@ import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
-/**
- * This activity allows the user to enter a query and after verifying the
- * congruence of the request creates a new ShowQuestion activity that will
- * search for corresponding questions.
- * 
- * @author LorenzoLeon
- * 
- */
 public class SearchActivity extends Activity {
 
 	private EditText searchQuery = null;

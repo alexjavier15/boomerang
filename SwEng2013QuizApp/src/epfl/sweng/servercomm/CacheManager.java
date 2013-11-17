@@ -127,10 +127,6 @@ public final class CacheManager {
 
     }
 
-    /**
-     * This Background task attempts to sync the post cache to the sweng server.
-     *
-     */
     private class BackgroundServiceTask extends AsyncTask<Void, Boolean, Boolean> {
 
         /*
@@ -152,7 +148,7 @@ public final class CacheManager {
                     try {
                         Debug.out("go to process post");
                         quizQuestion = new QuizQuestion(jsonString);
-                        response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH,
+                        response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
                                 JSONParser.parseQuiztoJSON(quizQuestion));
                         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                             sPostQuestionDB.deleteQuizQuestion();

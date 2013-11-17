@@ -138,7 +138,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         state = TEQUILA;
         Debug.out(urlEntity.toString());
 
-        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA_LOGIN, urlEntity);
+        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA, urlEntity);
 
     }
 

@@ -2,10 +2,6 @@ package epfl.sweng.patterns;
 
 import epfl.sweng.servercomm.HttpCommsProxy;
 
-/**
- * @author LorenzoLeon
- *
- */
 public class CheckProxyHelper implements ICheckProxyHelper {
 
     @Override
