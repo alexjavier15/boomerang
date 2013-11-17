@@ -90,9 +90,8 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null,
                 "RANDOM()", null);
-        if (cursor!=null && cursor.getCount()>0) {
+        if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
-          
 
             String quizQuestion = cursor.getString(CULUMN_JSON_INDEX);
             db.close();
