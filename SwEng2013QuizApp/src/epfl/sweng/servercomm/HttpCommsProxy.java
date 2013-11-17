@@ -81,7 +81,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         if (response != null) {
 
             if (isOnlineMode() && checkResponseStatus(response, HttpStatus.SC_OK)) {
-                // Httpresponse can't be read twice
+                Debug.out(" pushing question");
                 String entity = EntityUtils.toString(response.getEntity());
 
                 response.setEntity(new StringEntity(entity));
