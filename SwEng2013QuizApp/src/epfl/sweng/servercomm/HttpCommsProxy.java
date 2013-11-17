@@ -144,7 +144,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         return response.getStatusLine().getStatusCode() == expectedStatus;
     }
 
-    private boolean isOnlineMode() {
+    public boolean isOnlineMode() {
         Debug.out("client status : " + QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true));
 
         return QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true);

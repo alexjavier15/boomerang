@@ -82,7 +82,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         Debug.out((new CheckProxyHelper()).getServerCommunicationClass());
         HttpCommsProxy.getInstance();
         CheckBox check = (CheckBox) findViewById(R.id.offline_mode);
-        boolean isOnline = QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true);
+        boolean isOnline = HttpCommsProxy.getInstance().isOnlineMode();
         if (!check.isChecked() != isOnline) {
             update(isOnline);
 
@@ -92,7 +92,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 
     private void setUpPreferences() {
 
-        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
+        HttpCommsProxy.getInstance().setOnlineMode(true);
 
     }
 
@@ -191,7 +191,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 
         CheckBox offlineCheckBox = (CheckBox) view;
         boolean isOnline = !offlineCheckBox.isChecked();
-        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, !offlineCheckBox.isChecked()).apply();
+        HttpCommsProxy.getInstance().setOnlineMode(!offlineCheckBox.isChecked());
         update(isOnline);
 
     }
