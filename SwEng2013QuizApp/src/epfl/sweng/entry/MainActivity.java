@@ -1,7 +1,5 @@
 package epfl.sweng.entry;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +34,56 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 
     private boolean authenticated = true;
 
+    /**
+     * Launches the new Activity ShowQuestionsActivity to display a random question
+     * 
+     * @param view
+     *            The view that was clicked.
+     */
+    public void askQuestion(View view) {
+        Toast.makeText(this, "You are on the page to show a random question!", Toast.LENGTH_SHORT).show();
+        Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
+        this.startActivity(showQuestionActivityIntent);
+    }
+
+    /**
+     * 
+     * @param view
+     */
+    public void changeNetworkMode(View view) {
+
+        CheckBox offlineCheckBox = (CheckBox) view;
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, !offlineCheckBox.isChecked()).apply();
+        update();
+
+    }
+
+    private void checkStatus(String newValue) {
+        if (newValue.equals("")) {
+            Log.i("Session Id has been removed: logged out", newValue);
+            setAthenticated(false);
+            ((Button) findViewById(R.id.log_inout)).setText("Log in using Tequila");
+        } else {
+            Log.i("New session Id is: ", newValue);
+            setAthenticated(true);
+            ((Button) findViewById(R.id.log_inout)).setText("Log out");
+            CacheManager.getInstance().init();
+
+        }
+    }
+
+    public void logInOut(View view) {
+        if (authenticated) {
+            // this means you are logging out!
+            CredentialManager.getInstance().removeUserCredential();
+            TestCoordinator.check(TTChecks.LOGGED_OUT);
+        } else {
+            Intent loginActivityIntent = new Intent(this, AuthenticationActivity.class);
+            startActivity(loginActivityIntent);
+        }
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,24 +105,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     /*
      * (non-Javadoc)
      * 
-     * @see android.app.Activity#onStart()
-     */
-    @Override
-    protected void onStart() {
-
-        super.onStart();
-
-        String newValue = CredentialManager.getInstance().getUserCredential();
-        Debug.out("CREDENTIAL MANAGER IS RETURNING : " + newValue);
-        checkStatus(newValue);
-
-        TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see android.app.Activity#onResume()
      */
     @Override
@@ -91,62 +121,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         }
     }
 
-    private void setUpPreferences() {
-        
-        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
-        
-    }
-
-    private void update() {
-        if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
-            TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
-            ((CheckBox) findViewById(R.id.offline_mode)).setChecked(false);
-            CacheManager.getInstance().init();
-        } else {
-            ((CheckBox) findViewById(R.id.offline_mode)).setChecked(true);
-            TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
-        }
-
-    }
-
-    private void checkStatus(String newValue) {
-        if (newValue.equals("")) {
-            Log.i("Session Id has been removed: logged out", newValue);
-            setAthenticated(false);
-            ((Button) findViewById(R.id.log_inout)).setText("Log in using Tequila");
-        } else {
-            Log.i("New session Id is: ", newValue);
-            setAthenticated(true);
-            ((Button) findViewById(R.id.log_inout)).setText("Log out");
-            CacheManager.getInstance().init();
-
-        }
-    }
-
-    /**
-     * Launches the new Activity ShowQuestionsActivity to display a random question
-     * 
-     * @param view
-     *            The view that was clicked.
-     */
-    public void askQuestion(View view) {
-        Toast.makeText(this, "You are on the page to show a random question!", Toast.LENGTH_SHORT).show();
-        Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
-        this.startActivity(showQuestionActivityIntent);
-    }
-
-    public void logInOut(View view) {
-        if (authenticated) {
-            // this means you are logging out!
-            CredentialManager.getInstance().removeUserCredential();
-            TestCoordinator.check(TTChecks.LOGGED_OUT);
-        } else {
-            Intent loginActivityIntent = new Intent(this, AuthenticationActivity.class);
-            startActivity(loginActivityIntent);
-        }
-
-    }
-
     /**
 	 * 
 	 */
@@ -161,6 +135,24 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onStart()
+     */
+    @Override
+    protected void onStart() {
+
+        super.onStart();
+
+        String newValue = CredentialManager.getInstance().getUserCredential();
+        Debug.out("CREDENTIAL MANAGER IS RETURNING : " + newValue);
+        checkStatus(newValue);
+
+        TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
+
+    }
+
     /**
      * 
      * @param newState
@@ -170,6 +162,12 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         ((Button) findViewById(R.id.ShowQuestionButton)).setEnabled(newState);
         ((Button) findViewById(R.id.SubmitQuestionButton)).setEnabled(newState);
         ((CheckBox) findViewById(R.id.offline_mode)).setEnabled(newState);
+    }
+
+    private void setUpPreferences() {
+
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
+
     }
 
     /**
@@ -184,15 +182,15 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         startActivity(submitActivityIntent);
     }
 
-    /**
-     * 
-     * @param view
-     */
-    public void changeNetworkMode(View view) {
-
-        CheckBox offlineCheckBox = (CheckBox) view;
-        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, !offlineCheckBox.isChecked()).apply();
-        update();
+    private void update() {
+        if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
+            TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
+            ((CheckBox) findViewById(R.id.offline_mode)).setChecked(false);
+            CacheManager.getInstance().init();
+        } else {
+            ((CheckBox) findViewById(R.id.offline_mode)).setChecked(true);
+            TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
+        }
 
     }
 }

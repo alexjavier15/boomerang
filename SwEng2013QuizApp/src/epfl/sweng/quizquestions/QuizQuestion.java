@@ -1,6 +1,5 @@
 package epfl.sweng.quizquestions;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,50 +18,23 @@ import epfl.sweng.tools.JSONParser;
  *         This class represents a question.
  */
 public class QuizQuestion implements QuestionProvider, Serializable {
+    public static final int ID = -1;
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
-    public static final int ID = -1;
     private List<String> answers = new ArrayList<String>();
     private int id;
+    private final int maxAnswerLength = 500;
+    private final int maxAnswersSize = 10;
+    private final int maxQuestionLength = 500;
+    private final int maxTagLength = 20;
+
+    private final int maxTagsSize = 20;
+    private String owner;
     private String question;
     private int solutionIndex;
     private Set<String> tags = new HashSet<String>();
-    private String owner;
-
-    private final int maxQuestionLength = 500;
-    private final int maxAnswersSize = 10;
-    private final int maxAnswerLength = 500;
-    private final int maxTagsSize = 20;
-    private final int maxTagLength = 20;
-
-    /**
-     * Constructor of a QuizQuestion : class to modelize a quiz question at the json format.
-     * 
-     * @param iD
-     *            of the question
-     * @param quest
-     *            String
-     * @param ans
-     *            List of String
-     * @param solIndex
-     *            int
-     * @param tags
-     *            themas of the question
-     */
-    public QuizQuestion(final String question, final List<String> answers, final int solutionIndex,
-            final Set<String> tags, final int id, final String owner) {
-        this.id = id;
-        this.question = question;
-        this.answers = answers;
-        this.solutionIndex = solutionIndex;
-        this.tags = tags;
-        this.owner = owner;
-        // if (auditErrors() != 0) {
-        // throw new IllegalArgumentException();
-        // }
-    }
 
     public QuizQuestion(final String jsonInput) throws JSONException {
 
@@ -94,6 +66,33 @@ public class QuizQuestion implements QuestionProvider, Serializable {
         this.id = initId;
         this.owner = initOwner;
 
+        // if (auditErrors() != 0) {
+        // throw new IllegalArgumentException();
+        // }
+    }
+
+    /**
+     * Constructor of a QuizQuestion : class to modelize a quiz question at the json format.
+     * 
+     * @param iD
+     *            of the question
+     * @param quest
+     *            String
+     * @param ans
+     *            List of String
+     * @param solIndex
+     *            int
+     * @param tags
+     *            themas of the question
+     */
+    public QuizQuestion(final String question, final List<String> answers, final int solutionIndex,
+            final Set<String> tags, final int id, final String owner) {
+        this.id = id;
+        this.question = question;
+        this.answers = answers;
+        this.solutionIndex = solutionIndex;
+        this.tags = tags;
+        this.owner = owner;
         // if (auditErrors() != 0) {
         // throw new IllegalArgumentException();
         // }
@@ -148,14 +147,6 @@ public class QuizQuestion implements QuestionProvider, Serializable {
         return solutionIndex;
     }
 
-    public String getQuestion() {
-        return question;
-    }
-
-    public Set<String> getTags() {
-        return tags;
-    }
-
     /**
      * Return the the owner
      * 
@@ -165,13 +156,21 @@ public class QuizQuestion implements QuestionProvider, Serializable {
         return owner;
     }
 
-    // For JUnit test cases
-    public void setQuestion(String q) {
-        this.question = q;
+    public String getQuestion() {
+        return question;
+    }
+
+    public Set<String> getTags() {
+        return tags;
     }
 
     public void setAnswers(List<String> a) {
         this.answers = a;
+    }
+
+    // For JUnit test cases
+    public void setQuestion(String q) {
+        this.question = q;
     }
 
     public void setTags(Set<String> tagsIn) {

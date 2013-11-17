@@ -4,6 +4,7 @@
 package epfl.sweng.servercomm;
 
 import java.io.IOException;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
@@ -25,11 +26,10 @@ import epfl.sweng.tools.JSONParser;
  */
 
 public final class HttpCommsProxy implements IHttpConnectionHelper {
-    private static IHttpConnectionHelper sRealHttpComms = null;
+    private static HttpCommsProxy proxy = null;
     private static CacheHttpComms sCacheHttpComms = null;
     private static CacheManager sCacheManager = null;
-    private static HttpCommsProxy proxy = null;
-    private QueryHelper mQueryHelper = null;
+    private static IHttpConnectionHelper sRealHttpComms = null;
 
     public static HttpCommsProxy getInstance() {
 
@@ -41,6 +41,8 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         }
 
     }
+
+    private QueryHelper mQueryHelper = null;
 
     private HttpCommsProxy() {
 
@@ -55,22 +57,15 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         sCacheManager = CacheManager.getInstance();
     }
 
-    public Class<?> getServerCommsClass() {
-
-        return getServerCommsInstance().getClass();
-    }
-
     /**
-     * @return
+     * Check the status the {@link HttpResponse} against an expected status. If the status is not as expected The proxy
+     * switch to the offline state.
+     * 
+     * @param response
+     * @param expectedStatus
      */
-    private IHttpConnectionHelper getServerCommsInstance() {
-
-        if (isOnlineMode()) {
-            return sRealHttpComms;
-
-        } else {
-            return sCacheHttpComms;
-        }
+    private boolean checkResponseStatus(HttpResponse response, int expectedStatus) {
+        return response.getStatusLine().getStatusCode() == expectedStatus;
     }
 
     /*
@@ -98,6 +93,51 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         }
 
         return response;
+    }
+
+    public Class<?> getServerCommsClass() {
+
+        return getServerCommsInstance().getClass();
+    }
+
+    /**
+     * @return
+     */
+    private IHttpConnectionHelper getServerCommsInstance() {
+
+        if (isOnlineMode()) {
+            return sRealHttpComms;
+
+        } else {
+            return sCacheHttpComms;
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
+     */
+    @Override
+    public boolean isConnected() {
+        return getServerCommsInstance().isConnected();
+    }
+
+    public boolean isOnlineMode() {
+        Debug.out("client status : " + QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true));
+
+        return QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true);
+    }
+
+    public HttpResponse poll(boolean isQueryMode, String mQuery) throws ClientProtocolException, IOException,
+            NetworkErrorException, NullPointerException, ParseException, JSONException {
+        if (isQueryMode && mQuery != null) {
+            if (mQueryHelper != null) {
+                return mQueryHelper.processQuery(mQuery);
+            }
+        }
+
+        return getHttpResponse(HttpComms.URL);
     }
 
     /*
@@ -131,44 +171,6 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         }
 
         return response;
-    }
-
-    /**
-     * Check the status the {@link HttpResponse} against an expected status. If the status is not as expected The proxy
-     * switch to the offline state.
-     * 
-     * @param response
-     * @param expectedStatus
-     */
-    private boolean checkResponseStatus(HttpResponse response, int expectedStatus) {
-        return response.getStatusLine().getStatusCode() == expectedStatus;
-    }
-
-    public boolean isOnlineMode() {
-        Debug.out("client status : " + QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true));
-
-        return QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
-     */
-    @Override
-    public boolean isConnected() {
-        return getServerCommsInstance().isConnected();
-    }
-
-    public HttpResponse poll(boolean isQueryMode, String mQuery) throws ClientProtocolException, IOException,
-            NetworkErrorException, NullPointerException, ParseException, JSONException {
-        if (isQueryMode && mQuery != null) {
-            if (mQueryHelper != null) {
-                return mQueryHelper.processQuery(mQuery);
-            }
-        }
-
-        return getHttpResponse(HttpComms.URL);
     }
 
     /**

@@ -5,13 +5,13 @@ import epfl.sweng.servercomm.HttpCommsProxy;
 public class CheckProxyHelper implements ICheckProxyHelper {
 
     @Override
-    public Class<?> getServerCommunicationClass() {
-        return HttpCommsProxy.getInstance().getServerCommsClass();
+    public Class<?> getProxyClass() {
+        return HttpCommsProxy.getInstance().getClass();
     }
 
     @Override
-    public Class<?> getProxyClass() {
-        return HttpCommsProxy.getInstance().getClass();
+    public Class<?> getServerCommunicationClass() {
+        return HttpCommsProxy.getInstance().getServerCommsClass();
     }
 
 }

@@ -46,11 +46,86 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     private ListView answerChoices;
     private OnItemClickListener answerListener = null;
     private QuizQuestion currrentQuestion;
+    private boolean isQueryMode = false;
     private int lastChoice = -1;
+    private String mQuery = null;
     private TextView tags;
     private TextView text;
-    private boolean isQueryMode = false;
-    private String mQuery = null;
+
+    /**
+     * Launches fetchNewQuestion() when clicking on the button labeled "Next Question"
+     * 
+     * @param view
+     */
+    public void askNextQuestion(View view) {
+        answerChoices.setOnItemClickListener(answerListener);
+        ((Button) findViewById(R.id.next_question)).setEnabled(false);
+        fetchNewQuestion();
+    }
+
+    /**
+     * Get the tags of the question to display them on the screen
+     * 
+     * @param set
+     *            : set of Strings
+     * @return the tags
+     */
+    private String displayTags(Set<String> set) {
+        if (set.size() > 0) {
+            System.out.println("Va afficher les tags");
+            String tagsInString = "";
+            int counter = 0;
+
+            for (String s : set) {
+                counter++;
+                if (counter == set.size()) {
+                    tagsInString += s;
+                } else {
+                    tagsInString += s + ", ";
+                }
+            }
+
+            return tagsInString;
+        } else {
+            return "No tags for this question";
+        }
+    }
+
+    /**
+     * Obtains a random question thru an AsyncTask but blocks the thread until the response is received.
+     * 
+     * @param query
+     * 
+     * @return HttpResponse
+     */
+
+    public HttpResponse fetchFirstQuestion() {
+        HttpResponse response = null;
+
+        Debug.out("Start fetching");
+        try {
+            response = new HttpCommsBackgroundTask(this, false).execute().get();
+        } catch (InterruptedException e) {
+            Log.e(getLocalClassName(), "AsyncTask thread exception");
+        } catch (ExecutionException e) {
+            Log.e(getLocalClassName(), "AsyncTask thread exception");
+        }
+
+        return response;
+    }
+
+    /**
+     * Launches the HTTPGET operation to display a new random question
+     */
+    public void fetchNewQuestion() {
+
+        new HttpCommsBackgroundTask(this, true).execute();
+
+    }
+
+    public TextView getText() {
+        return text;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,103 +194,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         return true;
     }
 
-    /**
-     * Obtains a random question thru an AsyncTask but blocks the thread until the response is received.
-     * 
-     * @param query
-     * 
-     * @return HttpResponse
-     */
-
-    public HttpResponse fetchFirstQuestion() {
-        HttpResponse response = null;
-
-        Debug.out("Start fetching");
-        try {
-            response = new HttpCommsBackgroundTask(this, false).execute().get();
-        } catch (InterruptedException e) {
-            Log.e(getLocalClassName(), "AsyncTask thread exception");
-        } catch (ExecutionException e) {
-            Log.e(getLocalClassName(), "AsyncTask thread exception");
-        }
-
-        return response;
-    }
-
-    /**
-     * Launches fetchNewQuestion() when clicking on the button labeled "Next Question"
-     * 
-     * @param view
-     */
-    public void askNextQuestion(View view) {
-        answerChoices.setOnItemClickListener(answerListener);
-        ((Button) findViewById(R.id.next_question)).setEnabled(false);
-        fetchNewQuestion();
-    }
-
-    /**
-     * Launches the HTTPGET operation to display a new random question
-     */
-    public void fetchNewQuestion() {
-
-        new HttpCommsBackgroundTask(this, true).execute();
-
-    }
-
-    /**
-     * Get the tags of the question to display them on the screen
-     * 
-     * @param set
-     *            : set of Strings
-     * @return the tags
-     */
-    private String displayTags(Set<String> set) {
-        if (set.size() > 0) {
-            System.out.println("Va afficher les tags");
-            String tagsInString = "";
-            int counter = 0;
-
-            for (String s : set) {
-                counter++;
-                if (counter == set.size()) {
-                    tagsInString += s;
-                } else {
-                    tagsInString += s + ", ";
-                }
-            }
-
-            return tagsInString;
-        } else {
-            return "No tags for this question";
-        }
-    }
-
-    @Override
-    public HttpResponse requete() {
-        HttpResponse response = null;
-
-        try {
-            response = HttpCommsProxy.getInstance().poll(isQueryMode, mQuery);
-        } catch (ClientProtocolException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-            e.printStackTrace();
-        } catch (NetworkErrorException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-            e.printStackTrace();
-        } catch (IOException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-            e.printStackTrace();
-        } catch (ParseException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-            e.printStackTrace();
-        } catch (JSONException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-            e.printStackTrace();
-        }
-
-        return response;
-    }
-
     @Override
     public void processHttpReponse(HttpResponse httpResponse) {
         QuizQuestion quizQuestion = null;
@@ -253,6 +231,32 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         TestCoordinator.check(TTChecks.QUESTION_SHOWN);
     }
 
+    @Override
+    public HttpResponse requete() {
+        HttpResponse response = null;
+
+        try {
+            response = HttpCommsProxy.getInstance().poll(isQueryMode, mQuery);
+        } catch (ClientProtocolException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+            e.printStackTrace();
+        } catch (NetworkErrorException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+            e.printStackTrace();
+        } catch (IOException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+            e.printStackTrace();
+        } catch (ParseException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+            e.printStackTrace();
+        } catch (JSONException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
     private void setQuestion(QuizQuestion quizQuestion) {
         currrentQuestion = quizQuestion;
 
@@ -263,10 +267,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         answerChoices.setAdapter(adapter);
 
         adapter.setNotifyOnChange(true);
-    }
-
-    public TextView getText() {
-        return text;
     }
 
     public void setText(TextView view) {

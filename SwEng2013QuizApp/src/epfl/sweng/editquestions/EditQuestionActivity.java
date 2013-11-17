@@ -47,20 +47,176 @@ import epfl.sweng.tools.JSONParser;
 
 public class EditQuestionActivity extends Activity implements HttpcommunicationsAdapter {
 
+    public static final String CHECK_SYM = null;
     public static final String ERROR_MESSAGE = "Could not upload the question to the server";
+    private Button addAnswerButton;
+    private final String answersHint = "Type in the answer";
     private AnswerAdapter mAdapter;
     private ListView mListView;
+
     private Pattern mPatternTags = Pattern.compile("([A-Za-z0-9]+)");
     private boolean mReset = true;
-    public static final String CHECK_SYM = null;
-
     private EditText questionEditText;
     private final String questionHint = "Type in the question's text body";
-    private final String answersHint = "Type in the answer";
+    private Button submitButton;
     private EditText tagsEditText;
     private final String tagsHint = "Type in the question's tags";
-    private Button submitButton;
-    private Button addAnswerButton;
+
+    /**
+     * Whenever the button with the plus sign (+) is clicked, it adds a new possible answer with the hint
+     * "Type in the answer" and it is marked as incorrect.
+     * 
+     * @param view
+     */
+    public void addNewSlot(View view) {
+        Answer temp = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
+        mAdapter.add(temp);
+        Debug.out(temp);
+        mAdapter.notifyDataSetChanged();
+        if (!isReset()) {
+            TestCoordinator.check(TTChecks.QUESTION_EDITED);
+        }
+        mListView.setSelection(mListView.getCount() - 1);
+    }
+
+    private int auditAnswers() {
+        int numberErrors = 0;
+        int numberOfAnswers = 0;
+        for (int i = 0; i < mListView.getChildCount(); i++) {
+            Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
+            if (check.getText().equals(R.string.heavy_check_mark)) {
+                numberOfAnswers++;
+            }
+        }
+
+        if (numberOfAnswers > 1) {
+            numberErrors++;
+        }
+        return numberErrors;
+    }
+
+    private int auditButtons() {
+        int numberErrors = 0;
+        if (!addAnswerButton.getText().equals("+") || addAnswerButton.getVisibility() != View.VISIBLE) {
+            numberErrors++;
+        }
+        if (!submitButton.getText().equals("Submit") || submitButton.getVisibility() != View.VISIBLE) {
+            numberErrors++;
+        }
+        for (int i = 0; i < mListView.getChildCount(); i++) {
+            Button removeAnswer = (Button) mListView.getChildAt(i).findViewById(R.id.edit_cancelAnswer);
+            if (!removeAnswer.getText().equals("-") || removeAnswer.getVisibility() != View.VISIBLE) {
+                numberErrors++;
+            }
+            Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
+            CharSequence checkTxt = check.getText();
+            String juste = getString(R.string.heavy_check_mark);
+            String faux = getString(R.string.heavy_ballot_x);
+            if (!(checkTxt.equals(juste) || checkTxt.equals(faux)) || check.getVisibility() != View.VISIBLE) {
+                numberErrors++;
+            }
+        }
+        return numberErrors;
+    }
+
+    private int auditEditTexts() {
+        int numberErrors = 0;
+        if (!questionEditText.getHint().equals(questionHint) || questionEditText.getVisibility() != View.VISIBLE) {
+            numberErrors++;
+        }
+        for (int i = 0; i < mListView.getChildCount(); i++) {
+            EditText answer = (EditText) mListView.getChildAt(i).findViewById(R.id.edit_answerText);
+            if (!answer.getHint().equals(answersHint) || answer.getVisibility() != View.VISIBLE) {
+                numberErrors++;
+            }
+        }
+        if (!tagsEditText.getHint().equals(tagsHint) || tagsEditText.getVisibility() != View.VISIBLE) {
+            numberErrors++;
+        }
+        return numberErrors;
+    }
+
+    public int auditErrors() {
+        return auditAnswers() + auditButtons() + auditEditTexts() + auditSubmitButton();
+    }
+
+    private int auditSubmitButton() {
+        int numberErrors = 0;
+        QuizQuestion currentQQ = createQuestion();
+        if (currentQQ.auditErrors() != 0) {
+            if (submitButton.isEnabled()) {
+                numberErrors++;
+            }
+        } else {
+            if (!submitButton.isEnabled()) {
+                numberErrors++;
+            }
+        }
+        return numberErrors;
+    }
+
+    /**
+     * This method is called when the quiz question is valid and all answers the user typed in are saved in order to
+     * create a quiz question in JSON format for the SwEng quiz server.
+     * 
+     * @return The quiz question is JSON format.
+     */
+    private QuizQuestion createQuestion() throws IllegalArgumentException {
+        String questionString = questionEditText.getText().toString();
+        List<String> answers = new LinkedList<String>();
+        int solIndex = 0;
+        boolean check = true;
+        QuizQuestion questionCreated = null;
+
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            Answer answerI = mAdapter.getItem(i);
+            answers.add(answerI.getAnswer());
+            if (check) {
+                if (answerI.getChecked().equals(getResources().getString(R.string.heavy_check_mark))) {
+                    check = false;
+                } else {
+                    solIndex++;
+                }
+            }
+        }
+
+        Pattern patternTags = Pattern.compile("([A-Za-z0-9]+)");
+        Set<String> tags = new HashSet<String>();
+
+        Matcher matcher = patternTags.matcher(tagsEditText.getText().toString());
+        while (matcher.find()) {
+            tags.add(matcher.group(1));
+        }
+        questionCreated = new QuizQuestion(questionString, answers, solIndex, tags, QuizQuestion.ID,
+                CredentialManager.getInstance().getUserCredential());
+
+        return questionCreated;
+    }
+
+    /**
+     * Return the the reset status of {@link EditQuestionActivity}
+     * 
+     * @return the reset
+     */
+    public boolean isReset() {
+        return mReset;
+    }
+
+    /**
+     * When the user clicks on the submission button, this method is triggered to verify all the four requirements
+     * defining a valid quiz question : 1) The question body must be a no empty {@link String} or only white spaces
+     * spaces. 2) None of the answers of a quiz question may be empty or contain only white spaces. 3) There must be at
+     * least 2 answers. 4) One of the answers must be marked as correct.
+     * 
+     * @return True if all requirements defining a valid quiz question are verified, otherwise false.
+     */
+    public boolean isValid() {
+        String questionText = questionEditText.getText().toString();
+        String tagsText = tagsEditText.getText().toString();
+
+        return mPatternTags.matcher(tagsText).find() && !questionText.trim().equals("") && mAdapter.getCount() >= 2
+                && !mAdapter.hasEmptyAnswer() && mAdapter.hasOneCorrectAnswer();
+    }
 
     /**
      * Starts the window adding a modified ArrayAdapter to list the answers. Creates the multiple Test Listeners for
@@ -113,71 +269,47 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.edit_question, menu);
         return true;
     }
 
-    /**
-     * Whenever the button with the plus sign (+) is clicked, it adds a new possible answer with the hint
-     * "Type in the answer" and it is marked as incorrect.
-     * 
-     * @param view
-     */
-    public void addNewSlot(View view) {
-        Answer temp = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
-        mAdapter.add(temp);
-        Debug.out(temp);
-        mAdapter.notifyDataSetChanged();
-        if (!isReset()) {
-            TestCoordinator.check(TTChecks.QUESTION_EDITED);
-        }
-        mListView.setSelection(mListView.getCount() - 1);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        TestCoordinator.check(TTChecks.EDIT_QUESTIONS_SHOWN);
     }
 
     /**
-     * This method is called when the quiz question is valid and all answers the user typed in are saved in order to
-     * create a quiz question in JSON format for the SwEng quiz server.
+     * Used to show a {@link Toast} in case of a failed submission
      * 
-     * @return The quiz question is JSON format.
      */
-    private QuizQuestion createQuestion() throws IllegalArgumentException {
-        String questionString = questionEditText.getText().toString();
-        List<String> answers = new LinkedList<String>();
-        int solIndex = 0;
-        boolean check = true;
-        QuizQuestion questionCreated = null;
+    private void printFail() {
+        Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_SHORT).show();
+    }
 
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            Answer answerI = mAdapter.getItem(i);
-            answers.add(answerI.getAnswer());
-            if (check) {
-                if (answerI.getChecked().equals(getResources().getString(R.string.heavy_check_mark))) {
-                    check = false;
-                } else {
-                    solIndex++;
-                }
+    /**
+     * Used to show a {@link Toast} in case of a successful submission
+     */
+    private void printSuccess() {
+        Toast.makeText(this, "Your submission was successful!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void processHttpReponse(HttpResponse response) {
+        if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+            reset();
+            printSuccess();
+        } else {
+            if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+
             }
+            printFail();
         }
-
-        Pattern patternTags = Pattern.compile("([A-Za-z0-9]+)");
-        Set<String> tags = new HashSet<String>();
-
-        Matcher matcher = patternTags.matcher(tagsEditText.getText().toString());
-        while (matcher.find()) {
-            tags.add(matcher.group(1));
-        }
-        questionCreated = new QuizQuestion(questionString, answers, solIndex, tags, QuizQuestion.ID, CredentialManager
-                .getInstance().getUserCredential());
-
-        return questionCreated;
+        TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
     }
 
     @Override
@@ -201,62 +333,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             HttpCommsProxy.getInstance().setOnlineMode(false);
         }
         return response;
-    }
-
-    @Override
-    public void processHttpReponse(HttpResponse response) {
-        if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-            reset();
-            printSuccess();
-        } else {
-            if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-
-            }
-            printFail();
-        }
-        TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
-    }
-
-    /**
-     * Used to show a {@link Toast} in case of a failed submission
-     * 
-     */
-    private void printFail() {
-        Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Used to show a {@link Toast} in case of a successful submission
-     */
-    private void printSuccess() {
-        Toast.makeText(this, "Your submission was successful!", Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Return the the reset status of {@link EditQuestionActivity}
-     * 
-     * @return the reset
-     */
-    public boolean isReset() {
-        return mReset;
-    }
-
-    /**
-     * When the user clicks on the submission button, this method is triggered to verify all the four requirements
-     * defining a valid quiz question : 1) The question body must be a no empty {@link String} or only white spaces
-     * spaces. 2) None of the answers of a quiz question may be empty or contain only white spaces. 3) There must be at
-     * least 2 answers. 4) One of the answers must be marked as correct.
-     * 
-     * @return True if all requirements defining a valid quiz question are verified, otherwise false.
-     */
-    public boolean isValid() {
-        String questionText = questionEditText.getText().toString();
-        String tagsText = tagsEditText.getText().toString();
-
-        return mPatternTags.matcher(tagsText).find() && !questionText.trim().equals("") && mAdapter.getCount() >= 2
-                && !mAdapter.hasEmptyAnswer() && mAdapter.hasOneCorrectAnswer();
     }
 
     /**
@@ -309,82 +385,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             }
             TestCoordinator.check(TTChecks.QUESTION_EDITED);
         }
-    }
-
-    public int auditErrors() {
-        return auditAnswers() + auditButtons() + auditEditTexts() + auditSubmitButton();
-    }
-
-    private int auditEditTexts() {
-        int numberErrors = 0;
-        if (!questionEditText.getHint().equals(questionHint) || questionEditText.getVisibility() != View.VISIBLE) {
-            numberErrors++;
-        }
-        for (int i = 0; i < mListView.getChildCount(); i++) {
-            EditText answer = (EditText) mListView.getChildAt(i).findViewById(R.id.edit_answerText);
-            if (!answer.getHint().equals(answersHint) || answer.getVisibility() != View.VISIBLE) {
-                numberErrors++;
-            }
-        }
-        if (!tagsEditText.getHint().equals(tagsHint) || tagsEditText.getVisibility() != View.VISIBLE) {
-            numberErrors++;
-        }
-        return numberErrors;
-    }
-
-    private int auditButtons() {
-        int numberErrors = 0;
-        if (!addAnswerButton.getText().equals("+") || addAnswerButton.getVisibility() != View.VISIBLE) {
-            numberErrors++;
-        }
-        if (!submitButton.getText().equals("Submit") || submitButton.getVisibility() != View.VISIBLE) {
-            numberErrors++;
-        }
-        for (int i = 0; i < mListView.getChildCount(); i++) {
-            Button removeAnswer = (Button) mListView.getChildAt(i).findViewById(R.id.edit_cancelAnswer);
-            if (!removeAnswer.getText().equals("-") || removeAnswer.getVisibility() != View.VISIBLE) {
-                numberErrors++;
-            }
-            Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
-            CharSequence checkTxt = check.getText();
-            String juste = getString(R.string.heavy_check_mark);
-            String faux = getString(R.string.heavy_ballot_x);
-            if (!(checkTxt.equals(juste) || checkTxt.equals(faux)) || check.getVisibility() != View.VISIBLE) {
-                numberErrors++;
-            }
-        }
-        return numberErrors;
-    }
-
-    private int auditAnswers() {
-        int numberErrors = 0;
-        int numberOfAnswers = 0;
-        for (int i = 0; i < mListView.getChildCount(); i++) {
-            Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
-            if (check.getText().equals(R.string.heavy_check_mark)) {
-                numberOfAnswers++;
-            }
-        }
-    
-        if (numberOfAnswers > 1) {
-            numberErrors++;
-        }
-        return numberErrors;
-    }
-
-    private int auditSubmitButton() {
-        int numberErrors = 0;
-        QuizQuestion currentQQ = createQuestion();
-        if (currentQQ.auditErrors() != 0) {
-            if (submitButton.isEnabled()) {
-                numberErrors++;
-            }
-        } else {
-            if (!submitButton.isEnabled()) {
-                numberErrors++;
-            }
-        }
-        return numberErrors;
     }
 
 }

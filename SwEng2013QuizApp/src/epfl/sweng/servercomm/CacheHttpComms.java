@@ -62,6 +62,17 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
     /*
      * (non-Javadoc)
      * 
+     * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
+     */
+    @Override
+    public boolean isConnected() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see epfl.sweng.servercomm.IHttpConnection#postQuestion(java.lang.String, org.json.JSONObject)
      */
     @Override
@@ -76,21 +87,10 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
-     */
-    @Override
-    public boolean isConnected() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
     /**
      * @param reponse
-     * @throws JSONException 
-     * @throws NullPointerException 
+     * @throws JSONException
+     * @throws NullPointerException
      */
     public void pushQuestion(HttpResponse reponse) throws NullPointerException, JSONException {
 

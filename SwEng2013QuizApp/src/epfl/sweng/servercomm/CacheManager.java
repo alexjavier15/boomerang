@@ -29,107 +29,6 @@ import epfl.sweng.tools.JSONParser;
  * 
  */
 public final class CacheManager {
-    public static final String QUESTION_CACHE_DB_NAME = "Cache.db";
-    public static final String POST_SYNC_DB_NAME = "PostSync.db";
-    public static final String QUERY_CACHE_DB_NAME = "QueryCache.db";
-    private static QuizQuestionDBHelper sQuizQuestionDB;
-    private static QuizQuestionDBHelper sPostQuestionDB;
-    private static QuizQuestionDBHelper sQueryQuestionDB;
-    private static CacheManager sCacheManager = null;
-
-    private CacheManager() {
-
-        sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUESTION_CACHE_DB_NAME);
-        sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), POST_SYNC_DB_NAME);
-        sQueryQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUERY_CACHE_DB_NAME);
-
-    }
-
-    public static CacheManager getInstance() {
-        if (sCacheManager == null) {
-            sCacheManager = new CacheManager();
-
-        }
-        return sCacheManager;
-
-    }
-
-    /**
-     * @return
-     * @throws IOException
-     * @throws JSONException
-     */
-    public HttpResponse getRandomQuestion() throws IOException, JSONException {
-
-        String question = sQuizQuestionDB.getRandomQuizQuestion();
-
-        return wrapQuizQuestion(question);
-    }
-
-    public HttpResponse getNextQueryQuestion() throws IOException, JSONException {
-        String question = sQueryQuestionDB.getRandomQuizQuestion();
-        return wrapQuizQuestion(question);
-
-    }
-
-    private HttpResponse wrapQuizQuestion(String question) throws IOException, JSONException {
-        HttpResponse reponse = null;
-        QuizQuestion quizQuestion = null;
-        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
-        if (question != null) {
-            quizQuestion = new QuizQuestion(question);
-        }
-
-        if (quizQuestion != null) {
-            JSONObject questionObj = JSONParser.parseQuiztoJSON(quizQuestion);
-            reponse = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_OK, null), null);
-            reponse.setEntity(new StringEntity(questionObj.toString(HttpComms.STRING_ENTITY)));
-        } else {
-            reponse = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR, null), null);
-        }
-
-        return reponse;
-    }
-
-    /**
-     * @param question
-     * @return
-     */
-    public HttpResponse addQuestionForSync(String question) {
-
-        sPostQuestionDB.addQuizQuestion(question);
-
-        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
-        HttpResponse reponse = httpResFactory.newHttpResponse(
-                new BasicStatusLine((new HttpPost()).getProtocolVersion(), HttpStatus.SC_CREATED, null), null);
-
-        return reponse;
-
-    }
-
-    public void pushQueryQuestion(String query) {
-
-        sQueryQuestionDB.addQuizQuestion(query);
-    }
-
-    private void syncPostCachedQuestions() {
-        long num = DatabaseUtils.queryNumEntries(sPostQuestionDB.getReadableDatabase(), sPostQuestionDB.TABLE_NAME);
-        Debug.out("row count =" + num);
-
-        (new BackgroundServiceTask()).execute();
-
-    }
-
-    /**
-     * @param question
-     */
-    public void pushFetchedQuestion(String question) {
-        sQuizQuestionDB.addQuizQuestion(question);
-
-    }
-
     private class BackgroundServiceTask extends AsyncTask<Void, Boolean, Boolean> {
 
         /*
@@ -209,12 +108,65 @@ public final class CacheManager {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#
-     * onSharedPreferenceChanged(android.content. SharedPreferences, java.lang.String)
+    public static final String POST_SYNC_DB_NAME = "PostSync.db";
+    public static final String QUERY_CACHE_DB_NAME = "QueryCache.db";
+    public static final String QUESTION_CACHE_DB_NAME = "Cache.db";
+    private static CacheManager sCacheManager = null;
+    private static QuizQuestionDBHelper sPostQuestionDB;
+    private static QuizQuestionDBHelper sQueryQuestionDB;
+
+    private static QuizQuestionDBHelper sQuizQuestionDB;
+
+    public static CacheManager getInstance() {
+        if (sCacheManager == null) {
+            sCacheManager = new CacheManager();
+
+        }
+        return sCacheManager;
+
+    }
+
+    private CacheManager() {
+
+        sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUESTION_CACHE_DB_NAME);
+        sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), POST_SYNC_DB_NAME);
+        sQueryQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUERY_CACHE_DB_NAME);
+
+    }
+
+    /**
+     * @param question
+     * @return
      */
+    public HttpResponse addQuestionForSync(String question) {
+
+        sPostQuestionDB.addQuizQuestion(question);
+
+        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
+        HttpResponse reponse = httpResFactory.newHttpResponse(
+                new BasicStatusLine((new HttpPost()).getProtocolVersion(), HttpStatus.SC_CREATED, null), null);
+
+        return reponse;
+
+    }
+
+    public HttpResponse getNextQueryQuestion() throws IOException, JSONException {
+        String question = sQueryQuestionDB.getRandomQuizQuestion();
+        return wrapQuizQuestion(question);
+
+    }
+
+    /**
+     * @return
+     * @throws IOException
+     * @throws JSONException
+     */
+    public HttpResponse getRandomQuestion() throws IOException, JSONException {
+
+        String question = sQuizQuestionDB.getRandomQuizQuestion();
+
+        return wrapQuizQuestion(question);
+    }
 
     public void init() {
         Debug.out("onChange in chache manager called");
@@ -224,5 +176,55 @@ public final class CacheManager {
             syncPostCachedQuestions();
 
         }
+    }
+
+    /**
+     * @param question
+     */
+    public void pushFetchedQuestion(String question) {
+        sQuizQuestionDB.addQuizQuestion(question);
+
+    }
+
+    public void pushQueryQuestion(String query) {
+
+        sQueryQuestionDB.addQuizQuestion(query);
+    }
+
+    private void syncPostCachedQuestions() {
+        long num = DatabaseUtils.queryNumEntries(sPostQuestionDB.getReadableDatabase(),
+                QuizQuestionDBHelper.TABLE_NAME);
+        Debug.out("row count =" + num);
+
+        (new BackgroundServiceTask()).execute();
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#
+     * onSharedPreferenceChanged(android.content. SharedPreferences, java.lang.String)
+     */
+
+    private HttpResponse wrapQuizQuestion(String question) throws IOException, JSONException {
+        HttpResponse reponse = null;
+        QuizQuestion quizQuestion = null;
+        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
+        if (question != null) {
+            quizQuestion = new QuizQuestion(question);
+        }
+
+        if (quizQuestion != null) {
+            JSONObject questionObj = JSONParser.parseQuiztoJSON(quizQuestion);
+            reponse = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
+                    HttpStatus.SC_OK, null), null);
+            reponse.setEntity(new StringEntity(questionObj.toString(HttpComms.STRING_ENTITY)));
+        } else {
+            reponse = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR, null), null);
+        }
+
+        return reponse;
     }
 }

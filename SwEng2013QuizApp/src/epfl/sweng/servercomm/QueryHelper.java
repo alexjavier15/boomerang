@@ -16,12 +16,12 @@ public final class QueryHelper {
     private QueryHelper() {
     }
 
-    public void setQuery(String nwQuery) {
-    }
-
     public HttpResponse processQuery(String mQuery) {
         return null;
         // TODO Auto-generated method stub
 
+    }
+
+    public void setQuery(String nwQuery) {
     }
 }
