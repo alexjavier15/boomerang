@@ -65,30 +65,35 @@ public class QuizQuestion implements QuestionProvider, Serializable {
     }
 
     public QuizQuestion(final String jsonInput) throws JSONException {
-        if (jsonInput != null) {
-            JSONObject parser = new JSONObject(jsonInput);
-            int initId = -1;
-            String initQuestion = "";
-            List<String> initAnswers = null;
-            int initSolutionIndex = -1;
-            Set<String> initTags = null;
-            String initOwner = "";
 
-            initId = parser.getInt("id");
-            initQuestion = parser.getString("question");
-            initAnswers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
+        if (jsonInput == null) {
 
-            initSolutionIndex = parser.getInt("solutionIndex");
-            initTags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
-            initOwner = parser.getString("owner");
+            throw new JSONException("the input string can't be null");
 
-            this.question = initQuestion;
-            this.answers = initAnswers;
-            this.solutionIndex = initSolutionIndex;
-            this.tags = initTags;
-            this.id = initId;
-            this.owner = initOwner;
         }
+        JSONObject parser = new JSONObject(jsonInput);
+        int initId = -1;
+        String initQuestion = "";
+        List<String> initAnswers = null;
+        int initSolutionIndex = -1;
+        Set<String> initTags = null;
+        String initOwner = "";
+
+        initId = parser.getInt("id");
+        initQuestion = parser.getString("question");
+        initAnswers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
+
+        initSolutionIndex = parser.getInt("solutionIndex");
+        initTags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
+        initOwner = parser.getString("owner");
+
+        this.question = initQuestion;
+        this.answers = initAnswers;
+        this.solutionIndex = initSolutionIndex;
+        this.tags = initTags;
+        this.id = initId;
+        this.owner = initOwner;
+
         // if (auditErrors() != 0) {
         // throw new IllegalArgumentException();
         // }

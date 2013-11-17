@@ -19,7 +19,7 @@ import epfl.sweng.tools.Debug;
 
 public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumns {
 
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 1;
     public static final String TABLE_NAME = "quizQuestions";
     public static final String COLUMN_NAME_JSON_QUESTION = "jsonQuestion";
     private static final int CULUMN_JSON_INDEX = 1;

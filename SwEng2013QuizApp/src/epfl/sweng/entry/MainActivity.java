@@ -1,5 +1,7 @@
 package epfl.sweng.entry;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -90,9 +92,9 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     }
 
     private void setUpPreferences() {
-
+        
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
-
+        
     }
 
     private void update() {
@@ -116,6 +118,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             Log.i("New session Id is: ", newValue);
             setAthenticated(true);
             ((Button) findViewById(R.id.log_inout)).setText("Log out");
+            CacheManager.getInstance().init();
 
         }
     }
