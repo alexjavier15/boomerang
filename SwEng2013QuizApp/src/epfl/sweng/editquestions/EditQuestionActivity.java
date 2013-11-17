@@ -82,10 +82,14 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     public int auditAnswers() {
         int numberErrors = 0;
         int numberOfAnswers = 0;
-        Debug.out("child count " + mListView.getCount());
+
+        Debug.out(mListView.getChildCount());
+        Debug.out(mListView.getCount());
+
         for (int i = 0; i < mListView.getCount(); i++) {
             Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
             Debug.out(check.getText() + " vs " + getResources().getString(R.string.heavy_check_mark));
+
             if (check.getText().equals(getResources().getString(R.string.heavy_check_mark))) {
                 numberOfAnswers++;
 

@@ -2,16 +2,11 @@ package epfl.sweng.test.audits;
 
 import android.test.UiThreadTest;
 import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-
 import com.jayway.android.robotium.solo.Solo;
 
 import epfl.sweng.R;
 import epfl.sweng.editquestions.EditQuestionActivity;
 import epfl.sweng.test.template.TestTemplate;
-import epfl.sweng.testing.TestCoordinator.TTChecks;
-import epfl.sweng.tools.Debug;
 
 public class EditQuestionsAuditsTest extends TestTemplate<EditQuestionActivity> {
 
@@ -23,23 +18,20 @@ public class EditQuestionsAuditsTest extends TestTemplate<EditQuestionActivity> 
 
     @UiThreadTest
     public void testAuditError() {
+        EditQuestionActivity edit = (EditQuestionActivity) getActivity();
 
-        Button plus = (Button) getActivity().findViewById(R.id.add_answer);
+        Button plus = (Button) getSolo().getButton("+");
         plus.callOnClick();
 
         plus.callOnClick();
         plus.callOnClick();
         plus.callOnClick();
-        Button bt = (Button) getActivity().findViewById(R.id.edit_buttonProperty);
+        Button bt = (Button) edit.findViewById(R.id.edit_buttonProperty);
         bt.setText(R.string.heavy_check_mark);
         Button bt1 = (Button) getSolo().getButton(0);
         bt1.setText(R.string.heavy_check_mark);
-       
 
-        Debug.out(((EditQuestionActivity) getActivity()).auditAnswers());
-
-        assertTrue("audit", ((EditQuestionActivity) getActivity()).auditAnswers() == 0);
-
+        assertTrue("audit", ((EditQuestionActivity) edit).auditAnswers() == 0);
     }
 
     // public void testAuditButtons() {

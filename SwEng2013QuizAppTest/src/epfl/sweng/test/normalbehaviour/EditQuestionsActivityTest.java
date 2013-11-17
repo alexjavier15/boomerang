@@ -57,12 +57,7 @@ public class EditQuestionsActivityTest extends TestTemplate<EditQuestionActivity
 //
 //        getSolo().getButton(2).setText(R.string.heavy_check_mark);
         submit = getSolo().getButton("Submit");
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+       
         assertFalse("Submit button should be disabled", submit.isEnabled());
         assertFalse("multiple checks, condition", 0 != ((EditQuestionActivity) getActivity()).auditErrors());
         getActivity().finish();
