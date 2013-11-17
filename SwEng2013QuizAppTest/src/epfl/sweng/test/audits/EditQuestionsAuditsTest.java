@@ -14,12 +14,10 @@ public class EditQuestionsAuditsTest extends TestTemplate<EditQuestionActivity> 
 	}
 
 	public void testAuditError() {
-		assertEquals(0, ((EditQuestionActivity) getActivity()).auditErrors());
+	    EditQuestionActivity edit = (EditQuestionActivity) getActivity();
+	
 	}
 	
-	public void testAuditEditText() {
-		assertEquals(0, ((EditQuestionActivity) getActivity()).auditErrors());
-	}
 	
 //	public void testAuditButtons() {
 //		assertEquals(0, ((EditQuestionActivity) getActivity()).auditButtons());

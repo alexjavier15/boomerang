@@ -2,5 +2,7 @@
 <resources>
 
     <string name="app_name">SwEng2013QuizAppTestTest</string>
+    <string name="heavy_ballot_x">✘</string>
+    <string name="heavy_check_mark">✔</string>
 
 </resources>

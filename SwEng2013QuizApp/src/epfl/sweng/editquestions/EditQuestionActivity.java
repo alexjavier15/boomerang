@@ -52,6 +52,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     private ListView mListView;
     private Pattern mPatternTags = Pattern.compile("([A-Za-z0-9]+)");
     private boolean mReset = true;
+    public static final String CHECK_SYM = null;
 
     private EditText questionEditText;
     private final String questionHint = "Type in the question's text body";
