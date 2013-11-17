@@ -79,13 +79,16 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         mListView.setSelection(mListView.getCount() - 1);
     }
 
-    private int auditAnswers() {
+    public int auditAnswers() {
         int numberErrors = 0;
         int numberOfAnswers = 0;
+        Debug.out("child count " +mListView.getChildCount());
         for (int i = 0; i < mListView.getChildCount(); i++) {
             Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
+            Debug.out(check.getText() +" vs "+ getResources().getString(R.string.heavy_check_mark));
             if (check.getText().equals(R.string.heavy_check_mark)) {
                 numberOfAnswers++;
+               
             }
         }
 
@@ -133,6 +136,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         if (!tagsEditText.getHint().equals(tagsHint) || tagsEditText.getVisibility() != View.VISIBLE) {
             numberErrors++;
         }
+        Debug.out("errors en answers : " + numberErrors);
         return numberErrors;
     }
 
