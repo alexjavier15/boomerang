@@ -18,7 +18,7 @@ public class EditQuestionsAuditsTest extends TestTemplate<EditQuestionActivity> 
 	}
 	
 	public void testAuditEditText() {
-		assertEquals(0, ((EditQuestionActivity) getActivity()).auditEditTexts());
+		assertEquals(0, ((EditQuestionActivity) getActivity()).auditErrors());
 	}
 	
 //	public void testAuditButtons() {

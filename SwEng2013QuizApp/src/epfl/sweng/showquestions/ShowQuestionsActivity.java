@@ -220,34 +220,36 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     public void processHttpReponse(HttpResponse httpResponse) {
         QuizQuestion quizQuestion = null;
 
-        if (httpResponse != null && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+        if (httpResponse != null) {
+            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                try {
+                    quizQuestion = new QuizQuestion(JSONParser.getParser(httpResponse).toString());
+                    setQuestion(quizQuestion);
 
-            try {
-                quizQuestion = new QuizQuestion(JSONParser.getParser(httpResponse).toString());
-                Debug.out(quizQuestion);
-            } catch (IOException e) {
-                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-                Log.e(getLocalClassName(), e.getMessage());
-            } catch (JSONException e) {
-                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-                e.printStackTrace();
-            }
-            if (quizQuestion != null) {
-                setQuestion(quizQuestion);
+                    Debug.out(quizQuestion);
+                } catch (IOException e) {
+
+                    Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                    HttpCommsProxy.getInstance().setOnlineMode(false);
+                    Log.e(getLocalClassName(), e.getMessage());
+                } catch (JSONException e) {
+                    Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                    HttpCommsProxy.getInstance().setOnlineMode(false);
+                    e.printStackTrace();
+                }
+
             } else {
-                text.append("No question can be obtained !");
-                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                if (httpResponse.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+
+                    HttpCommsProxy.getInstance().setOnlineMode(false);
+
+                }
+
             }
         } else {
-            if (httpResponse.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-
-            }
             Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
         }
+
         TestCoordinator.check(TTChecks.QUESTION_SHOWN);
     }
 
