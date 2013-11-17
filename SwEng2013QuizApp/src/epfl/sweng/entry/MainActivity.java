@@ -82,9 +82,8 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         Debug.out((new CheckProxyHelper()).getServerCommunicationClass());
         HttpCommsProxy.getInstance();
         CheckBox check = (CheckBox) findViewById(R.id.offline_mode);
-        boolean isOnline = HttpCommsProxy.getInstance().isOnlineMode();
-        if (!check.isChecked() != isOnline) {
-            update(isOnline);
+        if (!check.isChecked() != QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
+            update();
 
             // onSharedPreferenceChanged(QuizApp.getPreferences(), PreferenceKeys.ONLINE_MODE);
         }
@@ -92,18 +91,17 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 
     private void setUpPreferences() {
 
-        HttpCommsProxy.getInstance().setOnlineMode(true);
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
 
     }
 
-    private void update(boolean isOnline) {
-        CheckBox offlineMode = (CheckBox) findViewById(R.id.offline_mode);
-        if (isOnline) {
-            offlineMode.setChecked(!isOnline);
-            CacheManager.getInstance().init();
+    private void update() {
+        if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
             TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
+            ((CheckBox) findViewById(R.id.offline_mode)).setChecked(false);
+            CacheManager.getInstance().init();
         } else {
-            offlineMode.setChecked(isOnline);
+            ((CheckBox) findViewById(R.id.offline_mode)).setChecked(true);
             TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
         }
 
@@ -190,9 +188,8 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     public void changeNetworkMode(View view) {
 
         CheckBox offlineCheckBox = (CheckBox) view;
-        boolean isOnline = !offlineCheckBox.isChecked();
-        HttpCommsProxy.getInstance().setOnlineMode(!offlineCheckBox.isChecked());
-        update(isOnline);
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, !offlineCheckBox.isChecked()).apply();
+        update();
 
     }
 }

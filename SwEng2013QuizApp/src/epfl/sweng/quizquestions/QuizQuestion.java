@@ -73,18 +73,15 @@ public class QuizQuestion implements QuestionProvider, Serializable {
             int initSolutionIndex = -1;
             Set<String> initTags = null;
             String initOwner = "";
-            try {
-                initId = parser.getInt("id");
-                initQuestion = parser.getString("question");
-                initAnswers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
-                initSolutionIndex = parser.getInt("solutionIndex");
-                initTags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
-                initOwner = parser.getString("owner");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            initId = parser.getInt("id");
+            initQuestion = parser.getString("question");
+            initAnswers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
+
+            initSolutionIndex = parser.getInt("solutionIndex");
+            initTags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
+            initOwner = parser.getString("owner");
+
             this.question = initQuestion;
             this.answers = initAnswers;
             this.solutionIndex = initSolutionIndex;

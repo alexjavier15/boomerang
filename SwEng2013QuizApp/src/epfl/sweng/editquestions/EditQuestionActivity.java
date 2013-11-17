@@ -365,6 +365,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
                 numberOfAnswers++;
             }
         }
+    
         if (numberOfAnswers > 1) {
             numberErrors++;
         }

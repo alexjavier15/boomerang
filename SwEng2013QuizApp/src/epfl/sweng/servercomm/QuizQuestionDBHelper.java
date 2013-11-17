@@ -6,6 +6,7 @@ package epfl.sweng.servercomm;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
@@ -37,7 +38,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
      */
     public QuizQuestionDBHelper(Context context, String name) {
         super(context, name, null, DATABASE_VERSION);
-        
+
     }
 
     /*
@@ -48,7 +49,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
-        
+
     }
 
     /*
@@ -97,13 +98,14 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     public String getFirstPostQuestion() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null, _ID
-                + " ASC");
+        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null,
+                _ID + " ASC");
         if (cursor.moveToFirst()) {
             last = cursor.getInt(0);
-            Debug.out("showing question name for debug: " + cursor.getString(CULUMN_JSON_INDEX) + " and idk _ " + last);
+            Debug.out("showing question name for debug: " + cursor.getString(CULUMN_JSON_INDEX) + " and idk _ "
+                    + last);
 
-            return cursor.getColumnName(1);
+            return cursor.getString(CULUMN_JSON_INDEX);
         } else {
             last = -1;
             Debug.out("nomore question to sync");
@@ -113,11 +115,14 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     }
 
     public void deleteQuizQuestion() {
+        
         Debug.out("gAttempt to delete " + last);
         if (last != -1) {
 
             SQLiteDatabase db = this.getWritableDatabase();
-            db.delete(TABLE_NAME, _ID + " = ?", new String[] {String.valueOf(last)});
+            Debug.out(DatabaseUtils.queryNumEntries(db, TABLE_NAME));
+            db.delete(TABLE_NAME, _ID + "=?", new String[] {String.valueOf(last)});
+            Debug.out(DatabaseUtils.queryNumEntries(db, TABLE_NAME));
             db.close();
         }
     }

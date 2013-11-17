@@ -16,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
+import android.database.DatabaseUtils;
 import android.os.AsyncTask;
 import android.util.Log;
 import epfl.sweng.authentication.PreferenceKeys;
@@ -41,7 +42,7 @@ public final class CacheManager {
         sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUESTION_CACHE_DB_NAME);
         sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), POST_SYNC_DB_NAME);
         sQueryQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUERY_CACHE_DB_NAME);
-        init();
+
     }
 
     public static CacheManager getInstance() {
@@ -101,8 +102,8 @@ public final class CacheManager {
         sPostQuestionDB.addQuizQuestion(question);
 
         DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
-        HttpResponse reponse = httpResFactory.newHttpResponse(new BasicStatusLine(
-                (new HttpPost()).getProtocolVersion(), HttpStatus.SC_CREATED, null), null);
+        HttpResponse reponse = httpResFactory.newHttpResponse(
+                new BasicStatusLine((new HttpPost()).getProtocolVersion(), HttpStatus.SC_CREATED, null), null);
 
         return reponse;
 
@@ -114,6 +115,8 @@ public final class CacheManager {
     }
 
     private void syncPostCachedQuestions() {
+        long num = DatabaseUtils.queryNumEntries(sPostQuestionDB.getReadableDatabase(), sPostQuestionDB.TABLE_NAME);
+        Debug.out("row count =" + num);
 
         (new BackgroundServiceTask()).execute();
 
@@ -137,44 +140,57 @@ public final class CacheManager {
         @Override
         protected Boolean doInBackground(Void... params) {
             Debug.out("Attempting to sync file");
+            HttpResponse response = null;
+            boolean inSync = false;
+            boolean isEmpty = false;
+            boolean result = false;
 
             QuizQuestion quizQuestion = null;
 
-            String jsonString = sPostQuestionDB.getFirstPostQuestion();
-
             do {
-                if (quizQuestion != null) {
-                    HttpResponse response = null;
-                    try {
-                        Debug.out("go to process post");
-                        quizQuestion = new QuizQuestion(jsonString);
-                        response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
-                                JSONParser.parseQuiztoJSON(quizQuestion));
-                        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-                            sPostQuestionDB.deleteQuizQuestion();
-                            quizQuestion = new QuizQuestion(sPostQuestionDB.getFirstPostQuestion());
-                            response.getEntity().consumeContent();
-                        }
-                        Debug.out("reponse got");
 
-                    } catch (ClientProtocolException e) {
-                        e.printStackTrace();
+                try {
 
-                    } catch (NetworkErrorException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        Log.e(this.getClass().getName(), e.getMessage());
-                        sPostQuestionDB.deleteQuizQuestion();
-
+                    String jsonString = sPostQuestionDB.getFirstPostQuestion();
+                    if (jsonString == null) {
+                        isEmpty = true;
                     }
+                    Debug.out("go to process post");
+                    quizQuestion = new QuizQuestion(jsonString);
+                    Debug.out("got it");
+                    if (quizQuestion != null) {
+                        response = HttpComms.getInstance().postJSONObject(HttpComms.URLPUSH,
+                                JSONParser.parseQuiztoJSON(quizQuestion));
+                    }
+                    inSync = response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED;
+                    result = response.getStatusLine().getStatusCode() <= HttpStatus.SC_INTERNAL_SERVER_ERROR;
+                    if (inSync) {
 
+                        response.getEntity().consumeContent();
+                        sPostQuestionDB.deleteQuizQuestion();
+                    }
+                    Debug.out("reponse got");
+                } catch (JSONException e) {
+                    sPostQuestionDB.deleteQuizQuestion();
+
+                    Log.e(this.getClass().getName(), e.getMessage());
+                    e.printStackTrace();
+                    return true;
+                } catch (ClientProtocolException e) {
+
+                    e.printStackTrace();
+
+                } catch (NetworkErrorException e) {
+
+                    e.printStackTrace();
+                } catch (IOException e) {
+
+                    e.printStackTrace();
                 }
 
-            } while (quizQuestion != null);
+            } while (inSync && !isEmpty);
 
-            return true;
+            return result;
         }
 
         /*

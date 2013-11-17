@@ -29,7 +29,7 @@ public class JSONParser {
 
         BasicResponseHandler responseHandler = new BasicResponseHandler();
         String jsonResponse = responseHandler.handleResponse(response);
-      
+
         return new JSONObject(jsonResponse);
 
     }
@@ -42,16 +42,14 @@ public class JSONParser {
      * @throws IOException
      * @throws JSONException
      */
-    public static List<String> jsonArrayToList(JSONArray array) throws IOException {
+    public static List<String> jsonArrayToList(JSONArray array) throws JSONException {
         int size = array.length();
         List<String> stringList = new ArrayList<String>(size);
 
         for (int i = 0; i < size; i++) {
-            try {
-                stringList.add(array.getString(i));
-            } catch (JSONException e) {
-                throw new IOException(e.getMessage());
-            }
+
+            stringList.add(array.getString(i));
+
         }
 
         return stringList;
@@ -81,5 +79,4 @@ public class JSONParser {
         return jsonQuestion;
     }
 
- 
 }
