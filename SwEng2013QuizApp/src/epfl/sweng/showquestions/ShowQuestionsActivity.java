@@ -119,6 +119,7 @@ public class ShowQuestionsActivity extends Activity {
 
 	@Override
 	protected void onStart() {
+		super.onStart();
 		askNextQuestion(this.getCurrentFocus());
 	}
 

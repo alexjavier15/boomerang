@@ -13,6 +13,13 @@
         android:layout_height="wrap_content"
         android:onClick="askQuestion"
         android:text="@string/random_question" />
+    
+    <Button 
+        android:id="@+id/SearchQuestionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="searchQuestion"
+        android:text="@string/search_question"/>
 
     <Button
         android:id="@+id/SubmitQuestionButton"

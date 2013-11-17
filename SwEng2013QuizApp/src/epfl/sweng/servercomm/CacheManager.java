@@ -4,6 +4,8 @@
 package epfl.sweng.servercomm;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.message.BasicStatusLine;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,185 +31,214 @@ import epfl.sweng.tools.JSONParser;
  * 
  */
 public final class CacheManager {
-    public static final String QUESTION_CACHE_DB_NAME = "Cache.db";
-    public static final String POST_SYNC_DB_NAME = "PostSync.db";
-    public static final String QUERY_CACHE_DB_NAME = "QueryCache.db";
-    private static QuizQuestionDBHelper sQuizQuestionDB;
-    private static QuizQuestionDBHelper sPostQuestionDB;
-    private static QuizQuestionDBHelper sQueryQuestionDB;
-    private static CacheManager sCacheManager = null;
+	public static final String QUESTION_CACHE_DB_NAME = "Cache.db";
+	public static final String POST_SYNC_DB_NAME = "PostSync.db";
+	private static QuizQuestionDBHelper sQuizQuestionDB;
+	private static QuizQuestionDBHelper sPostQuestionDB;
+	private static CacheManager sCacheManager = null;
 
-    private CacheManager() {
+	private CacheManager() {
 
-        sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUESTION_CACHE_DB_NAME);
-        sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), POST_SYNC_DB_NAME);
-        sQueryQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUERY_CACHE_DB_NAME);
-        init();
-    }
+		sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(),
+				QUESTION_CACHE_DB_NAME);
+		sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(),
+				POST_SYNC_DB_NAME);
+		init();
+	}
 
-    public static CacheManager getInstance() {
-        if (sCacheManager == null) {
-            sCacheManager = new CacheManager();
+	public static CacheManager getInstance() {
+		if (sCacheManager == null) {
+			sCacheManager = new CacheManager();
 
-        }
-        return sCacheManager;
+		}
+		return sCacheManager;
 
-    }
+	}
 
-    /**
-     * @return
-     * @throws IOException
-     * @throws JSONException
-     */
-    public HttpResponse getRandomQuestion() throws IOException, JSONException {
+	/**
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public HttpResponse getRandomQuestion() throws IOException, JSONException {
 
-        String question = sQuizQuestionDB.getRandomQuizQuestion();
+		String question = sQuizQuestionDB.getRandomQuizQuestion();
 
-        return wrapQuizQuestion(question);
-    }
+		return wrapQuizQuestion(question);
+	}
 
-    public HttpResponse getNextQueryQuestion() throws IOException, JSONException {
-        String question = sQueryQuestionDB.getRandomQuizQuestion();
-        return wrapQuizQuestion(question);
+	public HttpResponse wrapQuizQuestion(String question) throws IOException,
+		JSONException {
+		HttpResponse reponse = null;
+		QuizQuestion quizQuestion = null;
+		DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
+		if (question != null) {
+			quizQuestion = new QuizQuestion(question);
+		}
 
-    }
+		if (quizQuestion != null) {
+			JSONObject questionObj = JSONParser.parseQuiztoJSON(quizQuestion);
+			reponse = httpResFactory.newHttpResponse(new BasicStatusLine(
+					(new HttpPost()).getProtocolVersion(), HttpStatus.SC_OK,
+					null), null);
+			reponse.setEntity(new StringEntity(questionObj
+					.toString(HttpComms.STRING_ENTITY)));
+		} else {
+			reponse = httpResFactory.newHttpResponse(new BasicStatusLine(
+					(new HttpPost()).getProtocolVersion(),
+					HttpStatus.SC_INTERNAL_SERVER_ERROR, null), null);
+		}
 
-    private HttpResponse wrapQuizQuestion(String question) throws IOException, JSONException {
-        HttpResponse reponse = null;
-        QuizQuestion quizQuestion = null;
-        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
-        if (question != null) {
-            quizQuestion = new QuizQuestion(question);
-        }
+		return reponse;
+	}
 
-        if (quizQuestion != null) {
-            JSONObject questionObj = JSONParser.parseQuiztoJSON(quizQuestion);
-            reponse = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_OK, null), null);
-            reponse.setEntity(new StringEntity(questionObj.toString(HttpComms.STRING_ENTITY)));
-        } else {
-            reponse = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR, null), null);
-        }
+	/**
+	 * @param question
+	 * @return
+	 */
+	public HttpResponse addQuestionForSync(String question) {
 
-        return reponse;
-    }
+		sPostQuestionDB.addQuizQuestion(question);
 
-    /**
-     * @param question
-     * @return
-     */
-    public HttpResponse addQuestionForSync(String question) {
+		DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
+		HttpResponse reponse = httpResFactory.newHttpResponse(
+				new BasicStatusLine((new HttpPost()).getProtocolVersion(),
+						HttpStatus.SC_CREATED, null), null);
 
-        sPostQuestionDB.addQuizQuestion(question);
+		return reponse;
 
-        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
-        HttpResponse reponse = httpResFactory.newHttpResponse(new BasicStatusLine(
-                (new HttpPost()).getProtocolVersion(), HttpStatus.SC_CREATED, null), null);
+	}
 
-        return reponse;
+	private void syncPostCachedQuestions() {
 
-    }
+		(new BackgroundServiceTask()).execute();
 
-    public void pushQueryQuestion(String query) {
+	}
 
-        sQueryQuestionDB.addQuizQuestion(query);
-    }
+	/**
+	 * @param question
+	 */
+	public void pushFetchedQuestion(String question) {
+		sQuizQuestionDB.addQuizQuestion(question);
 
-    private void syncPostCachedQuestions() {
+	}
 
-        (new BackgroundServiceTask()).execute();
+	/**
+	 * @author LorenzoLeon
+	 *
+	 */
+	private class BackgroundServiceTask extends
+			AsyncTask<Void, Boolean, Boolean> {
 
-    }
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			Debug.out("Attempting to sync file");
 
-    /**
-     * @param question
-     */
-    public void pushFetchedQuestion(String question) {
-        sQuizQuestionDB.addQuizQuestion(question);
+			QuizQuestion quizQuestion = null;
 
-    }
+			String jsonString = sPostQuestionDB.getFirstPostQuestion();
 
-    private class BackgroundServiceTask extends AsyncTask<Void, Boolean, Boolean> {
+			do {
+				if (quizQuestion != null) {
+					HttpResponse response = null;
+					try {
+						Debug.out("go to process post");
+						quizQuestion = new QuizQuestion(jsonString);
+						response = HttpCommsProxy.getInstance().postJSONObject(
+								HttpComms.URL_SWENG_PUSH,
+								JSONParser.parseQuiztoJSON(quizQuestion));
+						if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+							sPostQuestionDB.deleteQuizQuestion();
+							quizQuestion = new QuizQuestion(
+									sPostQuestionDB.getFirstPostQuestion());
+							response.getEntity().consumeContent();
+						}
+						Debug.out("reponse got");
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see android.os.AsyncTask#doInBackground(Params[])
-         */
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            Debug.out("Attempting to sync file");
+					} catch (ClientProtocolException e) {
+						e.printStackTrace();
 
-            QuizQuestion quizQuestion = null;
+					} catch (NetworkErrorException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (JSONException e) {
+						Log.e(this.getClass().getName(), e.getMessage());
+						sPostQuestionDB.deleteQuizQuestion();
 
-            String jsonString = sPostQuestionDB.getFirstPostQuestion();
+					}
 
-            do {
-                if (quizQuestion != null) {
-                    HttpResponse response = null;
-                    try {
-                        Debug.out("go to process post");
-                        quizQuestion = new QuizQuestion(jsonString);
-                        response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH,
-                                JSONParser.parseQuiztoJSON(quizQuestion));
-                        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-                            sPostQuestionDB.deleteQuizQuestion();
-                            quizQuestion = new QuizQuestion(sPostQuestionDB.getFirstPostQuestion());
-                            response.getEntity().consumeContent();
-                        }
-                        Debug.out("reponse got");
+				}
 
-                    } catch (ClientProtocolException e) {
-                        e.printStackTrace();
+			} while (quizQuestion != null);
 
-                    } catch (NetworkErrorException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        Log.e(this.getClass().getName(), e.getMessage());
-                        sPostQuestionDB.deleteQuizQuestion();
+			return true;
+		}
 
-                    }
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
 
-                }
+		@Override
+		protected void onPostExecute(Boolean result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			if (!result) {
+				QuizApp.getPreferences().edit()
+						.putBoolean(PreferenceKeys.ONLINE_MODE, false);
+			}
+		}
+	}
 
-            } while (quizQuestion != null);
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#
+	 * onSharedPreferenceChanged(android.content. SharedPreferences,
+	 * java.lang.String)
+	 */
 
-            return true;
-        }
+	public void init() {
+		Debug.out("onChange in chache manager called");
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-         */
+		if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE,
+				true)) {
 
-        @Override
-        protected void onPostExecute(Boolean result) {
-            // TODO Auto-generated method stub
-            super.onPostExecute(result);
-            if (!result) {
-                QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, false);
-            }
-        }
-    }
+			syncPostCachedQuestions();
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#
-     * onSharedPreferenceChanged(android.content. SharedPreferences, java.lang.String)
-     */
+		}
+	}
 
-    public void init() {
-        Debug.out("onChange in chache manager called");
+	public HttpResponse getQueriedQuestion(JSONObject query) {
+		HttpResponse reponse = null;
+		List<String> questionList = sQuizQuestionDB.getQueriedQuestions(query);
 
-        if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
+		DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
 
-            syncPostCachedQuestions();
+		JSONArray array = new JSONArray(questionList);
 
-        }
-    }
+		try {
+			JSONObject questionObj = (new JSONObject()).put("questions", array);
+			reponse = httpResFactory.newHttpResponse(new BasicStatusLine(
+					(new HttpPost()).getProtocolVersion(), HttpStatus.SC_OK,
+					null), null);
+			reponse.setEntity(new StringEntity(questionObj
+					.toString(HttpComms.STRING_ENTITY)));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return reponse;
+	}
 }

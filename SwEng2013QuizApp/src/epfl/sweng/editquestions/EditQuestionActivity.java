@@ -196,7 +196,10 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-        }
+        } catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return response;
     }
 

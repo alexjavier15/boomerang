@@ -123,6 +123,8 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
 		if (url.equals(HttpComms.URL_SWENG_QUERY_POST)) {
 			if (!checkResponseStatus(response, HttpStatus.SC_OK)) {
+				
+				//TODO not connected post query to cache
 				QuizApp.getPreferences().edit()
 						.putBoolean(PreferenceKeys.ONLINE_MODE, false);
 
@@ -168,8 +170,12 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 		return getServerCommsInstance().isConnected();
 	}
 
-	public void saveQuery(String string, int questionIndex) {
-		// TODO Auto-generated method stub
+	public void saveQuery(HttpResponse response, int questionIndex) {
+		if (isOnlineMode()) {
+			
+			sCacheHttpComms.pushQuestion(response);
+
+		}
 
 	}
 

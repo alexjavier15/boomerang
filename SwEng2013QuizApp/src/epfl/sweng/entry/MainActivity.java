@@ -17,6 +17,7 @@ import epfl.sweng.authentication.CredentialManager;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.editquestions.EditQuestionActivity;
 import epfl.sweng.patterns.CheckProxyHelper;
+import epfl.sweng.searchquestions.SearchActivity;
 import epfl.sweng.servercomm.CacheManager;
 import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.servercomm.QuizApp;
@@ -138,12 +139,14 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             Log.i("MainActivity Listener new key value session id : ", newValue);
             checkStatus(newValue);
         }
-        if (pref.getBoolean(key, true)) {
-            TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
-            CacheManager.getInstance().init();
-        } else {
-            TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
-        }
+        if (key.equals(PreferenceKeys.ONLINE_MODE)) {
+			if (pref.getBoolean(key, true)) {
+				TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
+				CacheManager.getInstance().init();
+			} else {
+				TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
+			}
+		}
 
     }
 
@@ -169,6 +172,17 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         Intent submitActivityIntent = new Intent(this, EditQuestionActivity.class);
         startActivity(submitActivityIntent);
     }
+    
+    /**
+     * Launches a new Search activity where a query can be composed to the server.
+     * @param view
+     */
+	public void searchQuestion(View view) {
+		Toast.makeText(this, "You are on the page to search a question!",
+				Toast.LENGTH_SHORT).show();
+		Intent searchActivityIntent = new Intent(this, SearchActivity.class);
+		startActivity(searchActivityIntent);
+	}
 
     /**
      * 

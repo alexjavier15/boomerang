@@ -19,18 +19,26 @@ import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
+/**
+ * This activity allows the user to enter in the text field a search query (with
+ * corresponding guidelines) that will be forwarded to the sweng question server
+ * 
+ * @author LorenzoLeon
+ * 
+ */
 public class SearchActivity extends Activity {
 
 	private EditText searchQuery = null;
 	private Button searchButton = null;
 	private final int maxLengthOfQuery = 500;
+	private TextWatcher watcher;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
 
-		TextWatcher watcher = new TextWatcher() {
+		watcher = new TextWatcher() {
 
 			@Override
 			public void onTextChanged(CharSequence s, int start,

@@ -1,6 +1,8 @@
 package epfl.sweng.showquestions;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -10,6 +12,8 @@ import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
 
+import epfl.sweng.quizquestions.QuizQuestion;
+import epfl.sweng.servercomm.CacheManager;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.tools.JSONParser;
@@ -28,6 +32,7 @@ public class QueryConManager extends ConnectionManager {
 	private int questionIndex = 0;
 	private boolean hasNext = false;
 	private String next = null;
+	private LinkedList<HttpResponse> quList = new LinkedList<HttpResponse>();
 
 	public QueryConManager(ShowQuestionsActivity show) {
 		this.shower = show;
@@ -61,15 +66,10 @@ public class QueryConManager extends ConnectionManager {
 
 		}
 
-		if (questionIndex < qCount) {
-			response = HttpCommsProxy.getInstance().getQueryQuestion(
-					questionIndex);
-			questionIndex++;
-		} else {
-			shower.toast(ERROR_NONE_FOUND);
-			shower.block();
-
-		}
+		// response =
+		// HttpCommsProxy.getInstance().getQueryQuestion(questionIndex);
+		response = quList.poll();
+		questionIndex++;
 
 		return response;
 	}
@@ -95,8 +95,10 @@ public class QueryConManager extends ConnectionManager {
 
 			if (questionArray.length() > 0) {
 				for (int i = 0; i < questionArray.length(); i++) {
-					HttpCommsProxy.getInstance().saveQuery(
-							questionArray.getJSONObject(i).toString(), qCount);
+					HttpResponse question = CacheManager.getInstance().wrapQuizQuestion(
+							questionArray.getJSONObject(i).toString());
+					quList.add(question);
+					HttpCommsProxy.getInstance().saveQuery(question, qCount);
 					qCount++;
 				}
 			}
@@ -115,9 +117,9 @@ public class QueryConManager extends ConnectionManager {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String getErrorMessage() {
-		if (qCount>0) {
+		if (qCount > 0) {
 			return ERROR_NO_MORE;
 		} else {
 			return ERROR_NONE_FOUND;
