@@ -79,7 +79,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         mListView.setSelection(mListView.getCount() - 1);
     }
 
-    public int auditAnswers() {
+    private int auditAnswers() {
         int numberErrors = 0;
         int numberOfAnswers = 0;
 
