@@ -31,229 +31,211 @@ import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
- * This Activity allows the user to login with his Gaspar account using Tequila
- * server to authenticate the request.
+ * This Activity allows the user to login with his Gaspar account using Tequila server to authenticate the request.
  * 
  * @author AlexRivas
  * 
  */
 
-public class AuthenticationActivity extends Activity implements
-		HttpcommunicationsAdapter {
+public class AuthenticationActivity extends Activity implements HttpcommunicationsAdapter {
 
-	private static final int AUTHENTICATED = 4;
-	private static final int CONFIRMATION = 3;
-	private static final int ERROR = -1;
-	private static final String INTERNAL_ERROR_MSG = "An internal error has occurred during "
-			+ "authentication. Please try again.";
-	private static final String SUCCEFUL_MSG = "You have succesfully logged in";
-	private static final String SWENG_ERROR_MSG = "Authentication with SwEgQuizServed has failed.";
-	private static final int TEQUILA = 2;
-	private static final String TEQUILA_ERROR_MSG = "Login with Tequila was  NOT successful. "
-			+ "Please check your account infos.";
-	private static final int TOKEN = 1;
-	private static final int UNAUTHENTICATED = 0;
-	private static final String UNEXPECTED_ERROR_MSG = "An unexpected error has occured. "
-			+ "Your credentials couldn't be saved. Please try again";
-	private String mStatusMsg = "";
+    private static final int AUTHENTICATED = 4;
+    private static final int CONFIRMATION = 3;
+    private static final int ERROR = -1;
+    private static final String INTERNAL_ERROR_MSG = "An internal error has occurred during "
+            + "authentication. Please try again.";
+    private static final String SUCCEFUL_MSG = "You have succesfully logged in";
+    private static final String SWENG_ERROR_MSG = "Authentication with SwEgQuizServed has failed.";
+    private static final int TEQUILA = 2;
+    private static final String TEQUILA_ERROR_MSG = "Login with Tequila was  NOT successful. "
+            + "Please check your account infos.";
+    private static final int TOKEN = 1;
+    private static final int UNAUTHENTICATED = 0;
+    private static final String UNEXPECTED_ERROR_MSG = "An unexpected error has occured. "
+            + "Your credentials couldn't be saved. Please try again";
+    private String mStatusMsg = "";
 
-	// private static final int MAX_NUMBER_OF_FAILS = 3;
-	private int state;
-	// private int failedCount;
-	private String token;
+    // private static final int MAX_NUMBER_OF_FAILS = 3;
+    private int state;
+    // private int failedCount;
+    private String token;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_authentication);
-		// by default initial state is
-		state = UNAUTHENTICATED;
-		TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_authentication);
+        // by default initial state is
+        state = UNAUTHENTICATED;
+        TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.authentication, menu);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.authentication, menu);
+        return true;
+    }
 
-	public void logIn(View view) {
-		if (HttpComms.getInstance().isConnected()) {
+    public void logIn(View view) {
+        if (HttpComms.getInstance().isConnected()) {
 
-			new HttpCommsBackgroundTask(this).execute();
-		} else {
+            new HttpCommsBackgroundTask(this).execute();
+        } else {
 
-			Toast.makeText(this, "Not internet connection", Toast.LENGTH_SHORT)
-					.show();
-		}
-	}
+            Toast.makeText(this, "Not internet connection", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-	private HttpResponse stateMachine(HttpResponse response)
-		throws ClientProtocolException, IOException, JSONException,
-		NetworkErrorException, AuthenticationException {
-		/*
-		 * if (failedCount > MAX_NUMBER_OF_FAILS) { // too many fails! reset
-		 * fields! state = ERROR_OVERLOAD; return null; }
-		 */
-		switch (state) {
-		case UNAUTHENTICATED:
-			Log.i("Authentication state: ", "UNAUTHENTICATED, requesting token");
-			return stateMachine(requestAuthToken(response));
-		case TOKEN:
-			Log.i("Authentication state: ", "TOKEN, posting token");
-			return stateMachine(postTequilaToken(response));
-		case TEQUILA:
-			Log.i("Authentication state: ",
-					"TEQUILA, checking tequila response");
-			return stateMachine(checkTequila(response));
-		case CONFIRMATION:
-			Log.i("Authentication state: ",
-					"CONFIRMATION, confirming with server");
-			return stateMachine(confirm(response));
-		case AUTHENTICATED:
-			Log.i("Authentication state: ",
-					"AUTHENTICATED, returning session id");
-			return response;
-		default:
-			// nullPointerException => failedAuthenReset()
-			return null;
-		}
-	}
+    private HttpResponse stateMachine(HttpResponse response) throws ClientProtocolException, IOException,
+            JSONException, NetworkErrorException, AuthenticationException {
+        /*
+         * if (failedCount > MAX_NUMBER_OF_FAILS) { // too many fails! reset fields! state = ERROR_OVERLOAD; return
+         * null; }
+         */
+        switch (state) {
+            case UNAUTHENTICATED:
+                Log.i("Authentication state: ", "UNAUTHENTICATED, requesting token");
+                return stateMachine(requestAuthToken(response));
+            case TOKEN:
+                Log.i("Authentication state: ", "TOKEN, posting token");
+                return stateMachine(postTequilaToken(response));
+            case TEQUILA:
+                Log.i("Authentication state: ", "TEQUILA, checking tequila response");
+                return stateMachine(checkTequila(response));
+            case CONFIRMATION:
+                Log.i("Authentication state: ", "CONFIRMATION, confirming with server");
+                return stateMachine(confirm(response));
+            case AUTHENTICATED:
+                Log.i("Authentication state: ", "AUTHENTICATED, returning session id");
+                return response;
+            default:
+                // nullPointerException => failedAuthenReset()
+                return null;
+        }
+    }
 
-	private HttpResponse requestAuthToken(HttpResponse starter)
-		throws ClientProtocolException, IOException, NetworkErrorException {
-		HttpResponse response = HttpComms.getInstance().getHttpResponse(
-				HttpComms.URL_SWENG_SWERVER_LOGIN);
-		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			state = TOKEN;
-			return response;
-		} else {
+    private HttpResponse requestAuthToken(HttpResponse starter) throws ClientProtocolException, IOException,
+            NetworkErrorException {
+        HttpResponse response = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            state = TOKEN;
+            return response;
+        } else {
 
-			throw new ClientProtocolException(INTERNAL_ERROR_MSG);
-		}
-	}
+            throw new ClientProtocolException(INTERNAL_ERROR_MSG);
+        }
+    }
 
-	private HttpResponse postTequilaToken(HttpResponse tokenResponse)
-		throws JSONException, IOException, NetworkErrorException {
-		token = JSONParser.getParser(tokenResponse).getString("token");
-		String username = ((EditText) findViewById(R.id.GasparUsername_EditText))
-				.getText().toString();
-		String password = ((EditText) findViewById(R.id.GasparPassword_EditText))
-				.getText().toString();
-		NameValuePair[] namList = {
-				new BasicNameValuePair("requestkey", token),
-				new BasicNameValuePair("username", username),
-				new BasicNameValuePair("password", password) };
-		UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(
-				Arrays.asList(namList));
+    private HttpResponse postTequilaToken(HttpResponse tokenResponse) throws JSONException, IOException,
+            NetworkErrorException {
+        token = JSONParser.getParser(tokenResponse).getString("token");
+        String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
+        String password = ((EditText) findViewById(R.id.GasparPassword_EditText)).getText().toString();
+        NameValuePair[] namList = {new BasicNameValuePair("requestkey", token),
+            new BasicNameValuePair("username", username), new BasicNameValuePair("password", password)};
+        UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(Arrays.asList(namList));
 
-		state = TEQUILA;
-		Debug.out(urlEntity.toString());
+        state = TEQUILA;
+        Debug.out(urlEntity.toString());
 
-		return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA_LOGIN,
-				urlEntity);
+        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA_LOGIN, urlEntity);
 
-	}
+    }
 
-	private HttpResponse checkTequila(HttpResponse response)
-		throws AuthenticationException {
-		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
-			state = CONFIRMATION;
-			return response;
+    private HttpResponse checkTequila(HttpResponse response) throws AuthenticationException {
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
+            state = CONFIRMATION;
+            return response;
 
-		} else {
-			state = ERROR;
-			// failedCount++;
+        } else {
+            state = ERROR;
+            // failedCount++;
 
-			Log.w("Authentication state: TEQUILA", ", failedcount: ");
-			throw new AuthenticationException(TEQUILA_ERROR_MSG);
-		}
+            Log.w("Authentication state: TEQUILA", ", failedcount: ");
+            throw new AuthenticationException(TEQUILA_ERROR_MSG);
+        }
 
-	}
+    }
 
-	private HttpResponse confirm(HttpResponse response)
-		throws ClientProtocolException, IOException, JSONException,
-		NetworkErrorException, AuthenticationException {
-		response = HttpComms.getInstance().postJSONObject(
-				HttpComms.URL_SWENG_SWERVER_LOGIN,
-				(new JSONObject()).put("token", token));
+    private HttpResponse confirm(HttpResponse response) throws ClientProtocolException, IOException, JSONException,
+            NetworkErrorException, AuthenticationException {
+        response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_SWERVER_LOGIN,
+                (new JSONObject()).put("token", token));
 
-		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			state = AUTHENTICATED;
-			mStatusMsg = SUCCEFUL_MSG;
-			return response;
-		} else {
-			throw new AuthenticationException(SWENG_ERROR_MSG);
-		}
-	}
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            state = AUTHENTICATED;
+            mStatusMsg = SUCCEFUL_MSG;
+            return response;
+        } else {
+            throw new AuthenticationException(SWENG_ERROR_MSG);
+        }
+    }
 
-	private void failedAuthenReset() {
-		Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
-		((EditText) findViewById(R.id.GasparPassword_EditText)).setText("");
-		((EditText) findViewById(R.id.GasparUsername_EditText)).setText("");
-		state = UNAUTHENTICATED;
-		TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
-	}
+    private void failedAuthenReset() {
+        Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
+        ((EditText) findViewById(R.id.GasparPassword_EditText)).setText("");
+        ((EditText) findViewById(R.id.GasparUsername_EditText)).setText("");
+        state = UNAUTHENTICATED;
+        TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
+    }
 
-	@Override
-	public HttpResponse requete() {
+    @Override
+    public HttpResponse requete() {
 
-		HttpResponse response = null;
+        HttpResponse response = null;
 
-		try {
-			response = stateMachine(null);
-		} catch (AuthenticationException e) {
-			mStatusMsg = e.getMessage();
-			Log.e(getLocalClassName(), e.getMessage());
-		} catch (NetworkErrorException e) {
-			mStatusMsg = e.getMessage();
-			Log.e(getLocalClassName(), e.getMessage());
-			e.printStackTrace();
-		} catch (ClientProtocolException e) {
-			mStatusMsg = INTERNAL_ERROR_MSG;
-			Log.e(getLocalClassName(), e.getMessage());
-		} catch (IOException e) {
-			mStatusMsg = INTERNAL_ERROR_MSG;
-			Log.e(getLocalClassName(), e.getMessage());
-		} catch (JSONException e) {
-			mStatusMsg = INTERNAL_ERROR_MSG;
-			Log.e(getLocalClassName(), e.getMessage());
+        try {
+            response = stateMachine(null);
+        } catch (AuthenticationException e) {
+            mStatusMsg = e.getMessage();
+            Log.e(getLocalClassName(), e.getMessage());
+        } catch (NetworkErrorException e) {
+            mStatusMsg = e.getMessage();
+            Log.e(getLocalClassName(), e.getMessage());
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            mStatusMsg = INTERNAL_ERROR_MSG;
+            Log.e(getLocalClassName(), e.getMessage());
+        } catch (IOException e) {
+            mStatusMsg = INTERNAL_ERROR_MSG;
+            Log.e(getLocalClassName(), e.getMessage());
+        } catch (JSONException e) {
+            mStatusMsg = INTERNAL_ERROR_MSG;
+            Log.e(getLocalClassName(), e.getMessage());
 
-		}
+        }
 
-		return response;
-	}
+        return response;
+    }
 
-	@Override
-	public void processHttpReponse(HttpResponse response) {
-		if (response != null) {
+    @Override
+    public void processHttpReponse(HttpResponse response) {
+        if (response != null) {
 
-			try {
-				String sessionID = JSONParser.getParser(response).getString(
-						"session");
-				CredentialManager.getInstance().setUserCredential(sessionID);
-				Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
-				Debug.out(sessionID);
+            try {
+                String sessionID = JSONParser.getParser(response).getString("session");
+                CredentialManager.getInstance().setUserCredential(sessionID);
+                Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
+                Debug.out(sessionID);
 
-				this.finish();
-			} catch (NullPointerException e) {
-				mStatusMsg = UNEXPECTED_ERROR_MSG;
-				failedAuthenReset();
-				Log.e(getLocalClassName(), e.getMessage());
-			} catch (IOException e) {
-				mStatusMsg = INTERNAL_ERROR_MSG;
-				failedAuthenReset();
-				Log.e(getLocalClassName(), e.getMessage());
+                this.finish();
+            } catch (NullPointerException e) {
+                mStatusMsg = UNEXPECTED_ERROR_MSG;
+                failedAuthenReset();
+                Log.e(getLocalClassName(), e.getMessage());
+            } catch (IOException e) {
+                mStatusMsg = INTERNAL_ERROR_MSG;
+                failedAuthenReset();
+                Log.e(getLocalClassName(), e.getMessage());
 
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			failedAuthenReset();
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+            failedAuthenReset();
 
-		}
-	}
+        }
+    }
 
 }

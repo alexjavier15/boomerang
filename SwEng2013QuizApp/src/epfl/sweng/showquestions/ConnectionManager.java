@@ -10,12 +10,12 @@ import epfl.sweng.servercomm.HttpcommunicationsAdapter;
  */
 public abstract class ConnectionManager implements HttpcommunicationsAdapter {
 
-	@Override
-	public abstract void processHttpReponse(HttpResponse reponse);
+        @Override
+        public abstract void processHttpReponse(HttpResponse reponse);
 
-	@Override
-	public abstract HttpResponse requete();
+        @Override
+        public abstract HttpResponse requete();
 
-	public abstract String getErrorMessage();
+        public abstract String getErrorMessage();
 
 }

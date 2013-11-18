@@ -2,8 +2,6 @@ package epfl.sweng.showquestions;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
@@ -12,7 +10,6 @@ import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
 
-import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.CacheManager;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsProxy;
@@ -50,15 +47,12 @@ public class QueryConManager extends ConnectionManager {
 		HttpResponse response = null;
 		if ((qCount == 0) || (qCount == questionIndex && hasNext)) {
 			try {
-				JSONObject joll = JSONParser.parseKeyValuePairtoJSON("query",
+				JSONObject joll = (new JSONObject()).put("query",
 						query);
 				if (hasNext) {
 					joll.put("from", next);
 				}
 				postQuery(joll);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

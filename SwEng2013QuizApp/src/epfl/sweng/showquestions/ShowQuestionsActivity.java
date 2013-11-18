@@ -2,7 +2,6 @@ package epfl.sweng.showquestions;
 
 import java.io.IOException;
 import java.util.Set;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
@@ -22,6 +21,7 @@ import android.widget.Toast;
 import epfl.sweng.R;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
+import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 import epfl.sweng.tools.Debug;
@@ -32,6 +32,7 @@ import epfl.sweng.tools.JSONParser;
  * @author AlbanMarguet & LorenzoLeon
  * 
  */
+
 
 public class ShowQuestionsActivity extends Activity {
 
@@ -142,12 +143,15 @@ public class ShowQuestionsActivity extends Activity {
         if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 
             try {
-            	quizQuestion = new QuizQuestion(JSONParser.getParser(response).toString());
+                quizQuestion = new QuizQuestion(JSONParser.getParser(response).toString());
                 Debug.out(quizQuestion);
             } catch (IOException e) {
+            	toast(conManager.getErrorMessage());
+                HttpCommsProxy.getInstance().setOnlineMode(false);
                 Log.e(getLocalClassName(), e.getMessage());
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
+            	toast(conManager.getErrorMessage());
+                HttpCommsProxy.getInstance().setOnlineMode(false);
                 e.printStackTrace();
             }
             if (quizQuestion != null) {
@@ -157,68 +161,63 @@ public class ShowQuestionsActivity extends Activity {
                 toast(conManager.getErrorMessage());
             }
         } else {
-        	toast(conManager.getErrorMessage());
+            if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+
+            }
+            toast(conManager.getErrorMessage());
         }
         TestCoordinator.check(TTChecks.QUESTION_SHOWN);
-	}
+    }
 
-	/**
-	 * Get the tags of the question to display them on the screen
-	 * 
-	 * @param set
-	 *            : set of Strings
-	 * @return the tags
-	 */
-	private String displayTags(Set<String> set) {
-		if (set.size() > 0) {
-			System.out.println("Va afficher les tags");
-			String tagsInString = "";
-			int counter = 0;
+    /**
+     * Get the tags of the question to display them on the screen
+     * 
+     * @param set
+     *            : set of Strings
+     * @return the tags
+     */
+    private String displayTags(Set<String> set) {
+            if (set.size() > 0) {
+                    System.out.println("Va afficher les tags");
+                    String tagsInString = "";
+                    int counter = 0;
 
-			for (String s : set) {
-				counter++;
-				if (counter == set.size()) {
-					tagsInString += s;
-				} else {
-					tagsInString += s + ", ";
-				}
-			}
+                    for (String s : set) {
+                            counter++;
+                            if (counter == set.size()) {
+                                    tagsInString += s;
+                            } else {
+                                    tagsInString += s + ", ";
+                            }
+                    }
 
-			return tagsInString;
-		} else {
-			return "No tags for this question";
-		}
-	}
+                    return tagsInString;
+            } else {
+                    return "No tags for this question";
+            }
+    }
+    private void setQuestion(QuizQuestion quizQuestion) {
+        currrentQuestion = quizQuestion;
 
-	void setQuestion(QuizQuestion quizQuestion) {
-		currrentQuestion = quizQuestion;
+        text.setText(quizQuestion.getQuestion());
+        tags.setText(displayTags(quizQuestion.getTags()));
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
 
-		text.setText(quizQuestion.getQuestion());
-		tags.setText(displayTags(quizQuestion.getTags()));
-		adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
+        answerChoices.setAdapter(adapter);
 
-		answerChoices.setAdapter(adapter);
+        adapter.setNotifyOnChange(true);
+    }
 
-		adapter.setNotifyOnChange(true);
-	}
+    public TextView getText() {
+        return text;
+    }
 
-	public TextView getText() {
-		return text;
-	}
-
-	public void setText(TextView view) {
-		text = view;
-	}
-
-	public void toast(String message) {
-		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-	}
-
-	public void block() {
-		answerChoices.setClickable(false);
-		((Button) findViewById(R.id.next_question)).setEnabled(false);
-		
-	}
-
+    public void setText(TextView view) {
+        text = view;
+    }
+    public void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+}
 }

@@ -39,7 +39,8 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        setUpPreferences();
+        QuizApp.getPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -61,10 +62,9 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     protected void onStart() {
 
         super.onStart();
-        setUpPreferences();
-        QuizApp.getPreferences().registerOnSharedPreferenceChangeListener(this);
+
         String newValue = CredentialManager.getInstance().getUserCredential();
-        Debug.out("CREDENTIAL MANAGER IS RETURNING : "+  newValue);
+        Debug.out("CREDENTIAL MANAGER IS RETURNING : " + newValue);
         checkStatus(newValue);
 
         TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
@@ -82,12 +82,27 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         super.onResume();
         Debug.out((new CheckProxyHelper()).getServerCommunicationClass());
         HttpCommsProxy.getInstance();
+        CheckBox check = (CheckBox) findViewById(R.id.offline_mode);
+        if (!check.isChecked() != QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
+            update();
 
+            // onSharedPreferenceChanged(QuizApp.getPreferences(), PreferenceKeys.ONLINE_MODE);
+        }
     }
 
     private void setUpPreferences() {
 
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
+
+    }
+
+    private void update() {
+        if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
+            TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
+            CacheManager.getInstance().init();
+        } else {
+            TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
+        }
 
     }
 
@@ -139,14 +154,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             Log.i("MainActivity Listener new key value session id : ", newValue);
             checkStatus(newValue);
         }
-        if (key.equals(PreferenceKeys.ONLINE_MODE)) {
-			if (pref.getBoolean(key, true)) {
-				TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
-				CacheManager.getInstance().init();
-			} else {
-				TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
-			}
-		}
 
     }
 
@@ -192,6 +199,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 
         CheckBox offlineCheckBox = (CheckBox) view;
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, !offlineCheckBox.isChecked()).apply();
-       
+        update();
+
     }
 }

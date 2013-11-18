@@ -10,11 +10,14 @@ import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.tools.Debug;
+import epfl.sweng.tools.JSONParser;
 
 /**
  * @author Alex
@@ -25,6 +28,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
 	private static IHttpConnectionHelper sRealHttpComms = null;
 	private static CacheHttpComms sCacheHttpComms = null;
+	private static CacheManager sCacheManager = null;
 	private static HttpCommsProxy proxy = null;
 
 	public static HttpCommsProxy getInstance() {
@@ -51,7 +55,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 				.edit()
 				.putBoolean(PreferenceKeys.ONLINE_MODE,
 						sRealHttpComms.isConnected());
-		CacheManager.getInstance();
+		sCacheManager = CacheManager.getInstance();
 	}
 
 	public Class<?> getServerCommsClass() {
@@ -80,8 +84,8 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 	 */
 	@Override
 	public HttpResponse getHttpResponse(String urlString)
-		throws NetworkErrorException, NullPointerException,
-		ParseException, IOException {
+		throws NetworkErrorException, NullPointerException, ParseException,
+		IOException {
 
 		HttpResponse response = getServerCommsInstance().getHttpResponse(
 				urlString);
@@ -95,11 +99,6 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 				response.setEntity(new StringEntity(entity));
 				sCacheHttpComms.pushQuestion(response);
 				response.setEntity(new StringEntity(entity));
-
-			} else {
-
-				QuizApp.getPreferences().edit()
-						.putBoolean(PreferenceKeys.ONLINE_MODE, false);
 
 			}
 
@@ -121,14 +120,13 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 		HttpResponse response = getServerCommsInstance().postJSONObject(url,
 				jObject);
 
-		if (url.equals(HttpComms.URL_SWENG_QUERY_POST)) {
-			if (!checkResponseStatus(response, HttpStatus.SC_OK)) {
-				
-				//TODO not connected post query to cache
-				QuizApp.getPreferences().edit()
-						.putBoolean(PreferenceKeys.ONLINE_MODE, false);
+		if (url.equals(HttpComms.URL_SWENG_QUERY_POST)
+				&& !checkResponseStatus(response, HttpStatus.SC_OK)) {
 
-			}
+			// TODO not connected post query to cache
+			QuizApp.getPreferences().edit()
+					.putBoolean(PreferenceKeys.ONLINE_MODE, false);
+
 		} else if (url.equals(HttpComms.URL_SWENG_PUSH)
 				&& !checkResponseStatus(response, HttpStatus.SC_CREATED)) {
 
@@ -172,7 +170,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
 	public void saveQuery(HttpResponse response, int questionIndex) {
 		if (isOnlineMode()) {
-			
+
 			sCacheHttpComms.pushQuestion(response);
 
 		}
@@ -182,6 +180,16 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 	public HttpResponse getQueryQuestion(int questionIndex) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setOnlineMode(boolean isOnline) {
+
+		QuizApp.getPreferences().edit()
+				.putBoolean(PreferenceKeys.ONLINE_MODE, isOnline).apply();
+
 	}
 
 }
