@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -62,7 +63,7 @@ public class SearchActivity extends Activity {
 		};
 
 		searchQuery = (EditText) findViewById(R.id.edit_search_query);
-		searchQuery.addTextChangedListener(watcher);
+		
 
 		searchButton = (Button) findViewById(R.id.search_button);
 		searchButton.setEnabled(false);
@@ -77,10 +78,12 @@ public class SearchActivity extends Activity {
 	}
 
 	protected void onStart() {
+		super.onStart();
+		searchQuery.addTextChangedListener(watcher);
 		TestCoordinator.check(TTChecks.SEARCH_ACTIVITY_SHOWN);
 	}
 
-	public void search() {
+	public void search(View view) {
 		Toast.makeText(this,
 				"You are on the page to enter a specific query for a random question",
 				Toast.LENGTH_SHORT).show();

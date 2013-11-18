@@ -31,8 +31,8 @@ import epfl.sweng.tools.JSONParser;
  * 
  */
 public final class CacheManager {
-	public static final String QUESTION_CACHE_DB_NAME = "Cache.db";
-	public static final String POST_SYNC_DB_NAME = "PostSync.db";
+	public static final String QUESTION_CACHE_DB_NAME = "Cache1.db";
+	public static final String POST_SYNC_DB_NAME = "PostSync1.db";
 	private static QuizQuestionDBHelper sQuizQuestionDB;
 	private static QuizQuestionDBHelper sPostQuestionDB;
 	private static CacheManager sCacheManager = null;

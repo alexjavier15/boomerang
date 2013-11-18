@@ -25,15 +25,15 @@ import epfl.sweng.tools.Debug;
 public class QuizQuestionDBHelper extends SQLiteOpenHelper implements
 		BaseColumns {
 
-	public static final int DATABASE_VERSION = 3;
-	public static final String TABLE_NAME = "quizQuestions";
+	public static final int DATABASE_VERSION = 1;
+	public static final String TABLE_NAME = "quizQuestions1";
 	public static final String COLUMN_NAME_JSON_QUESTION = "jsonQuestion";
 	public static final String COLUMN_NAME_TAGS = "questionTags";
 	private static final int CULUMN_JSON_INDEX = 1;
 	private static final String TEXT_TYPE = " TEXT";
 	private static final String SQL_CREATE_ENTRIES = "CREATE TABLE "
 			+ TABLE_NAME + " (" + _ID + " INTEGER PRIMARY KEY,"
-			+ COLUMN_NAME_JSON_QUESTION + TEXT_TYPE + COLUMN_NAME_TAGS
+			+ COLUMN_NAME_JSON_QUESTION + TEXT_TYPE + ", "+  COLUMN_NAME_TAGS
 			+ TEXT_TYPE + " )";
 
 	private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
