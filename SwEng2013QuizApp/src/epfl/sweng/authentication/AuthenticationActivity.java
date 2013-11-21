@@ -136,7 +136,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(Arrays.asList(namList));
 
         state = TEQUILA;
-        Debug.out(urlEntity.toString());
+        Debug.out(this.getClass(), urlEntity.toString());
 
         return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA_LOGIN, urlEntity);
 
@@ -216,7 +216,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
                 String sessionID = JSONParser.getParser(response).getString("session");
                 CredentialManager.getInstance().setUserCredential(sessionID);
                 Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
-                Debug.out(sessionID);
+                //Debug.out(this.getClass(), sessionID);
 
                 this.finish();
             } catch (NullPointerException e) {

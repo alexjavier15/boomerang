@@ -10,8 +10,8 @@ import android.util.Log;
  */
 public final class Debug {
 
-    public static void out(Object msg) {
-        Log.i("info", msg.toString());
+    public static void out(Class<?> clas, Object msg) {
+        Log.i(clas.getName(), msg.toString());
     }
 
     private Debug() {

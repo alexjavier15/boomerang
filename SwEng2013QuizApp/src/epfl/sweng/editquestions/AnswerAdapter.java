@@ -37,7 +37,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
     public void add(Answer object) {
         super.add(object);
         mEmptyAnswers.add(object);
-        Debug.out("empty ans : " + mEmptyAnswers.size());
+        Debug.out(this.getClass(), "empty ans : " + mEmptyAnswers.size());
     }
 
     /**

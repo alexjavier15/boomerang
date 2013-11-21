@@ -40,7 +40,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setUpPreferences();
-        QuizApp.getPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -53,34 +52,22 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onStart()
-     */
     @Override
     protected void onStart() {
 
         super.onStart();
-
+        QuizApp.getPreferences().registerOnSharedPreferenceChangeListener(this);
         String newValue = CredentialManager.getInstance().getUserCredential();
-        Debug.out("CREDENTIAL MANAGER IS RETURNING : " + newValue);
+        Debug.out(this.getClass(), "CREDENTIAL MANAGER IS RETURNING : " + newValue);
         checkStatus(newValue);
-
         TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onResume()
-     */
     @Override
     protected void onResume() {
-        // TODO Auto-generated method stub
         super.onResume();
-        Debug.out((new CheckProxyHelper()).getServerCommunicationClass());
+        Debug.out(this.getClass(), (new CheckProxyHelper()).getServerCommunicationClass());
         HttpCommsProxy.getInstance();
         CheckBox check = (CheckBox) findViewById(R.id.offline_mode);
         if (!check.isChecked() != QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
@@ -109,13 +96,13 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     private void checkStatus(String newValue) {
         if (newValue.equals("")) {
             Log.i("Session Id has been removed: logged out", newValue);
+            TestCoordinator.check(TTChecks.LOGGED_OUT);
             setAthenticated(false);
             ((Button) findViewById(R.id.log_inout)).setText("Log in using Tequila");
         } else {
             Log.i("New session Id is: ", newValue);
             setAthenticated(true);
             ((Button) findViewById(R.id.log_inout)).setText("Log out");
-
         }
     }
 
@@ -135,7 +122,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         if (authenticated) {
             // this means you are logging out!
             CredentialManager.getInstance().removeUserCredential();
-            TestCoordinator.check(TTChecks.LOGGED_OUT);
+            
         } else {
             Intent loginActivityIntent = new Intent(this, AuthenticationActivity.class);
             startActivity(loginActivityIntent);
@@ -148,10 +135,10 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 	 */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
-        Debug.out("listener notify");
+        Debug.out(this.getClass(), "listener notify");
         if (key.equals(PreferenceKeys.SESSION_ID)) {
             String newValue = pref.getString(key, "");
-            Log.i("MainActivity Listener new key value session id : ", newValue);
+            Log.d("MainActivity Listener new key value session id : ", newValue);
             checkStatus(newValue);
         }
 
@@ -165,6 +152,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         authenticated = newState;
         ((Button) findViewById(R.id.ShowQuestionButton)).setEnabled(newState);
         ((Button) findViewById(R.id.SubmitQuestionButton)).setEnabled(newState);
+        ((Button) findViewById(R.id.SearchQuestionButton)).setEnabled(newState);
         ((CheckBox) findViewById(R.id.offline_mode)).setEnabled(newState);
     }
 
@@ -179,17 +167,17 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         Intent submitActivityIntent = new Intent(this, EditQuestionActivity.class);
         startActivity(submitActivityIntent);
     }
-    
+
     /**
      * Launches a new Search activity where a query can be composed to the server.
+     * 
      * @param view
      */
-	public void searchQuestion(View view) {
-		Toast.makeText(this, "You are on the page to search a question!",
-				Toast.LENGTH_SHORT).show();
-		Intent searchActivityIntent = new Intent(this, SearchActivity.class);
-		startActivity(searchActivityIntent);
-	}
+    public void searchQuestion(View view) {
+        Toast.makeText(this, "You are on the page to search a question!", Toast.LENGTH_SHORT).show();
+        Intent searchActivityIntent = new Intent(this, SearchActivity.class);
+        startActivity(searchActivityIntent);
+    }
 
     /**
      * 

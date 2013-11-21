@@ -14,7 +14,6 @@ import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
 import epfl.sweng.authentication.PreferenceKeys;
-import epfl.sweng.tools.Debug;
 
 /**
  * @author Alex
@@ -147,11 +146,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 	}
 
 	private boolean isOnlineMode() {
-		Debug.out("client status : "
-				+ QuizApp.getPreferences().getBoolean(
-						PreferenceKeys.ONLINE_MODE, true));
-
-		return QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE,
+	    return QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE,
 				true);
 	}
 

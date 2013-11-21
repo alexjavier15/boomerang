@@ -133,7 +133,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     public void addNewSlot(View view) {
         Answer temp = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
         mAdapter.add(temp);
-        Debug.out(temp);
+        Debug.out(this.getClass(), temp);
         mAdapter.notifyDataSetChanged();
         if (!isReset()) {
             TestCoordinator.check(TTChecks.QUESTION_EDITED);
@@ -299,7 +299,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
      * 
      */
     public void updateTextchanged() {
-        Debug.out("Fired filled update");
+        Debug.out(this.getClass(), "Fired filled update");
         if (!mReset) {
             if (isValid()) {
                 submitButton.setEnabled(true);

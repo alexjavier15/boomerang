@@ -91,6 +91,8 @@ public class QueryConManager extends ConnectionManager {
                     HttpResponse question = CacheManager.getInstance().wrapQuizQuestion(questionArray.getString(i));
                     quList.add(question);
                     HttpCommsProxy.getInstance().saveQuery(question);
+                    Log.d(this.getClass().getName(),
+                            "Question number " + qCount + " saved from " + questionArray.length() + " received.");
                     qCount++;
                 }
             }

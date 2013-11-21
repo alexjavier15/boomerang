@@ -81,7 +81,7 @@ public class JSONParser {
         jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
         jsonQuestion.put("question", question.getQuestion());
 
-        Debug.out(jsonQuestion);
+        //Debug.out(jsonQuestion);
 
         return jsonQuestion;
     }

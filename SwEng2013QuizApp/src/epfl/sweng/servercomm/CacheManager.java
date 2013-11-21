@@ -137,7 +137,7 @@ public final class CacheManager {
 		 */
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			Debug.out("Attempting to sync file");
+		    Debug.out(this.getClass(), "Attempting to sync file");
 
 			QuizQuestion quizQuestion = null;
 
@@ -147,7 +147,7 @@ public final class CacheManager {
 				if (quizQuestion != null) {
 					HttpResponse response = null;
 					try {
-						Debug.out("go to process post");
+					    Debug.out(this.getClass(), "go to process post");
 						quizQuestion = new QuizQuestion(jsonString);
 						response = HttpCommsProxy.getInstance().postJSONObject(
 								HttpComms.URL_SWENG_PUSH,
@@ -158,7 +158,7 @@ public final class CacheManager {
 									sPostQuestionDB.getFirstPostQuestion());
 							response.getEntity().consumeContent();
 						}
-						Debug.out("reponse got");
+						Debug.out(this.getClass(), "reponse got");
 
 					} catch (ClientProtocolException e) {
 						e.printStackTrace();
@@ -206,7 +206,7 @@ public final class CacheManager {
 	 */
 
 	public void init() {
-		Debug.out("onChange in chache manager called");
+	    Debug.out(this.getClass(), "onChange in chache manager called");
 
 		if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE,
 				true)) {

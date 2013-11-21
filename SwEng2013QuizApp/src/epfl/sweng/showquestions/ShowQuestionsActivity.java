@@ -55,7 +55,7 @@ public class ShowQuestionsActivity extends Activity {
 		tags = (TextView) findViewById(R.id.show_tags);
 
 		text = (TextView) findViewById(R.id.show_question);
-		Debug.out(text);
+		Debug.out(this.getClass(), text);
 
 		answerListener = new OnItemClickListener() {
 
@@ -145,7 +145,7 @@ public class ShowQuestionsActivity extends Activity {
 				try {
 					quizQuestion = new QuizQuestion(JSONParser.getParser(
 							response).toString());
-					Debug.out(quizQuestion);
+					Debug.out(this.getClass(), quizQuestion);
 				} catch (IOException e) {
 					toast(conManager.getErrorMessage());
 					HttpCommsProxy.getInstance().setOnlineMode(false);

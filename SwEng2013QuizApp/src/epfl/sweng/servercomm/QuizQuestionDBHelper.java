@@ -17,7 +17,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
-import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -69,7 +68,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Debug.out("upgrading");
+        Log.d(this.getClass().getName(), "upgrading");
         db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
     }
@@ -125,20 +124,20 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
                 _ID + " ASC");
         if (cursor.moveToFirst()) {
             last = cursor.getInt(0);
-            Debug.out("showing question name for debug: " + cursor.getString(CULUMN_JSON_INDEX) + " and idk _ "
-                    + last);
+            Log.d(this.getClass().getName(),
+                    "showing question name for debug: " + cursor.getString(CULUMN_JSON_INDEX) + " and idk _ " + last);
 
             return cursor.getColumnName(1);
         } else {
             last = -1;
-            Debug.out("nomore question to sync");
+            Log.d(this.getClass().getName(), "nomore question to sync");
 
             return null;
         }
     }
 
     public void deleteQuizQuestion() {
-        Debug.out("gAttempt to delete " + last);
+        Log.d(this.getClass().getName(), "gAttempt to delete " + last);
         if (last != -1) {
 
             SQLiteDatabase db = this.getWritableDatabase();
@@ -156,7 +155,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         String[] selectionArgs = query.split("([a-zA-z0-9]+)");
         for (int i = 0; i < selectionArgs.length; i++) {
             Log.d("String argument num " + i + ": ", selectionArgs[i]);
-        }        
+        }
         Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, selectionArgs,
                 null, null, "_ID DESC", null);
 

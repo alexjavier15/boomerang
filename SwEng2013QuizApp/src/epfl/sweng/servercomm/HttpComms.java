@@ -58,7 +58,7 @@ public final class HttpComms implements IHttpConnectionHelper {
 				request.addHeader(HEADER, authenticationValue);
 
 			}
-			Debug.out("sending to SwengClient");
+			Debug.out(this.getClass(), "sending to SwengClient");
 			return SwengHttpClientFactory.getInstance().execute(request);
 		} else {
 			throw new NetworkErrorException(
