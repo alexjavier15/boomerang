@@ -165,7 +165,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 		return getServerCommsInstance().isConnected();
 	}
 
-	public void saveQuery(HttpResponse response, int questionIndex) {
+	public void saveQuery(HttpResponse response) {
 		if (isOnlineMode()) {
 
 			sCacheHttpComms.pushQuestion(response);

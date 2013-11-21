@@ -16,6 +16,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.util.Log;
 import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
@@ -153,12 +154,16 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
         String selection = COLUMN_NAME_TAGS + " " + translateQuery(query);
         String[] selectionArgs = query.split("([a-zA-z0-9]+)");
+        for (int i = 0; i < selectionArgs.length; i++) {
+            Log.d("String argument num " + i + ": ", selectionArgs[i]);
+        }        
         Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, selectionArgs,
                 null, null, "_ID DESC", null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             String st = cursor.getString(1);
+            Log.i(this.getDatabaseName() + "Question found: ", st);
             quList.add(st);
             cursor.moveToNext();
         }
@@ -168,6 +173,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     }
 
     private String translateQuery(String query) {
+        Log.d("Query before trans was: ", query);
         String translatedQuery = "";
         String[] tokens = query.split("([a-zA-z0-9]+|[\\(\\)\\+\\*])");
         boolean lastWasWord = false;
@@ -193,6 +199,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
                 lastWasWord = true;
             }
         }
+        Log.d("query after trans is : ", translatedQuery);
 
         return translatedQuery;
     }
