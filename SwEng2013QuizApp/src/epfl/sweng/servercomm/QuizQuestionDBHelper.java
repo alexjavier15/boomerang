@@ -6,6 +6,8 @@ package epfl.sweng.servercomm;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -152,12 +154,17 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selection = COLUMN_NAME_TAGS + " " + translateQuery(query);
-        String[] selectionArgs = query.split("([a-zA-z0-9]+)");
-        for (int i = 0; i < selectionArgs.length; i++) {
-            Log.d("String argument num " + i + ": ", selectionArgs[i]);
-        }
-        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, selectionArgs,
-                null, null, "_ID DESC", null);
+        //String[] selectionArgs = query.split("([ \\(\\)\\+\\*])");
+        /*List<String> selArgs = new ArrayList<String>();
+        Pattern pattern = Pattern.compile("([a-zA-Z0-9]+)");
+        Matcher matcher = pattern.matcher(query);
+        while (matcher.find()) {
+            selArgs.add(matcher.group(1));
+
+        }*/
+        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection,
+               // selArgs.toArray(new String[] {})
+               null , null, null, "_ID DESC", null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -174,29 +181,32 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     private String translateQuery(String query) {
         Log.d("Query before trans was: ", query);
         String translatedQuery = "";
-        String[] tokens = query.split("([a-zA-z0-9]+|[\\(\\)\\+\\*])");
+        // saves a list of either words or logical operators
+        Pattern pattern1 = Pattern.compile("([a-zA-Z0-9]+|[\\(\\)\\+\\*])");
+        Matcher matcher1 = pattern1.matcher(query);
+
         boolean lastWasWord = false;
-        for (int i = 0; i < tokens.length; i++) {
-            if (tokens[i].equals("(")) {
+        while (matcher1.find()) {
+            if (matcher1.group(1).equals("(")) {
                 translatedQuery += "[";
                 lastWasWord = false;
-            }
-            if (tokens[i].equals(")")) {
+            } else if (matcher1.group(1).equals(")")) {
                 translatedQuery += "]";
                 lastWasWord = true;
-            } else if (tokens[i].equals("+")) {
+            } else if (matcher1.group(1).equals("+")) {
                 translatedQuery += " OR ";
                 lastWasWord = false;
-            } else if (tokens[i].equals("*")) {
+            } else if (matcher1.group(1).equals("*")) {
                 translatedQuery += " AND ";
                 lastWasWord = false;
             } else {
                 if (lastWasWord) {
                     translatedQuery += " AND ";
                 }
-                translatedQuery += "LIKE ?";
+                translatedQuery += "LIKE '" + matcher1.group(1) + "'";
                 lastWasWord = true;
             }
+
         }
         Log.d("query after trans is : ", translatedQuery);
 
