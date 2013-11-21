@@ -24,19 +24,18 @@ public class JSONParser {
 
     public static final int HTTP_ERROR = 404;
 
-    public static JSONObject getParser(HttpResponse response)
-            throws HttpResponseException, IOException {
+    public static JSONObject getParser(HttpResponse response) throws HttpResponseException, IOException {
 
-            BasicResponseHandler responseHandler = new BasicResponseHandler();
-            String jsonResponse = responseHandler.handleResponse(response);
+        BasicResponseHandler responseHandler = new BasicResponseHandler();
+        String jsonResponse = responseHandler.handleResponse(response);
 
-            JSONObject jo;
-            try {
-                    jo = new JSONObject(jsonResponse);
-            } catch (JSONException e) {
-                    throw new IOException(e.getMessage());
-            }
-            return jo;
+        JSONObject jo;
+        try {
+            jo = new JSONObject(jsonResponse);
+        } catch (JSONException e) {
+            throw new IOException(e.getMessage());
+        }
+        return jo;
 
     }
 
@@ -87,5 +86,4 @@ public class JSONParser {
         return jsonQuestion;
     }
 
- 
 }

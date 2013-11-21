@@ -216,7 +216,7 @@ public final class CacheManager {
 		}
 	}
 
-	public HttpResponse getQueriedQuestion(JSONObject query) {
+	public HttpResponse getQueriedQuestion(String query) {
 		HttpResponse reponse = null;
 		List<String> questionList = sQuizQuestionDB.getQueriedQuestions(query);
 

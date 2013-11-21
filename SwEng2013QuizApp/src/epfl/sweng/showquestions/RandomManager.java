@@ -15,41 +15,41 @@ import epfl.sweng.servercomm.HttpCommsProxy;
  */
 public class RandomManager extends ConnectionManager {
 
-        public static final String ERROR_MESSAGE = "There was an error retrieving the question";
-        private ShowQuestionsActivity shower;
+    public static final String ERROR_MESSAGE = "There was an error retrieving the question";
+    private ShowQuestionsActivity shower;
 
-        public RandomManager(ShowQuestionsActivity show) {
-                this.shower = show;
+    public RandomManager(ShowQuestionsActivity show) {
+        this.shower = show;
+    }
+
+    @Override
+    public void processHttpReponse(HttpResponse response) {
+        shower.parseResponse(response);
+    }
+
+    @Override
+    public HttpResponse requete() {
+        HttpResponse response = null;
+
+        try {
+            response = HttpCommsProxy.getInstance().getHttpResponse(HttpComms.URL_SWENG_RANDOM_GET);
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NetworkErrorException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
-        @Override
-        public void processHttpReponse(HttpResponse response) {
-                shower.parseResponse(response);
-        }
+        return response;
+    }
 
-        @Override
-        public HttpResponse requete() {
-                HttpResponse response = null;
-
-                try {
-                        response = HttpCommsProxy.getInstance().getHttpResponse(HttpComms.URL_SWENG_RANDOM_GET);
-                } catch (ClientProtocolException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                } catch (NetworkErrorException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                }
-
-                return response;
-        }
-
-        @Override
-        public String getErrorMessage() {
-                return ERROR_MESSAGE;
-        }
+    @Override
+    public String getErrorMessage() {
+        return ERROR_MESSAGE;
+    }
 
 }

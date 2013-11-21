@@ -90,7 +90,7 @@ public class QueryConManager extends ConnectionManager {
 			if (questionArray.length() > 0) {
 				for (int i = 0; i < questionArray.length(); i++) {
 					HttpResponse question = CacheManager.getInstance().wrapQuizQuestion(
-							questionArray.getJSONObject(i).toString());
+							questionArray.getString(i));
 					quList.add(question);
 					HttpCommsProxy.getInstance().saveQuery(question, qCount);
 					qCount++;

@@ -10,14 +10,11 @@ import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.tools.Debug;
-import epfl.sweng.tools.JSONParser;
 
 /**
  * @author Alex
@@ -28,7 +25,6 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
 	private static IHttpConnectionHelper sRealHttpComms = null;
 	private static CacheHttpComms sCacheHttpComms = null;
-	private static CacheManager sCacheManager = null;
 	private static HttpCommsProxy proxy = null;
 
 	public static HttpCommsProxy getInstance() {
@@ -55,7 +51,8 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 				.edit()
 				.putBoolean(PreferenceKeys.ONLINE_MODE,
 						sRealHttpComms.isConnected());
-		sCacheManager = CacheManager.getInstance();
+		//TODO check if necessary 
+		CacheManager.getInstance();
 	}
 
 	public Class<?> getServerCommsClass() {
@@ -122,8 +119,8 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
 		if (url.equals(HttpComms.URL_SWENG_QUERY_POST)
 				&& !checkResponseStatus(response, HttpStatus.SC_OK)) {
-
-			// TODO not connected post query to cache
+		    
+		    sCacheHttpComms.postJSONObject(url, jObject);
 			QuizApp.getPreferences().edit()
 					.putBoolean(PreferenceKeys.ONLINE_MODE, false);
 
@@ -178,7 +175,6 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 	}
 
 	public HttpResponse getQueryQuestion(int questionIndex) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

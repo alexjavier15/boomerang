@@ -75,7 +75,14 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
 			return CacheManager.getInstance().addQuestionForSync(
 					question.toString());
 		} else if (url.equals(HttpComms.URL_SWENG_QUERY_POST)) {
-			return CacheManager.getInstance().getQueriedQuestion(question);
+			try {
+                return CacheManager.getInstance().getQueriedQuestion(question.getString("query"));
+            } catch (JSONException e) {
+                
+                //TODO
+                throw new UnsupportedOperationException(
+                        "Unsupported operation in offline mode");
+            }
 		} else {
 			throw new UnsupportedOperationException(
 					"Unsupported operation in offline mode");
@@ -89,7 +96,6 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
 	 */
 	@Override
 	public boolean isConnected() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -104,7 +110,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
 			CacheManager.getInstance().pushFetchedQuestion(
 					quizQuestion.toString());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		    //TODO
 			e.printStackTrace();
 		}
 

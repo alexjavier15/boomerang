@@ -175,12 +175,5 @@ public class QuizQuestion implements QuestionProvider, Serializable {
     public void setTags(Set<String> tagsIn) {
         this.tags = tagsIn;
     }
-    public String getTags2() {
-    	String tag = "";
-    	for (String g : tags) {
-    		tag += g;
-    	}
-    	return tag;
-    }
 
 }
