@@ -227,4 +227,5 @@ public class ShowQuestionsActivity extends Activity {
 	public void toast(String message) {
 		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
 	}
+
 }
