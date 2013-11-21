@@ -33,7 +33,6 @@ import epfl.sweng.tools.JSONParser;
  * 
  */
 
-
 public class ShowQuestionsActivity extends Activity {
 
 	private ArrayAdapter<String> adapter;
@@ -136,88 +135,96 @@ public class ShowQuestionsActivity extends Activity {
 		((Button) findViewById(R.id.next_question)).setEnabled(false);
 		new HttpCommsBackgroundTask(conManager, true).execute();
 	}
-	
+
 	public void parseResponse(HttpResponse response) {
 		QuizQuestion quizQuestion = null;
+		if (response != null) {
+			if (response != null
+					&& response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 
-        if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+				try {
+					quizQuestion = new QuizQuestion(JSONParser.getParser(
+							response).toString());
+					Debug.out(quizQuestion);
+				} catch (IOException e) {
+					toast(conManager.getErrorMessage());
+					HttpCommsProxy.getInstance().setOnlineMode(false);
+					Log.e(getLocalClassName(), e.getMessage());
+				} catch (JSONException e) {
+					toast(conManager.getErrorMessage());
+					HttpCommsProxy.getInstance().setOnlineMode(false);
+					e.printStackTrace();
+				}
+				if (quizQuestion != null) {
+					setQuestion(quizQuestion);
+				} else {
+					text.append("No question can be obtained !");
+					toast(conManager.getErrorMessage());
+				}
+			} else {
+				if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
 
-            try {
-                quizQuestion = new QuizQuestion(JSONParser.getParser(response).toString());
-                Debug.out(quizQuestion);
-            } catch (IOException e) {
-            	toast(conManager.getErrorMessage());
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-                Log.e(getLocalClassName(), e.getMessage());
-            } catch (JSONException e) {
-            	toast(conManager.getErrorMessage());
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-                e.printStackTrace();
-            }
-            if (quizQuestion != null) {
-                setQuestion(quizQuestion);
-            } else {
-                text.append("No question can be obtained !");
-                toast(conManager.getErrorMessage());
-            }
-        } else {
-            if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+					HttpCommsProxy.getInstance().setOnlineMode(false);
 
-                HttpCommsProxy.getInstance().setOnlineMode(false);
+				}
+			}
+		} else {
+			toast(conManager.getErrorMessage());
+		}
 
-            }
-            toast(conManager.getErrorMessage());
-        }
-        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
-    }
+		TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+	}
 
-    /**
-     * Get the tags of the question to display them on the screen
-     * 
-     * @param set
-     *            : set of Strings
-     * @return the tags
-     */
-    private String displayTags(Set<String> set) {
-            if (set.size() > 0) {
-                    System.out.println("Va afficher les tags");
-                    String tagsInString = "";
-                    int counter = 0;
+	/**
+	 * Get the tags of the question to display them on the screen
+	 * 
+	 * @param set
+	 *            : set of Strings
+	 * @return the tags
+	 */
+	private String displayTags(Set<String> set) {
+		if (set.size() > 0) {
+			System.out.println("Va afficher les tags");
+			String tagsInString = "";
+			int counter = 0;
 
-                    for (String s : set) {
-                            counter++;
-                            if (counter == set.size()) {
-                                    tagsInString += s;
-                            } else {
-                                    tagsInString += s + ", ";
-                            }
-                    }
+			for (String s : set) {
+				counter++;
+				if (counter == set.size()) {
+					tagsInString += s;
+				} else {
+					tagsInString += s + ", ";
+				}
+			}
 
-                    return tagsInString;
-            } else {
-                    return "No tags for this question";
-            }
-    }
-    private void setQuestion(QuizQuestion quizQuestion) {
-        currrentQuestion = quizQuestion;
+			return tagsInString;
+		} else {
+			return "No tags for this question";
+		}
+	}
 
-        text.setText(quizQuestion.getQuestion());
-        tags.setText(displayTags(quizQuestion.getTags()));
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
+	private void setQuestion(QuizQuestion quizQuestion) {
+		currrentQuestion = quizQuestion;
 
-        answerChoices.setAdapter(adapter);
+		text.setText(quizQuestion.getQuestion());
+		tags.setText(displayTags(quizQuestion.getTags()));
+		adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
 
-        adapter.setNotifyOnChange(true);
-    }
+		answerChoices.setAdapter(adapter);
 
-    public TextView getText() {
-        return text;
-    }
+		adapter.setNotifyOnChange(true);
+	}
 
-    public void setText(TextView view) {
-        text = view;
-    }
-    public void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-}
+	public TextView getText() {
+		return text;
+	}
+
+	public void setText(TextView view) {
+		text = view;
+	}
+
+	public void toast(String message) {
+		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+	}
 }

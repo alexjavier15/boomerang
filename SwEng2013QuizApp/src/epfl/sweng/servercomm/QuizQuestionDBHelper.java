@@ -15,6 +15,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.tools.Debug;
 
 /**
@@ -33,7 +34,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements
 	private static final String TEXT_TYPE = " TEXT";
 	private static final String SQL_CREATE_ENTRIES = "CREATE TABLE "
 			+ TABLE_NAME + " (" + _ID + " INTEGER PRIMARY KEY,"
-			+ COLUMN_NAME_JSON_QUESTION + TEXT_TYPE + ", "+  COLUMN_NAME_TAGS
+			+ COLUMN_NAME_JSON_QUESTION + TEXT_TYPE + ", " + COLUMN_NAME_TAGS
 			+ TEXT_TYPE + " )";
 
 	private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
@@ -86,7 +87,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements
 		values.put(COLUMN_NAME_JSON_QUESTION, question);
 		try {
 			values.put(COLUMN_NAME_TAGS,
-					(new JSONObject(question)).getString("tags"));
+					(new QuizQuestion(question)).getTags2());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -100,9 +101,10 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements
 	public String getRandomQuizQuestion() {
 
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.query(TABLE_NAME, new String[] { _ID,
-				COLUMN_NAME_JSON_QUESTION }, null, null, null, null,
-				"RANDOM()", "1");
+		Cursor cursor = db
+				.query(TABLE_NAME,
+						new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null,
+						null, null, null, "RANDOM()", "1");
 		if (cursor != null) {
 			cursor.moveToFirst();
 			String quizQuestion = cursor.getColumnName(1);
@@ -120,9 +122,8 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements
 	public String getFirstPostQuestion() {
 		SQLiteDatabase db = this.getReadableDatabase();
 
-		Cursor cursor = db.query(TABLE_NAME, new String[] { _ID,
-				COLUMN_NAME_JSON_QUESTION }, null, null, null, null, _ID
-				+ " ASC");
+		Cursor cursor = db.query(TABLE_NAME, new String[] {_ID,
+			COLUMN_NAME_JSON_QUESTION}, null, null, null, null, _ID + " ASC");
 		if (cursor.moveToFirst()) {
 			last = cursor.getInt(0);
 			Debug.out("showing question name for debug: "
@@ -158,7 +159,8 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements
 		String selection = COLUMN_NAME_TAGS + "MATCH ?";
 		String[] selectionArgs = new String[] {query.toString()};
 		Cursor cursor = db.query(true, TABLE_NAME, new String[] {_ID,
-			COLUMN_NAME_JSON_QUESTION}, selection, selectionArgs, null, null, "_ID DESC", null);
+			COLUMN_NAME_JSON_QUESTION}, selection, selectionArgs, null, null,
+				"_ID DESC", null);
 
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
