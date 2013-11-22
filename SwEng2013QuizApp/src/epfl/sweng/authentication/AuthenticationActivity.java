@@ -99,7 +99,6 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
     public void logIn(View view) {
         if (HttpComms.getInstance().isConnected()) {
-
             new HttpCommsBackgroundTask(this).execute();
         } else {
 
@@ -125,6 +124,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
     private HttpResponse postTequilaToken(HttpResponse tokenResponse) throws JSONException, IOException,
             NetworkErrorException {
+    	
         token = JSONParser.getParser(tokenResponse).getString("token");
         String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
         String password = ((EditText) findViewById(R.id.GasparPassword_EditText)).getText().toString();
@@ -136,13 +136,11 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         Debug.out(urlEntity.toString());
 
         return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA, urlEntity);
-
     }
 
     @Override
     public void processHttpReponse(HttpResponse response) {
         if (response != null) {
-
             try {
                 String sessionID = JSONParser.getParser(response).getString("session");
                 CredentialManager.getInstance().setUserCredential(sessionID);
@@ -163,20 +161,20 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+            
         } else {
             failedAuthenReset();
-
         }
     }
 
     private HttpResponse requestAuthToken(HttpResponse starter) throws ClientProtocolException, IOException,
             NetworkErrorException {
+    	
         HttpResponse response = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             state = TOKEN;
             return response;
         } else {
-
             throw new ClientProtocolException(INTERNAL_ERROR_MSG);
         }
     }

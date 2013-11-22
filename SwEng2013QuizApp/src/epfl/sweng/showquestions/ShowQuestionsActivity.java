@@ -72,7 +72,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      */
     private String displayTags(Set<String> set) {
         if (set.size() > 0) {
-            System.out.println("Va afficher les tags");
             String tagsInString = "";
             int counter = 0;
 
@@ -178,9 +177,11 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         };
         answerChoices.setOnItemClickListener(answerListener);
         isQueryMode = getIntent().getBooleanExtra("query_mode", false);
+        
         if (isQueryMode) {
             mQuery = getIntent().getStringExtra("query");
         }
+        
         processHttpReponse(fetchFirstQuestion());
     }
 

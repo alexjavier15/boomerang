@@ -41,6 +41,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
     @Override
     public HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException,
             NetworkErrorException {
+    	
         HttpResponse reponse = null;
 
         if (urlString.equals(HttpComms.URL)) {
@@ -48,7 +49,6 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
             try {
                 reponse = CacheManager.getInstance().getRandomQuestion();
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -66,7 +66,6 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      */
     @Override
     public boolean isConnected() {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -99,7 +98,6 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
             quizQuestion = JSONParser.getParser(reponse);
             CacheManager.getInstance().pushFetchedQuestion(quizQuestion.toString());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

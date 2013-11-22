@@ -31,9 +31,9 @@ public class QuizQuestion implements QuestionProvider, Serializable {
     private final int maxTagLength = 20;
 
     private final int maxTagsSize = 20;
-    private String owner;
-    private String question;
-    private int solutionIndex;
+    private String owner = "";
+    private String question = "";
+    private int solutionIndex = -1;
     private Set<String> tags = new HashSet<String>();
 
     public QuizQuestion(final String jsonInput) throws JSONException {
@@ -44,27 +44,13 @@ public class QuizQuestion implements QuestionProvider, Serializable {
 
         }
         JSONObject parser = new JSONObject(jsonInput);
-        int initId = -1;
-        String initQuestion = "";
-        List<String> initAnswers = null;
-        int initSolutionIndex = -1;
-        Set<String> initTags = null;
-        String initOwner = "";
 
-        initId = parser.getInt("id");
-        initQuestion = parser.getString("question");
-        initAnswers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
-
-        initSolutionIndex = parser.getInt("solutionIndex");
-        initTags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
-        initOwner = parser.getString("owner");
-
-        this.question = initQuestion;
-        this.answers = initAnswers;
-        this.solutionIndex = initSolutionIndex;
-        this.tags = initTags;
-        this.id = initId;
-        this.owner = initOwner;
+        this.question = parser.getString("question");
+        this.answers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
+        this.solutionIndex = parser.getInt("solutionIndex");
+        this.tags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
+        this.id = parser.getInt("id");
+        this.owner = parser.getString("owner");
 
         // if (auditErrors() != 0) {
         // throw new IllegalArgumentException();
