@@ -16,6 +16,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -148,7 +149,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         }
     }
 
-    public List<String> getQueriedQuestions(String query) throws UnsupportedOperationException {
+    public List<String> getQueriedQuestions(String query) throws UnsupportedOperationException, SQLiteException {
         List<String> quList = new ArrayList<String>();
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -180,10 +181,10 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         boolean lastWasWord = false;
         while (matcher1.find()) {
             if (matcher1.group(1).equals("(")) {
-                translatedQuery += "[";
+                translatedQuery += "( ";
                 lastWasWord = false;
             } else if (matcher1.group(1).equals(")")) {
-                translatedQuery += "]";
+                translatedQuery += ")";
                 lastWasWord = true;
             } else if (matcher1.group(1).equals("+")) {
                 translatedQuery += " OR ";
