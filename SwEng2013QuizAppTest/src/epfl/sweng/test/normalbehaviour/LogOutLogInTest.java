@@ -2,7 +2,6 @@ package epfl.sweng.test.normalbehaviour;
 
 import org.apache.http.HttpStatus;
 
-import android.widget.EditText;
 import epfl.sweng.entry.MainActivity;
 import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.test.minimalmock.MockHttpClient;
