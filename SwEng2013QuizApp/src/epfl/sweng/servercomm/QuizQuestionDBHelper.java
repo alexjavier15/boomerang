@@ -153,17 +153,9 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String selection = COLUMN_NAME_TAGS + " " + translateQuery(query);
-        //String[] selectionArgs = query.split("([ \\(\\)\\+\\*])");
-        /*List<String> selArgs = new ArrayList<String>();
-        Pattern pattern = Pattern.compile("([a-zA-Z0-9]+)");
-        Matcher matcher = pattern.matcher(query);
-        while (matcher.find()) {
-            selArgs.add(matcher.group(1));
-
-        }*/
+        String selection = translateQuery(query);
+     
         Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection,
-               // selArgs.toArray(new String[] {})
                null , null, null, "_ID DESC", null);
 
         cursor.moveToFirst();
@@ -203,7 +195,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
                 if (lastWasWord) {
                     translatedQuery += " AND ";
                 }
-                translatedQuery += "LIKE '" + matcher1.group(1) + "'";
+                translatedQuery += COLUMN_NAME_TAGS + " LIKE '%" + matcher1.group(1) + "%'";
                 lastWasWord = true;
             }
 
