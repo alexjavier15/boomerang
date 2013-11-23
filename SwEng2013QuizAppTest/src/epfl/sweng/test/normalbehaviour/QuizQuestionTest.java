@@ -29,7 +29,7 @@ public class QuizQuestionTest extends TestCase {
 		answers.add("Twenty-seven");
 		int sol = 0;
 		Set<String> tags = new HashSet<String>(Arrays.asList("h2g2", "trivia"));
-		return new QuizQuestion(question, answers, sol, tags, -1, "");
+		return new QuizQuestion(question, answers, sol, tags, -1, "owner");
 	}
 
 	public void testGettersQuestion() {
@@ -44,6 +44,7 @@ public class QuizQuestionTest extends TestCase {
 		Set<String> tags = new HashSet<String>(Arrays.asList("h2g2", "trivia"));
 		assertEquals(mQuestion.getTags(), tags);
 		assertEquals(mQuestion.getIndex(), 0);
+		assertEquals(mQuestion.getOwner(), "owner");
 		HttpResponse response = null;
 
 		QuizQuestion question = createQuestion();
@@ -72,7 +73,6 @@ public class QuizQuestionTest extends TestCase {
 		try {
 			String json = JSONParser.parseQuiztoJSON(mQuestion).toString();
 			QuizQuestion test = new QuizQuestion(json);
-			assertEquals(mQuestion.getOwner(), test.getOwner());
 			test.setQuestion("salut");
 			assertEquals(test.getQuestion(), "salut");
 			Set<String> tagsIn = new HashSet<String>(Arrays.asList(new String[] {"1", "2", "5"}));
