@@ -1,7 +1,9 @@
 package epfl.sweng.test.normalbehaviour;
 
 import android.widget.Button;
+import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.searchquestions.SearchActivity;
+import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.test.template.TestTemplate;
@@ -25,6 +27,8 @@ public class SearchActivityTest extends TestTemplate<SearchActivity> {
 						+ " 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }",
 				"application/json");
 		SwengHttpClientFactory.setInstance(mock);
+		QuizApp.getPreferences().edit()
+		.putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
 	}
 	
 	public void testView() {
