@@ -1,7 +1,7 @@
 /**
  * 
  */
-package epfl.sweng.servercomm;
+package epfl.sweng.entry;
 
 import epfl.sweng.authentication.PreferenceKeys;
 import android.app.Application;

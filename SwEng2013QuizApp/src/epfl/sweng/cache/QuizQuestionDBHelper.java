@@ -1,7 +1,7 @@
 /**
  * 
  */
-package epfl.sweng.servercomm;
+package epfl.sweng.cache;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,11 +33,13 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     public static final String TABLE_NAME = "quizQuestions1";
     public static final String COLUMN_NAME_JSON_QUESTION = "jsonQuestion";
     public static final String COLUMN_NAME_TAGS = "questionTags";
+    public static final String COLUMN_NAME_IXHASH = "indexHash";
     private static final int CULUMN_JSON_INDEX = 1;
     private static final String TEXT_TYPE = " TEXT";
     private static final String SQL_CREATE_ENTRIES = "CREATE TABLE " + TABLE_NAME + " (" + _ID
-            + " INTEGER PRIMARY KEY," + COLUMN_NAME_JSON_QUESTION + TEXT_TYPE + ", " + COLUMN_NAME_TAGS + TEXT_TYPE
-            + " )";
+            + " INTEGER PRIMARY KEY," + COLUMN_NAME_JSON_QUESTION + TEXT_TYPE + ", " + ", " + COLUMN_NAME_TAGS
+            + TEXT_TYPE + COLUMN_NAME_IXHASH + TEXT_TYPE + ", UNIQUE (" + COLUMN_NAME_JSON_QUESTION + ") "
+            + "ON CONFLICT REPLACE" + " )";
 
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
     private int last = -1;
@@ -76,10 +78,8 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         onCreate(db);
     }
 
-    public void addQuizQuestion(String question) {
-
+    public void addQuizQuestion(String question, int indexHash) {
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME_JSON_QUESTION, question);
         try {
@@ -95,14 +95,15 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         } catch (IOException e) {
             e.printStackTrace();
         }
+        values.put(COLUMN_NAME_IXHASH, indexHash);
 
         // Inserting Row
+        db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.insert(TABLE_NAME, null, values);
         db.close();
     }
 
     public String getRandomQuizQuestion() {
-
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null,
                 "RANDOM()", "1");
@@ -110,19 +111,15 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             cursor.moveToFirst();
             String quizQuestion = cursor.getColumnName(1);
             db.close();
-
             return quizQuestion;
-
         } else {
             db.close();
-
             return null;
         }
     }
 
     public String getFirstPostQuestion() {
         SQLiteDatabase db = this.getReadableDatabase();
-
         Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null,
                 _ID + " ASC");
         if (cursor.moveToFirst()) {
@@ -149,15 +146,31 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         }
     }
 
+    public String getHashedQuestion(int indexHash) {
+        String quizQuestion = null;
+        
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selection = COLUMN_NAME_IXHASH + " = " + indexHash;
+        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, null, null,
+                null, "RANDOM()", "1");
+        if (!cursor.isAfterLast()) {
+            cursor.moveToFirst();
+            quizQuestion = cursor.getColumnName(1);
+        }
+        db.close();
+
+        return quizQuestion;
+    }
+
     public List<String> getQueriedQuestions(String query) throws UnsupportedOperationException, SQLiteException {
         List<String> quList = new ArrayList<String>();
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selection = translateQuery(query);
-     
-        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection,
-               null , null, null, "_ID DESC", null);
+
+        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, null, null,
+                null, "_ID DESC", null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {

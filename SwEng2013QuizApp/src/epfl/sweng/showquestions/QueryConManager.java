@@ -1,19 +1,21 @@
 package epfl.sweng.showquestions;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
 import android.util.Log;
 
-import epfl.sweng.servercomm.CacheManager;
+import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsProxy;
+import epfl.sweng.testing.TestCoordinator;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
+import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -22,101 +24,75 @@ import epfl.sweng.tools.JSONParser;
  */
 public class QueryConManager extends ConnectionManager {
 
-    public static final String ERROR_NO_MORE = "No more questions match your query";
-    public static final String ERROR_NONE_FOUND = "No questions match your query";
+    public static final String ERROR_QUERY = "No questions match your query";
+    public static final String ERROR_MESSAGE = "There was an error retrieving the question";
+
     private ShowQuestionsActivity shower;
-    private String query = null;
-    private int qCount = 0;
-    private int questionIndex = 0;
+
+    private boolean isQuery = false;
     private boolean hasNext = false;
-    private String next = null;
-    private LinkedList<HttpResponse> quList = new LinkedList<HttpResponse>();
+    private String query = null;
 
     public QueryConManager(ShowQuestionsActivity show) {
         this.shower = show;
-        query = shower.getIntent().getStringExtra("query");
+        if (shower.getIntent().hasExtra("query_mode")) {
+            isQuery = true;
+            query = shower.getIntent().getStringExtra("query");
+        }
     }
 
     @Override
     public void processHttpReponse(HttpResponse response) {
-        shower.parseResponse(response);
-
+        QuizQuestion quizQuestion = null;
+        if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            try {
+                quizQuestion = new QuizQuestion(JSONParser.getParser(response).toString());
+                Debug.out(this.getClass(), quizQuestion);
+            } catch (IOException e) {
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+                Log.e(this.getClass().getName(), e.getMessage());
+            } catch (JSONException e) {
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+                e.printStackTrace();
+            }
+            shower.setQuestion(quizQuestion);
+        } else {
+            if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+            }
+        }
+        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
     }
 
     @Override
     public HttpResponse requete() {
         HttpResponse response = null;
-        if ((qCount == 0) || (qCount == questionIndex & hasNext)) {
-            try {
+
+        try {
+            if (isQuery) {
                 JSONObject joll = (new JSONObject()).put("query", query);
-                if (hasNext) {
-                    joll.put("from", next);
-                }
-                postQuery(joll);
-            } catch (JSONException e) {
-
+                response = HttpCommsProxy.getInstance().pollQuestion(HttpComms.URL_SWENG_QUERY_POST, joll);
+            } else {
+                response = HttpCommsProxy.getInstance().getHttpResponse(HttpComms.URL_SWENG_RANDOM_GET);
             }
-
+        } catch (ClientProtocolException e) {
+            Log.e(getClass().getName(), e.getMessage());
+        } catch (NetworkErrorException e) {
+            Log.e(getClass().getName(), e.getMessage());
+        } catch (IOException e) {
+            Log.e(getClass().getName(), e.getMessage());
+        } catch (JSONException e) {
+            Log.e(getClass().getName(), e.getMessage());
         }
-
-        // response =
-        // HttpCommsProxy.getInstance().getQueryQuestion(questionIndex);
-        response = quList.poll();
-        questionIndex++;
 
         return response;
     }
 
-    /**
-     * posts the a JsonObject (either query or next) to Sweng and if questions are received it saves them in cache
-     * continuing or starting a query index.
-     * 
-     * @param joll
-     */
-
-    private void postQuery(JSONObject joll) {
-        try {
-            HttpResponse response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_QUERY_POST, joll);
-            JSONObject jsonResponse = JSONParser.getParser(response);
-            hasNext = !jsonResponse.isNull("next");
-            if (hasNext) {
-                next = jsonResponse.getString("next");
-                Log.d(this.getClass().getName(), "has next message in query response saving: " + next);
-            }
-
-            JSONArray questionArray = jsonResponse.getJSONArray("questions");
-
-            if (questionArray.length() > 0) {
-                for (int i = 0; i < questionArray.length(); i++) {
-                    HttpResponse question = CacheManager.getInstance().wrapQuizQuestion(questionArray.getString(i));
-                    quList.add(question);
-                    HttpCommsProxy.getInstance().saveQuery(question);
-                    Log.d(this.getClass().getName(),
-                            "Question number " + qCount + " saved from " + questionArray.length() + " received.");
-                    qCount++;
-                }
-            }
-
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NetworkErrorException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
     public String getErrorMessage() {
-        if (qCount > 0) {
-            return ERROR_NO_MORE;
+        if (hasNext) {
+            return ERROR_QUERY;
         } else {
-            return ERROR_NONE_FOUND;
+            return ERROR_MESSAGE;
         }
     }
 }
