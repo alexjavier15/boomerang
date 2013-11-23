@@ -17,6 +17,7 @@ import epfl.sweng.authentication.CredentialManager;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.editquestions.EditQuestionActivity;
 import epfl.sweng.patterns.CheckProxyHelper;
+import epfl.sweng.searchquestions.SearchActivity;
 import epfl.sweng.servercomm.CacheManager;
 import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.servercomm.QuizApp;
@@ -180,6 +181,12 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         Toast.makeText(this, "You are on the page to submit a question!", Toast.LENGTH_SHORT).show();
         Intent submitActivityIntent = new Intent(this, EditQuestionActivity.class);
         startActivity(submitActivityIntent);
+    }
+    
+    public void searchQuestion(View view) {
+    	Toast.makeText(this, "You are on the page to search for a question!", Toast.LENGTH_SHORT).show();
+    	Intent searchActivityIntent = new Intent(this, SearchActivity.class);
+    	startActivity(searchActivityIntent);
     }
 
     private void update() {

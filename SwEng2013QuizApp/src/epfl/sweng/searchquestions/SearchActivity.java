@@ -97,6 +97,7 @@ public class SearchActivity extends Activity {
 
     @Override
     protected void onStart() {
+    	super.onStart();
         TestCoordinator.check(TTChecks.SEARCH_ACTIVITY_SHOWN);
     }
 
