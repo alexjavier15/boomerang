@@ -1,10 +1,10 @@
-//package epfl.sweng.normalbehaviour;
+//package epfl.sweng.test.normalbehaviour;
 //
 //import android.widget.Button;
-//import epfl.sweng.minimalmock.MockHttpClient;
+//import epfl.sweng.test.minimalmock.MockHttpClient;
 //import epfl.sweng.servercomm.SwengHttpClientFactory;
 //import epfl.sweng.showquestions.ShowQuestionsActivity;
-//import epfl.sweng.template.TestTemplate;
+//import epfl.sweng.test.template.TestTemplate;
 //import epfl.sweng.testing.TestCoordinator.TTChecks;
 //
 //public class ShowQuestionsActivityTest extends
@@ -21,13 +21,13 @@
 //		mock.pushCannedResponse(
 //				"GET (?:https?://[^/]+|[^/]+)?/+quizquestions/random HTTP/1.1",
 //				200,
-//				"{\"question\": \"What is the answer to life, the universe, and everything?\",
-//\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\",
-//\"solutionIndex\": 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }",
-//                "application/json");
+//				"{\"question\": \"What is the answer to life, the universe, and everything?\", "
+//						+ "\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\", \"solutionIndex\":"
+//						+ " 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }",
+//				"application/json");
 //		SwengHttpClientFactory.setInstance(mock);
 //	}
-//	
+//
 //	public void testShowQuestion() {
 //		getActivityAndWaitFor(TTChecks.QUESTION_SHOWN);
 //		assertTrue(
@@ -49,15 +49,19 @@
 //		assertFalse("Next question button is disabled",
 //				nextQuestionButton.isEnabled());
 //
-//		getSolo().clickOnText("Forty-two");
-//		waitFor(TTChecks.ANSWER_SELECTED);
+//		clickAndWaitForAnswer(TTChecks.ANSWER_SELECTED, "Forty-two");
 //
 //		assertTrue("Next question button exists",
 //				getSolo().searchButton("Next question"));
 //		assertTrue("Next question button is enabled",
 //				nextQuestionButton.isEnabled());
+//
+//		getSolo().clickOnButton("Next question");
+//
+//		assertTrue("Next question button is enabled",
+//				nextQuestionButton.isEnabled());
 //		
-//		
+//		getActivity().finish();
 //	}
 //
-// }
+//}

@@ -204,10 +204,8 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
                 try {
                     quizQuestion = new QuizQuestion(JSONParser.getParser(httpResponse).toString());
                     setQuestion(quizQuestion);
-
                     Debug.out(quizQuestion);
                 } catch (IOException e) {
-
                     Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
                     HttpCommsProxy.getInstance().setOnlineMode(false);
                     Log.e(getLocalClassName(), e.getMessage());
@@ -216,19 +214,15 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
                     HttpCommsProxy.getInstance().setOnlineMode(false);
                     e.printStackTrace();
                 }
-
             } else {
                 if (httpResponse.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-
                     HttpCommsProxy.getInstance().setOnlineMode(false);
-
                 }
-
+                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
             }
         } else {
             Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
         }
-
         TestCoordinator.check(TTChecks.QUESTION_SHOWN);
     }
 

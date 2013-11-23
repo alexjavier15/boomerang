@@ -92,7 +92,6 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
 
             if (check.getText().equals(getResources().getString(R.string.heavy_check_mark))) {
                 numberOfAnswers++;
-
             }
         }
 

@@ -21,7 +21,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
     public static final String COLUMN_NAME_JSON_QUESTION = "jsonQuestion";
     public static final int CULUMN_JSON_INDEX = 1;
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 3;
     public static final String TABLE_NAME = "quizQuestions";
     public static final String TEXT_TYPE = " TEXT";
     private static final String SQL_CREATE_ENTRIES = "CREATE TABLE " + TABLE_NAME + " (" + _ID
