@@ -32,7 +32,9 @@ public class SearchActivityTest extends TestTemplate<SearchActivity> {
 	}
 	
 	public void testView() {
-		getActivityAndWaitFor(TTChecks.SEARCH_ACTIVITY_SHOWN);
+		//getActivityAndWaitFor(TTChecks.SEARCH_ACTIVITY_SHOWN);
+		
+		getActivity();
 		
 		assertTrue("EditText for search query must exist", getSolo().searchEditText("Type in the search query"));
 		assertTrue("Button for submitting the query must exist", getSolo().searchButton("Search"));
