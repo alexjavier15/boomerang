@@ -30,7 +30,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
     private static IHttpConnectionHelper sRealHttpComms = null;
     private static CacheHttpComms sCacheHttpComms = null;
-    private static IHttpConnectionHelper sQueryCacheComms = null;
+    private static CacheQueryManager sQueryCacheComms = null;
     private static HttpCommsProxy proxy = null;
 
     public static HttpCommsProxy getInstance() {

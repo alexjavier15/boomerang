@@ -23,7 +23,7 @@ public final class CacheQueryManager implements IHttpConnectionHelper {
     private int qCount = 0;
     private int questionIndex = 0;
 
-    public static IHttpConnectionHelper getInstance() {
+    public static CacheQueryManager getInstance() {
         if (sCacheQuery == null) {
             sCacheQuery = new CacheQueryManager();
         }
@@ -49,6 +49,18 @@ public final class CacheQueryManager implements IHttpConnectionHelper {
     @Override
     public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
             NetworkErrorException {
+        try {
+            if (!question.getString("query").equals(query)) {
+                hasNext = false;
+                next = null;
+                qCount = 0;
+                query = question.getString("query");
+            }
+        } catch (JSONException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        
         HttpResponse response = null;
         if ((qCount == 0) || (qCount == questionIndex & hasNext)) {
             try {
@@ -76,13 +88,6 @@ public final class CacheQueryManager implements IHttpConnectionHelper {
 
     public void postQuery(JSONObject question) throws ClientProtocolException, NetworkErrorException, IOException,
             JSONException {
-
-        if (!question.getString("query").equals(query)) {
-            hasNext = false;
-            next = null;
-            qCount = 0;
-            query = question.getString("query");
-        }
 
         HttpResponse response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_QUERY_POST, question);
         JSONObject jsonResponse = JSONParser.getParser(response);
