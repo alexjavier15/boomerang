@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import epfl.sweng.R;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
+import epfl.sweng.tools.Debug;
 
 public class SearchActivity extends Activity {
 
@@ -101,13 +103,14 @@ public class SearchActivity extends Activity {
         TestCoordinator.check(TTChecks.SEARCH_ACTIVITY_SHOWN);
     }
 
-    public void search() {
-        Toast.makeText(this, "You are on the page to enter a specific query for a random question",
+    public void search(View view) {
+        Toast.makeText(this, "Here is your specific random question!",
                 Toast.LENGTH_SHORT).show();
+        Debug.out("Gougouououl");
         Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
         showQuestionActivityIntent.putExtra("query_mode", true);
         String queryText = searchQuery.getText().toString();
         showQuestionActivityIntent.putExtra("query", queryText);
-        this.startActivity(showQuestionActivityIntent);
+        startActivity(showQuestionActivityIntent);
     }
 }

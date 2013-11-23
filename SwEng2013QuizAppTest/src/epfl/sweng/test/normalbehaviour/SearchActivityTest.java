@@ -1,5 +1,6 @@
 package epfl.sweng.test.normalbehaviour;
 
+import android.widget.Button;
 import epfl.sweng.searchquestions.SearchActivity;
 import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.test.minimalmock.MockHttpClient;
@@ -26,8 +27,19 @@ public class SearchActivityTest extends TestTemplate<SearchActivity> {
 		SwengHttpClientFactory.setInstance(mock);
 	}
 	
-	public void viewTest() {
+	public void testView() {
 		getActivityAndWaitFor(TTChecks.SEARCH_ACTIVITY_SHOWN);
+		
+		assertTrue("EditText for search query must exist", getSolo().searchEditText("Type in the search query"));
+		assertTrue("Button for submitting the query must exist", getSolo().searchButton("Search"));
+		
+		Button search = getSolo().getButton("Search");
+		
+		assertFalse("Search button is disabled", search.isEnabled());
+		
+		enterTextAndWaitFor(TTChecks.QUERY_EDITED, getSolo().getEditText("query"), "h2g2");
+		
+		assertTrue("Search button is enabled", search.isEnabled());
 		
 		getActivity().finish();
 	}
