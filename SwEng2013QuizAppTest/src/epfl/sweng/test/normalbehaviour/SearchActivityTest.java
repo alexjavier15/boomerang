@@ -31,7 +31,7 @@ public class SearchActivityTest extends TestTemplate<SearchActivity> {
 		.putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
 	}
 	
-	public void testView() {
+	public void testItems() {
 		//getActivityAndWaitFor(TTChecks.SEARCH_ACTIVITY_SHOWN);
 		
 		getActivity();
@@ -42,12 +42,21 @@ public class SearchActivityTest extends TestTemplate<SearchActivity> {
 		Button search = getSolo().getButton("Search");
 		
 		assertFalse("Search button is disabled", search.isEnabled());
-		
-		enterTextAndWaitFor(TTChecks.QUERY_EDITED, getSolo().getEditText("query"), "h2g2");
-		
+		enterTextAndWaitFor(TTChecks.QUERY_EDITED, getSolo().getEditText(0), "h2g2");
 		assertTrue("Search button is enabled", search.isEnabled());
 		
 		getActivity().finish();
+	}
+	
+	public void testQuery() {
+		getActivity();
+
+		enterTextAndWaitFor(TTChecks.QUERY_EDITED, getSolo().getEditText("query"), "h2g2");
+		
+		// Should be a TTchek I think
+		getSolo().clickOnButton("Search");
+		
+		
 	}
 
 }

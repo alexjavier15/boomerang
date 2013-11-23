@@ -106,7 +106,6 @@ public class SearchActivity extends Activity {
     public void search(View view) {
         Toast.makeText(this, "Here is your specific random question!",
                 Toast.LENGTH_SHORT).show();
-        Debug.out("Gougouououl");
         Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
         showQuestionActivityIntent.putExtra("query_mode", true);
         String queryText = searchQuery.getText().toString();
