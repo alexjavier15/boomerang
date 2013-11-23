@@ -20,6 +20,7 @@ import epfl.sweng.editquestions.EditQuestionActivity;
 import epfl.sweng.patterns.CheckProxyHelper;
 import epfl.sweng.searchquestions.SearchActivity;
 import epfl.sweng.servercomm.HttpCommsProxy;
+import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;

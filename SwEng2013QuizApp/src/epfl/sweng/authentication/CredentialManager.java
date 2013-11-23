@@ -1,6 +1,6 @@
 package epfl.sweng.authentication;
 
-import epfl.sweng.entry.QuizApp;
+import epfl.sweng.servercomm.QuizApp;
 import android.content.SharedPreferences;
 
 /**

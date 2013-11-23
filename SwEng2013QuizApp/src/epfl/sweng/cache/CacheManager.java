@@ -22,10 +22,10 @@ import android.accounts.NetworkErrorException;
 import android.os.AsyncTask;
 import android.util.Log;
 import epfl.sweng.authentication.PreferenceKeys;
-import epfl.sweng.entry.QuizApp;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsProxy;
+import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 

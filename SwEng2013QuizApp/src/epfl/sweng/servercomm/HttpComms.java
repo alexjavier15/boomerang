@@ -17,7 +17,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import epfl.sweng.authentication.CredentialManager;
-import epfl.sweng.entry.QuizApp;
 import epfl.sweng.tools.Debug;
 
 /**

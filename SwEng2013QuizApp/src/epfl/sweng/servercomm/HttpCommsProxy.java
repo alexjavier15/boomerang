@@ -17,7 +17,6 @@ import org.json.JSONObject;
 import android.accounts.NetworkErrorException;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.cache.CacheManager;
-import epfl.sweng.entry.QuizApp;
 import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 

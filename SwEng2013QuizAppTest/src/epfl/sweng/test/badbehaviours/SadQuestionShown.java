@@ -6,7 +6,7 @@ import android.content.Context;
 import android.text.NoCopySpan.Concrete;
 
 import epfl.sweng.authentication.PreferenceKeys;
-import epfl.sweng.entry.QuizApp;
+import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.test.minimalmock.MockHttpClient;
