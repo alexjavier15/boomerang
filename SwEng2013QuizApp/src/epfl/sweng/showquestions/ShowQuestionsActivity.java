@@ -6,11 +6,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
-import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -177,11 +174,11 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         };
         answerChoices.setOnItemClickListener(answerListener);
         isQueryMode = getIntent().getBooleanExtra("query_mode", false);
-        
+
         if (isQueryMode) {
             mQuery = getIntent().getStringExtra("query");
         }
-        
+
         processHttpReponse(fetchFirstQuestion());
     }
 
@@ -196,60 +193,36 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     }
 
     @Override
-    public void processHttpReponse(HttpResponse httpResponse) {
-        QuizQuestion quizQuestion = null;
+    public HttpResponse requete() {
 
-        if (httpResponse != null) {
-            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                try {
-                    quizQuestion = new QuizQuestion(JSONParser.getParser(httpResponse).toString());
-                    setQuestion(quizQuestion);
-                    Debug.out(quizQuestion);
-                } catch (IOException e) {
-                    Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-                    HttpCommsProxy.getInstance().setOnlineMode(false);
-                    Log.e(getLocalClassName(), e.getMessage());
-                } catch (JSONException e) {
-                    Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-                    HttpCommsProxy.getInstance().setOnlineMode(false);
-                    e.printStackTrace();
-                }
-            } else {
-                if (httpResponse.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-                    HttpCommsProxy.getInstance().setOnlineMode(false);
-                }
-                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-            }
-        } else {
-            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-        }
-        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+        return HttpCommsProxy.getInstance().getHttpResponse(mQuery);
+
     }
 
     @Override
-    public HttpResponse requete() {
-        HttpResponse response = null;
+    public void processHttpReponse(HttpResponse httpResponse) {
+        QuizQuestion quizQuestion = null;
 
-        try {
-            response = HttpCommsProxy.getInstance().poll(isQueryMode, mQuery);
-        } catch (ClientProtocolException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-            e.printStackTrace();
-        } catch (NetworkErrorException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-            e.printStackTrace();
-        } catch (IOException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-            e.printStackTrace();
-        } catch (ParseException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-            e.printStackTrace();
-        } catch (JSONException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-            e.printStackTrace();
+        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            try {
+                quizQuestion = new QuizQuestion(JSONParser.getParser(httpResponse).toString());
+                setQuestion(quizQuestion);
+                Debug.out(quizQuestion);
+            } catch (IOException e) {
+                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+                Log.e(getLocalClassName(), e.getMessage());
+            } catch (JSONException e) {
+                Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+                e.printStackTrace();
+            }
+        } else {
+
+            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
         }
 
-        return response;
+        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
     }
 
     private void setQuestion(QuizQuestion quizQuestion) {
@@ -258,9 +231,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         text.setText(quizQuestion.getQuestion());
         tags.setText(displayTags(quizQuestion.getTags()));
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, quizQuestion.getAnswers());
-
         answerChoices.setAdapter(adapter);
-
         adapter.setNotifyOnChange(true);
     }
 

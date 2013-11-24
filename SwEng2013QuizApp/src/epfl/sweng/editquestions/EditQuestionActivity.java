@@ -1,6 +1,5 @@
 package epfl.sweng.editquestions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -11,10 +10,9 @@ import java.util.regex.Pattern;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
+import org.json.JSONObject;
 
-import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -304,42 +302,36 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     }
 
     @Override
+    public HttpResponse requete() {
+
+        QuizQuestion question = createQuestion();
+        JSONObject json = convertQuizQtoJson(question);
+
+        return HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH, json);
+
+    }
+
+    @Override
     public void processHttpReponse(HttpResponse response) {
-        if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
             reset();
             printSuccess();
         } else {
-            if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-
-            }
             printFail();
         }
         TestCoordinator.check(TTChecks.NEW_QUESTION_SUBMITTED);
     }
 
-    @Override
-    public HttpResponse requete() {
-        HttpResponse response = null;
+    private JSONObject convertQuizQtoJson(QuizQuestion question) {
+
+        JSONObject json = null;
+
         try {
-            QuizQuestion question = createQuestion();
-
-            response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
-                    JSONParser.parseQuiztoJSON(question));
-
-        } catch (ClientProtocolException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-        } catch (NetworkErrorException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-        } catch (IOException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
+            json = JSONParser.parseQuiztoJSON(question);
         } catch (JSONException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-        } catch (IllegalArgumentException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
+            e.printStackTrace();
         }
-        return response;
+        return json;
     }
 
     /**

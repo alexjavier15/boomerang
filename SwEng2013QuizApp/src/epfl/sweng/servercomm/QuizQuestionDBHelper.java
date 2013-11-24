@@ -28,8 +28,6 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             + " INTEGER PRIMARY KEY," + COLUMN_NAME_JSON_QUESTION + TEXT_TYPE + " )";
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-    private int last = -1;
-
     /**
      * @param context
      * @param name
@@ -39,69 +37,6 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     public QuizQuestionDBHelper(Context context, String name) {
         super(context, name, null, DATABASE_VERSION);
 
-    }
-
-    public void addQuizQuestion(String question) {
-
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_NAME_JSON_QUESTION, question);
-
-        // Inserting Row
-        db.insert(TABLE_NAME, null, values);
-        db.close();
-    }
-
-    public void deleteQuizQuestion() {
-
-        Debug.out("gAttempt to delete " + last);
-        if (last != -1) {
-
-            SQLiteDatabase db = this.getWritableDatabase();
-            Debug.out(DatabaseUtils.queryNumEntries(db, TABLE_NAME));
-            db.delete(TABLE_NAME, _ID + "=?", new String[] {String.valueOf(last)});
-            Debug.out(DatabaseUtils.queryNumEntries(db, TABLE_NAME));
-            db.close();
-        }
-    }
-
-    public String getFirstPostQuestion() {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null,
-                _ID + " ASC");
-        if (cursor.moveToFirst()) {
-            last = cursor.getInt(0);
-            Debug.out("showing question name for debug: " + cursor.getString(CULUMN_JSON_INDEX) + " and idk _ "
-                    + last);
-
-            return cursor.getString(CULUMN_JSON_INDEX);
-        } else {
-            last = -1;
-            Debug.out("nomore question to sync");
-
-            return null;
-        }
-    }
-
-    public String getRandomQuizQuestion() {
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null,
-                "RANDOM()", null);
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-
-            String quizQuestion = cursor.getString(CULUMN_JSON_INDEX);
-            db.close();
-
-            return quizQuestion;
-
-        } else {
-            db.close();
-            return null;
-        }
     }
 
     /*
@@ -124,6 +59,66 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         Debug.out("upgrading");
         db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
+    }
+
+    public void addQuizQuestion(String question) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME_JSON_QUESTION, question);
+
+        // Inserting Row
+        db.insert(TABLE_NAME, null, values);
+        db.close();
+    }
+
+    public void deleteQuizQuestion(String index) {
+
+        Debug.out("gAttempt to delete " + index);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Debug.out(DatabaseUtils.queryNumEntries(db, TABLE_NAME));
+
+        db.delete(TABLE_NAME, _ID + "=?", new String[] {index});
+
+        Debug.out(DatabaseUtils.queryNumEntries(db, TABLE_NAME));
+        db.close();
+
+    }
+
+    public String[] getFirstPostQuestion() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] cursorArray = new String[2];
+
+        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null,
+                _ID + " ASC");
+        if (cursor.moveToFirst()) {
+            cursorArray[0] = String.valueOf(cursor.getInt(CULUMN_JSON_INDEX));
+            cursorArray[1] = cursor.getString(CULUMN_JSON_INDEX);
+
+        }
+        return cursorArray;
+
+    }
+
+    public String getRandomQuizQuestion() {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null,
+                "RANDOM()", null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+
+            String quizQuestion = cursor.getString(CULUMN_JSON_INDEX);
+            db.close();
+
+            return quizQuestion;
+
+        } else {
+            db.close();
+            return null;
+        }
     }
 
 }

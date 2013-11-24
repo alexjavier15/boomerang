@@ -6,11 +6,9 @@ package epfl.sweng.servercomm;
 import java.io.IOException;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.accounts.NetworkErrorException;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -39,23 +37,22 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      * @see epfl.sweng.servercomm.IHttpConnection#getHttpResponse(java.lang.String)
      */
     @Override
-    public HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException,
-            NetworkErrorException {
-    	
-        HttpResponse reponse = null;
+    public HttpResponse getHttpResponse(String urlString) {
+
+        HttpResponse response = null;
 
         if (urlString.equals(HttpComms.URL)) {
 
             try {
-                reponse = CacheManager.getInstance().getRandomQuestion();
+                response = CacheManager.getInstance().getRandomQuestion();
             } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
-        } else {
-            throw new UnsupportedOperationException("Unsupported operation in offline mode");
         }
-        return reponse;
+        return response;
 
     }
 
@@ -75,8 +72,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      * @see epfl.sweng.servercomm.IHttpConnection#postQuestion(java.lang.String, org.json.JSONObject)
      */
     @Override
-    public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
-            JSONException, NetworkErrorException {
+    public HttpResponse postJSONObject(String url, JSONObject question) {
         if (url.equals(HttpComms.URLPUSH)) {
             return CacheManager.getInstance().addQuestionForSync(question.toString());
         } else if (url.equals(HttpComms.URLQUERYPOST)) {
@@ -91,13 +87,18 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      * @throws JSONException
      * @throws NullPointerException
      */
-    public void pushQuestion(HttpResponse reponse) throws NullPointerException, JSONException {
+    public void pushQuestion(HttpResponse reponse) {
 
         JSONObject quizQuestion;
+
         try {
             quizQuestion = JSONParser.getParser(reponse);
             CacheManager.getInstance().pushFetchedQuestion(quizQuestion.toString());
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 

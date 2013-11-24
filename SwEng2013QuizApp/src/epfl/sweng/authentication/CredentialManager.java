@@ -36,7 +36,7 @@ public final class CredentialManager {
     }
 
     public boolean removeUserCredential() {
-        return mUserPreferences.edit().clear().commit();
+        return setUserCredential("");
     }
 
     public boolean setUserCredential(String value) {

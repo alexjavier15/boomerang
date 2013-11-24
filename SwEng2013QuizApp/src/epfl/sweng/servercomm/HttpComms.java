@@ -1,6 +1,7 @@
 package epfl.sweng.servercomm;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -17,7 +18,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import epfl.sweng.authentication.CredentialManager;
-import epfl.sweng.tools.Debug;
 
 /**
  * @author LorenzoLeon & Noortch
@@ -61,19 +61,23 @@ public final class HttpComms implements IHttpConnectionHelper {
         }
     }
 
-    private HttpResponse execute(HttpUriRequest request) throws NetworkErrorException, ClientProtocolException,
-            IOException {
+    private HttpResponse execute(HttpUriRequest request) {
+        HttpResponse response = null;
 
-        if (isConnected()) {
+        try {
+
             if (checkLoginStatus()) {
                 request.addHeader(HEADER, authenticationValue);
-
             }
-            Debug.out("sending to SwengClient");
-            return SwengHttpClientFactory.getInstance().execute(request);
-        } else {
-            throw new NetworkErrorException("A network error has ocurred when trying to contact the server");
+            response = SwengHttpClientFactory.getInstance().execute(request);
+
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return response;
+
     }
 
     /**
@@ -87,8 +91,7 @@ public final class HttpComms implements IHttpConnectionHelper {
      * @throws NetworkErrorException
      */
     @Override
-    public HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException,
-            NetworkErrorException {
+    public HttpResponse getHttpResponse(String urlString) {
         HttpGet request = new HttpGet(urlString);
 
         return execute(request);
@@ -122,20 +125,23 @@ public final class HttpComms implements IHttpConnectionHelper {
      * @param question
      *            The question that we want to post on the server.
      * @return boolean true if the server has received the Question
-     * @throws JSONException
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws NetworkErrorException
      */
     // TODO do so no code is repeated
     @Override
-    public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
-            JSONException, NetworkErrorException {
+    public HttpResponse postJSONObject(String url, JSONObject question) {
 
         HttpPost post = new HttpPost(url);
-        post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
-        post.setHeader("Content-type", "application/json");
-        HttpResponse response = execute(post);
+        HttpResponse response = null;
+        try {
+            post.setEntity(new StringEntity(question.toString(STRING_ENTITY)));
+            post.setHeader("Content-type", "application/json");
+            response = execute(post);
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         return response;
     }

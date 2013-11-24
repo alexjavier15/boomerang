@@ -42,19 +42,16 @@ public class QuizQuestion implements QuestionProvider, Serializable {
 
             throw new JSONException("the input string can't be null");
 
+        } else {
+            JSONObject parser = new JSONObject(jsonInput);
+
+            this.question = parser.getString("question");
+            this.answers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
+            this.solutionIndex = parser.getInt("solutionIndex");
+            this.tags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
+            this.id = parser.getInt("id");
+            this.owner = parser.getString("owner");
         }
-        JSONObject parser = new JSONObject(jsonInput);
-
-        this.question = parser.getString("question");
-        this.answers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
-        this.solutionIndex = parser.getInt("solutionIndex");
-        this.tags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
-        this.id = parser.getInt("id");
-        this.owner = parser.getString("owner");
-
-        // if (auditErrors() != 0) {
-        // throw new IllegalArgumentException();
-        // }
     }
 
     /**
