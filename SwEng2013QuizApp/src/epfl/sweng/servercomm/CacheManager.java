@@ -159,18 +159,18 @@ public final class CacheManager {
         protected Void doInBackground(Void... params) {
             Debug.out("Attempting to sync file");
             HttpResponse response = null;
-            boolean inSync = true;
 
+            String[] jsonString = new String[2];
             QuizQuestion quizQuestion = null;
 
             do {
-                String[] jsonString = sPostQuestionDB.getFirstPostQuestion();
+                jsonString = sPostQuestionDB.getFirstPostQuestion();
                 try {
 
                     quizQuestion = new QuizQuestion(jsonString[1]);
                     response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH,
                             JSONParser.parseQuiztoJSON(quizQuestion));
-                    inSync = response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED;
+                    boolean inSync = response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED;
                     if (inSync) {
                         response.getEntity().consumeContent();
                         sPostQuestionDB.deleteQuizQuestion(jsonString[0]);
@@ -180,9 +180,7 @@ public final class CacheManager {
 
                     Log.e(this.getClass().getName(), e.getMessage());
                     e.printStackTrace();
-                    if (jsonString[0] == null) {
-                        inSync = false;
-                    } else {
+                    if (jsonString[0] != null) {
                         sPostQuestionDB.deleteQuizQuestion(jsonString[0]);
 
                     }
@@ -194,10 +192,9 @@ public final class CacheManager {
                     e.printStackTrace();
                 }
 
-            } while (inSync);
+            } while (HttpCommsProxy.getInstance().isConnected() && jsonString[0] != null);
             return null;
 
         }
-
     }
 }
