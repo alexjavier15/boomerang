@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import epfl.sweng.R;
 import epfl.sweng.quizquestions.QuizQuestion;
+import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
@@ -43,9 +44,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     private ListView answerChoices;
     private OnItemClickListener answerListener = null;
     private QuizQuestion currrentQuestion;
-    private boolean isQueryMode = false;
     private int lastChoice = -1;
-    private String mQuery = null;
     private TextView tags;
     private TextView text;
 
@@ -173,12 +172,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
 
         };
         answerChoices.setOnItemClickListener(answerListener);
-        isQueryMode = getIntent().getBooleanExtra("query_mode", false);
-
-        if (isQueryMode) {
-            mQuery = getIntent().getStringExtra("query");
-        }
-
         processHttpReponse(fetchFirstQuestion());
     }
 
@@ -195,7 +188,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     @Override
     public HttpResponse requete() {
 
-        return HttpCommsProxy.getInstance().getHttpResponse(mQuery);
+        return HttpCommsProxy.getInstance().getHttpResponse(HttpComms.URL);
 
     }
 
