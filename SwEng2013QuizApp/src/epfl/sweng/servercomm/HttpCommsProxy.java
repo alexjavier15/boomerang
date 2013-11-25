@@ -165,5 +165,4 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, isOnline).apply();
 
     }
-
 }

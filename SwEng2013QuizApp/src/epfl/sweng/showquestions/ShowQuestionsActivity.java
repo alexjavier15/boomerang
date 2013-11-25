@@ -150,7 +150,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         if (set.size() > 0) {
             String tagsInString = "";
             int counter = 0;
-
             for (String s : set) {
                 counter++;
                 if (counter == set.size()) {
@@ -159,7 +158,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
                     tagsInString += s + ", ";
                 }
             }
-
             return tagsInString;
         } else {
             return "No tags for this question";
@@ -212,10 +210,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         }
 
         TestCoordinator.check(TTChecks.QUESTION_SHOWN);
-    }
 
-    public TextView getText() {
-        return text;
     }
 
     public void setText(TextView view) {

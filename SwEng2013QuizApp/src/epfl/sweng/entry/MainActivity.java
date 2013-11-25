@@ -142,7 +142,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         Debug.out(this.getClass(), "listener notify");
         if (key.equals(PreferenceKeys.SESSION_ID)) {
             String newValue = pref.getString(key, "");
-            Log.i("MainActivity Listener new key value session id : ", newValue);
+            Log.d("MainActivity Listener new key value session id : ", newValue);
             checkStatus(newValue);
         }
 

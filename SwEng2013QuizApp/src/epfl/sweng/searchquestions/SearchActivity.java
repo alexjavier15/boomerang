@@ -35,7 +35,6 @@ public class SearchActivity extends Activity {
     private EditText searchQuery = null;
     private TextWatcher watcher;
 
-    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

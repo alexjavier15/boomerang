@@ -99,7 +99,6 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
     public void logIn(View view) {
         if (HttpComms.getInstance().isConnected()) {
-
             new HttpCommsBackgroundTask(this).execute();
         } else {
 
@@ -148,6 +147,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
                 CredentialManager.getInstance().setUserCredential(sessionID);
                 Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
                 Debug.out(this.getClass(), sessionID);
+
 
                 this.finish();
             } catch (NullPointerException e) {

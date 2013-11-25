@@ -32,6 +32,7 @@ import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
+import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -68,7 +69,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
     public void addNewSlot(View view) {
         Answer temp = new Answer(getResources().getString(R.string.heavy_ballot_x), "");
         mAdapter.add(temp);
-        //Debug.out(this.getClass(), temp);
+        Debug.out(this.getClass(), temp);
         mAdapter.notifyDataSetChanged();
         if (!isReset()) {
             TestCoordinator.check(TTChecks.QUESTION_EDITED);
@@ -80,12 +81,12 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         int numberErrors = 0;
         int numberOfAnswers = 0;
 
-      //Debug.out(this.getClass(), mListView.getChildCount());
-      //Debug.out(this.getClass(), mListView.getCount());
+        Debug.out(this.getClass(), mListView.getChildCount());
+        Debug.out(this.getClass(), mListView.getCount());
 
         for (int i = 0; i < mListView.getChildCount(); i++) {
             Button check = (Button) mListView.getChildAt(i).findViewById(R.id.edit_buttonProperty);
-          //Debug.out(this.getClass(), check.getText() + " vs " + getResources().getString(R.string.heavy_check_mark));
+            Debug.out(this.getClass(), check.getText() + " vs " + getResources().getString(R.string.heavy_check_mark));
 
             if (check.getText().equals(getResources().getString(R.string.heavy_check_mark))) {
                 numberOfAnswers++;
@@ -136,7 +137,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         if (!tagsEditText.getHint().equals(tagsHint) || tagsEditText.getVisibility() != View.VISIBLE) {
             numberErrors++;
         }
-      //Debug.out(this.getClass(), "errors en answers : " + numberErrors);
+        Debug.out(this.getClass(), "errors en answers : " + numberErrors);
         return numberErrors;
     }
 
@@ -306,7 +307,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         QuizQuestion question = createQuestion();
         JSONObject json = convertQuizQtoJson(question);
 
-        return HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH, json);
+        return HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH, json);
 
     }
 
@@ -374,7 +375,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
      * 
      */
     public void updateTextchanged() {
-      //Debug.out(this.getClass(), "Fired filled update");
+        Debug.out(this.getClass(), "Fired filled update");
         if (!mReset) {
             if (isValid()) {
                 submitButton.setEnabled(true);

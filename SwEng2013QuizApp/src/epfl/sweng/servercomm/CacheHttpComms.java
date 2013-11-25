@@ -60,6 +60,16 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
     /*
      * (non-Javadoc)
      * 
+     * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
+     */
+    @Override
+    public boolean isConnected() {
+        return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see epfl.sweng.servercomm.IHttpConnection#postQuestion(java.lang.String, org.json.JSONObject)
      */
     @Override
@@ -77,16 +87,6 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
         } else {
             throw new UnsupportedOperationException("Unsupported operation in offline mode");
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
-     */
-    @Override
-    public boolean isConnected() {
-        return false;
     }
 
     /**
