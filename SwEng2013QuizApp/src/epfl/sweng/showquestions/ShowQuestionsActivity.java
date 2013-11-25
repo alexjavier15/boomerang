@@ -46,6 +46,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     private ListView answerChoices;
     private OnItemClickListener answerListener = null;
     private QuizQuestion currrentQuestion;
+
     private TextView tags;
     private TextView text;
 

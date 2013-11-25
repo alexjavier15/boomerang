@@ -18,13 +18,9 @@ public class QuizQuestionAuditTest extends TestCase {
 	
 	public void testAuditErors() {
 		assertTrue(question.auditErrors() == 0);
-		
 		question.setQuestion("  ");
-		
 		assertTrue(question.auditErrors() == 1);
-		
 		question.setAnswers(Arrays.asList("  ", "JeSuisJuste"));
-
 		assertTrue(question.auditErrors() == 2);
 	}
 	

@@ -2,101 +2,145 @@ package epfl.sweng.test.template;
 
 import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
+import android.widget.EditText;
 
 import com.jayway.android.robotium.solo.Solo;
-
-import epfl.sweng.servercomm.SwengHttpClientFactory;
-import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestingTransaction;
-/**
- * 
- * @author LorenzoLeon
- *
- * @param <T>
- */
+
 @SuppressWarnings("rawtypes")
 public class TestTemplate<T> extends ActivityInstrumentationTestCase2 {
 
-	private MockHttpClient httpClient;
-	private Activity myActivity;
-	private Solo mSolo;
+    //private MockHttpClient httpClient;
+    private Activity myActivity;
+    private Solo mSolo;
 
-	@SuppressWarnings("unchecked")
-	public TestTemplate(Class activityClass) {
-		super(activityClass);
-	}
+    @SuppressWarnings("unchecked")
+    public TestTemplate(Class activityClass) {
+        super(activityClass);
+    }
 
-	protected void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
-		TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
-			@Override
-			public void initiate() {
-				getActivity();
-			}
+    protected void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
+        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
+            @Override
+            public void initiate() {
+                getActivity();
+            }
 
-			@Override
-			public String toString() {
-				return String.format("getActivityAndWaitFor(%s)", expected);
-			}
+            @Override
+            public String toString() {
+                return String.format("getActivityAndWaitFor(%s)", expected);
+            }
 
-			@Override
-			public void verify(TestCoordinator.TTChecks notification) {
-				assertEquals(String.format(
-						"Expected notification %s, but received %s", expected,
-						notification), expected, notification);
-			}
-		});
-	}
+            @Override
+            public void verify(TestCoordinator.TTChecks notification) {
+                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
+                    expected, notification);
+            }
+        });
+    }
+    
+    protected void clickAndWaitForButton(final TestCoordinator.TTChecks expected, final String button) {
+        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
+            @Override
+            public void initiate() {
+                getSolo().clickOnButton(button);
+            }
 
-	protected void waitFor(final TestCoordinator.TTChecks expected) {
-		TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
-			@Override
-			public void initiate() {
+            @Override
+            public String toString() {
+                return String.format("getActivityAndWaitFor(%s)", expected);
+            }
 
-			}
+            @Override
+            public void verify(TestCoordinator.TTChecks notification) {
+                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
+                    expected, notification);
+            }
+        });
+    }
+    
+    protected void enterTextAndWaitFor(final TestCoordinator.TTChecks expected, final EditText et, final String text) {
+        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
+            @Override
+            public void initiate() {
+                getSolo().enterText(et, text);
+            }
 
-			@Override
-			public String toString() {
-				return String.format("waitFor(%s)", expected);
-			}
+            @Override
+            public String toString() {
+                return String.format("getActivityAndWaitFor(%s)", expected);
+            }
 
-			@Override
-			public void verify(TestCoordinator.TTChecks notification) {
-				assertEquals(String.format(
-						"Expected notification %s, but received %s", expected,
-						notification), expected, notification);
-			}
-		});
-	}
+            @Override
+            public void verify(TestCoordinator.TTChecks notification) {
+                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
+                    expected, notification);
+            }
+        });
+    }
+    
+    protected void clickAndWaitForAnswer(final TestCoordinator.TTChecks expected, final String answer) {
+        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
+            @Override
+            public void initiate() {
+                getSolo().clickOnText(answer);
+            }
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		httpClient = new MockHttpClient();
-		SwengHttpClientFactory.setInstance(httpClient);
-		setSolo(new Solo(getInstrumentation()));
-	}
+            @Override
+            public String toString() {
+                return String.format("getActivityAndWaitFor(%s)", expected);
+            }
 
-	/**
-	 * @return the myActivity
-	 */
-	public Activity getMyActivity() {
-		return myActivity;
-	}
+            @Override
+            public void verify(TestCoordinator.TTChecks notification) {
+                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
+                    expected, notification);
+            }
+        });
+    }
+    
+    protected void goBackAndWaitFor(final TestCoordinator.TTChecks expected) {
+        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
+            @Override
+            public void initiate() {
+                getSolo().goBack();
+            }
 
-	/**
-	 * @return the solo
-	 */
-	public Solo getSolo() {
-		return mSolo;
-	}
+            @Override
+            public String toString() {
+                return String.format("getActivityAndWaitFor(%s)", expected);
+            }
 
-	/**
-	 * @param solo
-	 *            the solo to set
-	 */
-	public void setSolo(Solo solo) {
-		this.mSolo = solo;
-	}
+            @Override
+            public void verify(TestCoordinator.TTChecks notification) {
+                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
+                    expected, notification);
+            }
+        });
+    }
+    
+    
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        mSolo = new Solo(getInstrumentation());
+    }
+
+    /**
+     * @return the myActivity
+     */
+    public Activity getMyActivity() {
+        return myActivity;
+    }
+
+   
+
+    /**
+     * @return the solo
+     */
+    public Solo getSolo() {
+        return mSolo;
+    }
 
 }

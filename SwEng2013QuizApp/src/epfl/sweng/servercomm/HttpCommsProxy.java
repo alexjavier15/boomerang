@@ -153,7 +153,6 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
     private boolean isOnlineMode() {
         Debug.out(this.getClass(),
                 "client status : " + QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true));
-
         return QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true);
     }
 

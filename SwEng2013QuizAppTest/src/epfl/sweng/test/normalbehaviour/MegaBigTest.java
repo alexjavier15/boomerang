@@ -61,32 +61,29 @@ public class MegaBigTest extends TestTemplate<MainActivity> {
 		getActivityAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
 
 		if (!getSolo().searchButton("Log in using Tequila")) {
-			getSolo().clickOnButton("Log out");
+			clickAndWaitForButton(TTChecks.LOGGED_OUT, "Log out");
 		}
-		getSolo().clickOnButton("Log in using Tequila");
-
-		waitFor(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
+		
+		clickAndWaitForButton(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN, "Log in using Tequila");
 
 		EditText username = getSolo().getEditText("GASPAR Username");
 		getSolo().enterText(username, "test");
 		EditText password = getSolo().getEditText("GASPAR Password");
 		getSolo().enterText(password, "password");
 
-		getSolo().clickOnButton("Log in using Tequila");
+		clickAndWaitForButton(TTChecks.MAIN_ACTIVITY_SHOWN, "Log in using Tequila");
 
-		getSolo().clickOnButton("Show a random question");
-		// waitFor(TTChecks.QUESTION_SHOWN);
+		clickAndWaitForButton(TTChecks.QUESTION_SHOWN, "Show a random question");
+		
 		assertFalse("Next question disabled",
 				getSolo().getButton("Next question").isEnabled());
 
-		getSolo().clickOnText("Twenty-seven");
-		waitFor(TTChecks.ANSWER_SELECTED);
+		clickAndWaitForAnswer(TTChecks.ANSWER_SELECTED, "Twenty-seven");
 
 		assertFalse("Next question button is disabled",
 				getSolo().getButton("Next question").isEnabled());
 
-		getSolo().clickOnText("Forty-two");
-		waitFor(TTChecks.ANSWER_SELECTED);
+		clickAndWaitForAnswer(TTChecks.ANSWER_SELECTED, "Forty-two");
 
 		assertTrue("Next question button is enabled",
 				getSolo().getButton("Next question").isEnabled());

@@ -39,9 +39,7 @@ public class QuizQuestion implements QuestionProvider, Serializable {
     public QuizQuestion(final String jsonInput) throws JSONException {
 
         if (jsonInput == null) {
-
             throw new JSONException("the input string can't be null");
-
         } else {
             JSONObject parser = new JSONObject(jsonInput);
 

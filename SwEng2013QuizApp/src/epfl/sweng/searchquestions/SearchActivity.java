@@ -83,7 +83,7 @@ public class SearchActivity extends Activity {
     }
 
     public void search(View view) {
-        Toast.makeText(this, "You are on the page to enter a specific query for a random question",
+        Toast.makeText(this, "You are on the page to enter a specific query for a question",
                 Toast.LENGTH_SHORT).show();
         Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
         showQuestionActivityIntent.putExtra("query_mode", true);

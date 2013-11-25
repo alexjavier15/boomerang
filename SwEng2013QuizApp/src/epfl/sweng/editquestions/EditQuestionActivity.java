@@ -307,7 +307,7 @@ public class EditQuestionActivity extends Activity implements Httpcommunications
         QuizQuestion question = createQuestion();
         JSONObject json = convertQuizQtoJson(question);
 
-        return HttpCommsProxy.getInstance().postJSONObject(HttpComms.URLPUSH, json);
+        return HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH, json);
 
     }
 

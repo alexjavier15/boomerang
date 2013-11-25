@@ -2,6 +2,8 @@ package epfl.sweng.test.normalbehaviour;
 
 import org.apache.http.HttpStatus;
 
+import android.widget.EditText;
+
 import epfl.sweng.entry.MainActivity;
 import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.test.minimalmock.MockHttpClient;
@@ -51,18 +53,17 @@ public class LogOutLogInTest extends TestTemplate<MainActivity> {
 	public void testLogInLogOut() {
 		getActivityAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
 		if (getSolo().searchButton("Log in using Tequila")) {
-			/*getSolo().clickOnButton("Log in using Tequila");
-			//waitFor(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
-			//EditText username = getSolo().getEditText("GASPAR Username");
+			clickAndWaitForButton(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN, "Log in using Tequila");
+			EditText username = getSolo().getEditText("GASPAR Username");
 			getSolo().enterText(username, "test");
 			EditText password = getSolo().getEditText("GASPAR Password");
 			getSolo().enterText(password, "password");
 			getSolo().clickOnButton("Log in using Tequila");
-			getSolo().clickOnButton("Log out");*/
-		} else {
 			getSolo().clickOnButton("Log out");
+		} else {
+			clickAndWaitForButton(TTChecks.LOGGED_OUT, "Log out");
 		}
-
+		getActivity().finish();
 	}
 
 }

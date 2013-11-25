@@ -39,7 +39,6 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      */
     @Override
     public HttpResponse getHttpResponse(String urlString) {
-
         HttpResponse response = null;
 
         if (urlString.equals(HttpComms.URL_SWENG_RANDOM_GET)) {
