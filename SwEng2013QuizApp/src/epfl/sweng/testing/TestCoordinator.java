@@ -27,12 +27,28 @@ public final class TestCoordinator {
      * The possible points at which transactions end. Each of these corresponds to some finished action.
      */
     public enum TTChecks {
-        ANSWER_SELECTED, AUTHENTICATION_ACTIVITY_SHOWN, AVAILABLE_QUIZZES_SHOWN, EDIT_QUESTIONS_SHOWN, LOGGED_OUT, MAIN_ACTIVITY_SHOWN, NEW_QUESTION_SUBMITTED, NONE, OFFLINE_CHECKBOX_DISABLED, OFFLINE_CHECKBOX_ENABLED, QUERY_EDITED, QUESTION_EDITED, QUESTION_SHOWN, QUIZ_SCORE_SHOWN, SEARCH_ACTIVITY_SHOWN
+        ANSWER_SELECTED,
+        AUTHENTICATION_ACTIVITY_SHOWN,
+        AVAILABLE_QUIZZES_SHOWN,
+        EDIT_QUESTIONS_SHOWN,
+        LOGGED_OUT,
+        MAIN_ACTIVITY_SHOWN,
+        NEW_QUESTION_SUBMITTED,
+        NONE,
+        OFFLINE_CHECKBOX_DISABLED,
+        OFFLINE_CHECKBOX_ENABLED,
+        QUERY_EDITED,
+        QUESTION_EDITED,
+        QUESTION_SHOWN,
+        QUIZ_SCORE_SHOWN,
+        SEARCH_ACTIVITY_SHOWN
     }
 
     /** The possible states of a transaction */
     private enum TTState {
-        COMPLETED, IDLE, INITIATED
+        COMPLETED,
+        IDLE,
+        INITIATED
     }
 
     private static final TestCoordinator INSTANCE = new TestCoordinator();

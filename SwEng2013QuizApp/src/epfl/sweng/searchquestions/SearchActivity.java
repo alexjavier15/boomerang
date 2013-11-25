@@ -19,7 +19,6 @@ import epfl.sweng.R;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
-import epfl.sweng.tools.Debug;
 
 public class SearchActivity extends Activity {
 
@@ -99,13 +98,12 @@ public class SearchActivity extends Activity {
 
     @Override
     protected void onStart() {
-    	super.onStart();
+        super.onStart();
         TestCoordinator.check(TTChecks.SEARCH_ACTIVITY_SHOWN);
     }
 
     public void search(View view) {
-        Toast.makeText(this, "Here is your specific random question!",
-                Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Here is your specific random question!", Toast.LENGTH_SHORT).show();
         Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
         showQuestionActivityIntent.putExtra("query_mode", true);
         String queryText = searchQuery.getText().toString();
