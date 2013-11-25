@@ -1,6 +1,5 @@
 package epfl.sweng.quizquestions;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,23 +18,41 @@ import epfl.sweng.tools.JSONParser;
  *         This class represents a question.
  */
 public class QuizQuestion implements QuestionProvider, Serializable {
+    public static final int ID = -1;
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
-    public static final int ID = -1;
     private List<String> answers = new ArrayList<String>();
     private int id;
-    private String question;
-    private int solutionIndex;
-    private Set<String> tags = new HashSet<String>();
-    private String owner;
-
-    private final int maxQuestionLength = 500;
-    private final int maxAnswersSize = 10;
     private final int maxAnswerLength = 500;
-    private final int maxTagsSize = 20;
+    private final int maxAnswersSize = 10;
+    private final int maxQuestionLength = 500;
     private final int maxTagLength = 20;
+
+    private final int maxTagsSize = 20;
+    private String owner = "";
+    private String question = "";
+    private int solutionIndex = -1;
+    private Set<String> tags = new HashSet<String>();
+
+    public QuizQuestion(final String jsonInput) throws JSONException {
+
+        if (jsonInput == null) {
+
+            throw new JSONException("the input string can't be null");
+
+        } else {
+            JSONObject parser = new JSONObject(jsonInput);
+
+            this.question = parser.getString("question");
+            this.answers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
+            this.solutionIndex = parser.getInt("solutionIndex");
+            this.tags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
+            this.id = parser.getInt("id");
+            this.owner = parser.getString("owner");
+        }
+    }
 
     /**
      * Constructor of a QuizQuestion : class to modelize a quiz question at the json format.
@@ -59,39 +76,6 @@ public class QuizQuestion implements QuestionProvider, Serializable {
         this.solutionIndex = solutionIndex;
         this.tags = tags;
         this.owner = owner;
-        // if (auditErrors() != 0) {
-        // throw new IllegalArgumentException();
-        // }
-    }
-
-    public QuizQuestion(final String jsonInput) throws JSONException {
-        if (jsonInput != null) {
-            JSONObject parser = new JSONObject(jsonInput);
-            int initId = -1;
-            String initQuestion = "";
-            List<String> initAnswers = null;
-            int initSolutionIndex = -1;
-            Set<String> initTags = null;
-            String initOwner = "";
-            try {
-                initId = parser.getInt("id");
-                initQuestion = parser.getString("question");
-                initAnswers = JSONParser.jsonArrayToList(parser.getJSONArray("answers"));
-                initSolutionIndex = parser.getInt("solutionIndex");
-                initTags = new HashSet<String>(JSONParser.jsonArrayToList(parser.getJSONArray("tags")));
-                initOwner = parser.getString("owner");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            this.question = initQuestion;
-            this.answers = initAnswers;
-            this.solutionIndex = initSolutionIndex;
-            this.tags = initTags;
-            this.id = initId;
-            this.owner = initOwner;
-        }
         // if (auditErrors() != 0) {
         // throw new IllegalArgumentException();
         // }
@@ -146,14 +130,6 @@ public class QuizQuestion implements QuestionProvider, Serializable {
         return solutionIndex;
     }
 
-    public String getQuestion() {
-        return question;
-    }
-
-    public Set<String> getTags() {
-        return tags;
-    }
-
     /**
      * Return the the owner
      * 
@@ -163,13 +139,21 @@ public class QuizQuestion implements QuestionProvider, Serializable {
         return owner;
     }
 
-    // For JUnit test cases
-    public void setQuestion(String q) {
-        this.question = q;
+    public String getQuestion() {
+        return question;
+    }
+
+    public Set<String> getTags() {
+        return tags;
     }
 
     public void setAnswers(List<String> a) {
         this.answers = a;
+    }
+
+    // For JUnit test cases
+    public void setQuestion(String q) {
+        this.question = q;
     }
 
     public void setTags(Set<String> tagsIn) {

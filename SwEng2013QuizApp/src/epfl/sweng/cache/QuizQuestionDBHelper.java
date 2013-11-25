@@ -3,7 +3,6 @@
  */
 package epfl.sweng.cache;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -15,11 +14,13 @@ import org.json.JSONObject;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
+import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -29,7 +30,7 @@ import epfl.sweng.tools.JSONParser;
 
 public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumns {
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 3;
     public static final String TABLE_NAME = "quizQuestions1";
     public static final String COLUMN_NAME_JSON_QUESTION = "jsonQuestion";
     public static final String COLUMN_NAME_TAGS = "questionTags";
@@ -40,7 +41,6 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             + ", UNIQUE (" + COLUMN_NAME_JSON_QUESTION + ") " + "ON CONFLICT REPLACE" + " )";
 
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
-    private int last = -1;
 
     private String query = null;
     private Cursor queriedCursor = null;
@@ -59,18 +59,17 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     /*
      * (non-Javadoc)
      * 
-     * @see android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite .SQLiteDatabase)
+     * @see android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite.SQLiteDatabase)
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
-
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite .SQLiteDatabase, int, int)
+     * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite.SQLiteDatabase, int, int)
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -81,6 +80,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
     public long addQuizQuestion(String question) {
         SQLiteDatabase db = this.getWritableDatabase();
+
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME_JSON_QUESTION, question);
         try {
@@ -93,8 +93,6 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             values.put(COLUMN_NAME_TAGS, tags);
         } catch (JSONException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         // Inserting Row
@@ -104,46 +102,51 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         return id;
     }
 
-    public String getRandomQuizQuestion() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null,
-                "RANDOM()", "1");
-        if (cursor != null) {
-            cursor.moveToFirst();
-            String quizQuestion = cursor.getColumnName(1);
-            db.close();
-            return quizQuestion;
-        } else {
-            db.close();
-            return null;
-        }
+    public void deleteQuizQuestion(String index) {
+
+        Debug.out(getClass(), "gAttempt to delete " + index);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Debug.out(getClass(), DatabaseUtils.queryNumEntries(db, TABLE_NAME));
+
+        db.delete(TABLE_NAME, _ID + "=?", new String[] {index});
+
+        Debug.out(getClass(), DatabaseUtils.queryNumEntries(db, TABLE_NAME));
+        db.close();
+
     }
 
-    public String getFirstPostQuestion() {
+    public String[] getFirstPostQuestion() {
         SQLiteDatabase db = this.getReadableDatabase();
+        String[] cursorArray = new String[2];
+
         Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null,
                 _ID + " ASC");
         if (cursor.moveToFirst()) {
-            last = cursor.getInt(0);
-            Log.d(this.getClass().getName(),
-                    "showing question name for debug: " + cursor.getString(CULUMN_JSON_INDEX) + " and idk _ " + last);
+            cursorArray[0] = String.valueOf(cursor.getInt(CULUMN_JSON_INDEX));
+            cursorArray[1] = cursor.getString(CULUMN_JSON_INDEX);
 
-            return cursor.getColumnName(1);
-        } else {
-            last = -1;
-            Log.d(this.getClass().getName(), "nomore question to sync");
-
-            return null;
         }
+        return cursorArray;
+
     }
 
-    public void deleteQuizQuestion() {
-        Log.d(this.getClass().getName(), "gAttempt to delete " + last);
-        if (last != -1) {
+    public String getRandomQuizQuestion() {
 
-            SQLiteDatabase db = this.getWritableDatabase();
-            db.delete(TABLE_NAME, _ID + " = ?", new String[] {String.valueOf(last)});
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null,
+                "RANDOM()", null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+
+            String quizQuestion = cursor.getString(CULUMN_JSON_INDEX);
             db.close();
+
+            return quizQuestion;
+
+        } else {
+            db.close();
+            return null;
         }
     }
 

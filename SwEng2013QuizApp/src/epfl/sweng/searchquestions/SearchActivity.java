@@ -30,25 +30,18 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
  */
 public class SearchActivity extends Activity {
 
-    private EditText searchQuery = null;
-    private Button searchButton = null;
     private final int maxLengthOfQuery = 500;
+    private Button searchButton = null;
+    private EditText searchQuery = null;
     private TextWatcher watcher;
 
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
         watcher = new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -58,6 +51,14 @@ public class SearchActivity extends Activity {
                     searchButton.setEnabled(false);
                 }
                 TestCoordinator.check(TTChecks.QUERY_EDITED);
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
         };
 
@@ -75,6 +76,7 @@ public class SearchActivity extends Activity {
         return true;
     }
 
+    @Override
     protected void onStart() {
         super.onStart();
         searchQuery.addTextChangedListener(watcher);
@@ -84,13 +86,12 @@ public class SearchActivity extends Activity {
     public void search(View view) {
         Toast.makeText(this, "You are on the page to enter a specific query for a random question",
                 Toast.LENGTH_SHORT).show();
-        
         Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
         showQuestionActivityIntent.putExtra("query_mode", true);
         String queryText = searchQuery.getText().toString();
         CacheQueryManager.getInstance().update(queryText);
         showQuestionActivityIntent.putExtra("query", queryText);
-        this.startActivity(showQuestionActivityIntent);
+        startActivity(showQuestionActivityIntent);
     }
 
     private boolean isQueryValid() {

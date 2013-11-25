@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.accounts.NetworkErrorException;
 import android.util.Log;
 import epfl.sweng.cache.CacheManager;
 import epfl.sweng.tools.JSONParser;
@@ -36,8 +35,7 @@ public final class CacheQueryManager implements IHttpConnectionHelper {
     }
 
     @Override
-    public HttpResponse getHttpResponse(String urlString) throws ClientProtocolException, IOException,
-            NetworkErrorException, NullPointerException {
+    public HttpResponse getHttpResponse(String urlString) {
         if (urlString.equals(HttpComms.URL_SWENG_RANDOM_GET)) {
             return HttpCommsProxy.getInstance().getHttpResponse(urlString);
         } else {
@@ -58,8 +56,7 @@ public final class CacheQueryManager implements IHttpConnectionHelper {
     }
 
     @Override
-    public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
-            NetworkErrorException {
+    public HttpResponse postJSONObject(String url, JSONObject question) {
 
         HttpResponse response = null;
         if ((qCount == 0) || (qCount == questionIndex & hasNext)) {
@@ -69,6 +66,12 @@ public final class CacheQueryManager implements IHttpConnectionHelper {
                 }
                 postQuery(question);
             } catch (JSONException e) {
+
+            } catch (HttpResponseException e) {
+
+            } catch (NullPointerException e) {
+
+            } catch (IOException e) {
 
             }
 
@@ -87,8 +90,8 @@ public final class CacheQueryManager implements IHttpConnectionHelper {
         return response;
     }
 
-    public void postQuery(JSONObject question) throws ClientProtocolException, NetworkErrorException, IOException,
-            JSONException {
+    public void postQuery(JSONObject question) throws JSONException, HttpResponseException, NullPointerException,
+            IOException {
 
         HttpResponse response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_QUERY_POST, question);
         JSONObject jsonResponse = JSONParser.getParser(response);

@@ -3,35 +3,34 @@
  */
 package epfl.sweng.servercomm;
 
-import epfl.sweng.authentication.PreferenceKeys;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import epfl.sweng.authentication.PreferenceKeys;
 
 /**
  * @author Alex
  * 
  */
 public class QuizApp extends Application {
-	private static Context sContext;
+    private static Context sContext;
 
-	public static Resources getResourcesStatic() {
-		return sContext.getResources();
-	}
+    public static Context getContexStatic() {
+        return sContext;
+    }
 
-	public static Context getContexStatic() {
-		return sContext;
-	}
+    public static SharedPreferences getPreferences() {
+        return getContexStatic().getSharedPreferences(PreferenceKeys.USER_PREFERENCE, MODE_PRIVATE);
+    }
 
-	public static SharedPreferences getPreferences() {
-		return getContexStatic().getSharedPreferences(
-				PreferenceKeys.USER_PREFERENCE, MODE_PRIVATE);
-	}
+    public static Resources getResourcesStatic() {
+        return sContext.getResources();
+    }
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
-		sContext = getApplicationContext();
-	}
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        sContext = getApplicationContext();
+    }
 }

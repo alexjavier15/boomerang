@@ -8,8 +8,8 @@ package epfl.sweng.editquestions;
  * 
  */
 public class Answer {
-    private String answer = null;
-    private String checked = null;
+    private String answer = "";
+    private String checked = "";
     private boolean mCorrect = false;
 
     /**
@@ -17,7 +17,7 @@ public class Answer {
      * whether this answer is the correct one or not.
      * 
      * @param check
-     *            The property of the answer: it might be marked as correct (✔) or incorrect (✘).
+     *            The property of the answer: it might be marked as correct (heavy) or incorrect (less).
      * @param answerText
      *            The text of the answer that the user can enter.
      * 

@@ -60,88 +60,6 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     // private int failedCount;
     private String token;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_authentication);
-        // by default initial state is
-        state = UNAUTHENTICATED;
-        TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.authentication, menu);
-        return true;
-    }
-
-    public void logIn(View view) {
-        if (HttpComms.getInstance().isConnected()) {
-
-            new HttpCommsBackgroundTask(this).execute();
-        } else {
-
-            Toast.makeText(this, "Not internet connection", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private HttpResponse stateMachine(HttpResponse response) throws ClientProtocolException, IOException,
-            JSONException, NetworkErrorException, AuthenticationException {
-        /*
-         * if (failedCount > MAX_NUMBER_OF_FAILS) { // too many fails! reset fields! state = ERROR_OVERLOAD; return
-         * null; }
-         */
-        switch (state) {
-            case UNAUTHENTICATED:
-                Log.i("Authentication state: ", "UNAUTHENTICATED, requesting token");
-                return stateMachine(requestAuthToken(response));
-            case TOKEN:
-                Log.i("Authentication state: ", "TOKEN, posting token");
-                return stateMachine(postTequilaToken(response));
-            case TEQUILA:
-                Log.i("Authentication state: ", "TEQUILA, checking tequila response");
-                return stateMachine(checkTequila(response));
-            case CONFIRMATION:
-                Log.i("Authentication state: ", "CONFIRMATION, confirming with server");
-                return stateMachine(confirm(response));
-            case AUTHENTICATED:
-                Log.i("Authentication state: ", "AUTHENTICATED, returning session id");
-                return response;
-            default:
-                // nullPointerException => failedAuthenReset()
-                return null;
-        }
-    }
-
-    private HttpResponse requestAuthToken(HttpResponse starter) throws ClientProtocolException, IOException,
-            NetworkErrorException {
-        HttpResponse response = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            state = TOKEN;
-            return response;
-        } else {
-
-            throw new ClientProtocolException(INTERNAL_ERROR_MSG);
-        }
-    }
-
-    private HttpResponse postTequilaToken(HttpResponse tokenResponse) throws JSONException, IOException,
-            NetworkErrorException {
-        token = JSONParser.getParser(tokenResponse).getString("token");
-        String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
-        String password = ((EditText) findViewById(R.id.GasparPassword_EditText)).getText().toString();
-        NameValuePair[] namList = {new BasicNameValuePair("requestkey", token),
-            new BasicNameValuePair("username", username), new BasicNameValuePair("password", password)};
-        UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(Arrays.asList(namList));
-
-        state = TEQUILA;
-        Debug.out(this.getClass(), urlEntity.toString());
-
-        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA_LOGIN, urlEntity);
-
-    }
-
     private HttpResponse checkTequila(HttpResponse response) throws AuthenticationException {
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
             state = CONFIRMATION;
@@ -179,6 +97,90 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
     }
 
+    public void logIn(View view) {
+        if (HttpComms.getInstance().isConnected()) {
+
+            new HttpCommsBackgroundTask(this).execute();
+        } else {
+
+            Toast.makeText(this, "Not internet connection", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_authentication);
+        // by default initial state is
+        state = UNAUTHENTICATED;
+        TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.authentication, menu);
+        return true;
+    }
+
+    private HttpResponse postTequilaToken(HttpResponse tokenResponse) throws JSONException, IOException,
+            NetworkErrorException {
+    	
+        token = JSONParser.getParser(tokenResponse).getString("token");
+        String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
+        String password = ((EditText) findViewById(R.id.GasparPassword_EditText)).getText().toString();
+        NameValuePair[] namList = {new BasicNameValuePair("requestkey", token),
+            new BasicNameValuePair("username", username), new BasicNameValuePair("password", password)};
+        UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(Arrays.asList(namList));
+
+        state = TEQUILA;
+        Debug.out(this.getClass(), urlEntity.toString());
+
+        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA_LOGIN, urlEntity);
+
+    }
+
+    @Override
+    public void processHttpReponse(HttpResponse response) {
+        if (response != null) {
+            try {
+                String sessionID = JSONParser.getParser(response).getString("session");
+                CredentialManager.getInstance().setUserCredential(sessionID);
+                Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
+                Debug.out(this.getClass(), sessionID);
+
+                this.finish();
+            } catch (NullPointerException e) {
+                mStatusMsg = UNEXPECTED_ERROR_MSG;
+                failedAuthenReset();
+                Log.e(getLocalClassName(), e.getMessage());
+            } catch (IOException e) {
+                mStatusMsg = INTERNAL_ERROR_MSG;
+                failedAuthenReset();
+                Log.e(getLocalClassName(), e.getMessage());
+
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
+        } else {
+            failedAuthenReset();
+        }
+    }
+
+    private HttpResponse requestAuthToken(HttpResponse starter) throws ClientProtocolException, IOException,
+            NetworkErrorException {
+    	
+        HttpResponse response = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            state = TOKEN;
+            return response;
+        } else {
+            throw new ClientProtocolException(INTERNAL_ERROR_MSG);
+        }
+    }
+
     @Override
     public HttpResponse requete() {
 
@@ -208,33 +210,31 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         return response;
     }
 
-    @Override
-    public void processHttpReponse(HttpResponse response) {
-        if (response != null) {
-
-            try {
-                String sessionID = JSONParser.getParser(response).getString("session");
-                CredentialManager.getInstance().setUserCredential(sessionID);
-                Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
-                //Debug.out(this.getClass(), sessionID);
-
-                this.finish();
-            } catch (NullPointerException e) {
-                mStatusMsg = UNEXPECTED_ERROR_MSG;
-                failedAuthenReset();
-                Log.e(getLocalClassName(), e.getMessage());
-            } catch (IOException e) {
-                mStatusMsg = INTERNAL_ERROR_MSG;
-                failedAuthenReset();
-                Log.e(getLocalClassName(), e.getMessage());
-
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        } else {
-            failedAuthenReset();
-
+    private HttpResponse stateMachine(HttpResponse response) throws ClientProtocolException, IOException,
+            JSONException, NetworkErrorException, AuthenticationException {
+        /*
+         * if (failedCount > MAX_NUMBER_OF_FAILS) { // too many fails! reset fields! state = ERROR_OVERLOAD; return
+         * null; }
+         */
+        switch (state) {
+            case UNAUTHENTICATED:
+                Log.i("Authentication state: ", "UNAUTHENTICATED, requesting token");
+                return stateMachine(requestAuthToken(response));
+            case TOKEN:
+                Log.i("Authentication state: ", "TOKEN, posting token");
+                return stateMachine(postTequilaToken(response));
+            case TEQUILA:
+                Log.i("Authentication state: ", "TEQUILA, checking tequila response");
+                return stateMachine(checkTequila(response));
+            case CONFIRMATION:
+                Log.i("Authentication state: ", "CONFIRMATION, confirming with server");
+                return stateMachine(confirm(response));
+            case AUTHENTICATED:
+                Log.i("Authentication state: ", "AUTHENTICATED, returning session id");
+                return response;
+            default:
+                // nullPointerException => failedAuthenReset()
+                return null;
         }
     }
 

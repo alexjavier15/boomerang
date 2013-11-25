@@ -18,7 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.accounts.NetworkErrorException;
+import android.database.DatabaseUtils;
 import android.os.AsyncTask;
 import android.util.Log;
 import epfl.sweng.authentication.PreferenceKeys;
@@ -34,17 +34,19 @@ import epfl.sweng.tools.JSONParser;
  * 
  */
 public final class CacheManager {
-    public static final String QUESTION_CACHE_DB_NAME = "Cache1.db";
-    public static final String POST_SYNC_DB_NAME = "PostSync1.db";
-    private static QuizQuestionDBHelper sQuizQuestionDB;
-    private static QuizQuestionDBHelper sPostQuestionDB;
+    public static final String POST_SYNC_DB_NAME = "PostSync.db";
+    public static final String QUERY_CACHE_DB_NAME = "QueryCache.db";
+    public static final String QUESTION_CACHE_DB_NAME = "Cache.db";
     private static CacheManager sCacheManager = null;
+    private static QuizQuestionDBHelper sPostQuestionDB;
+    private static QuizQuestionDBHelper sQuizQuestionDB;
 
     private CacheManager() {
 
         sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUESTION_CACHE_DB_NAME);
         sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), POST_SYNC_DB_NAME);
-        init();
+        new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUERY_CACHE_DB_NAME);
+
     }
 
     public static CacheManager getInstance() {
@@ -56,38 +58,15 @@ public final class CacheManager {
 
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @throws JSONException
-     */
-    public HttpResponse getRandomQuestion() throws IOException, JSONException {
 
-        String question = sQuizQuestionDB.getRandomQuizQuestion();
+    public void init() {
+        Debug.out(this.getClass(), "onChange in chache manager called");
 
-        return wrapQuizQuestion(question);
-    }
+        if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
 
-    public HttpResponse wrapQuizQuestion(String question) throws IOException, JSONException {
-        HttpResponse reponse = null;
-        QuizQuestion quizQuestion = null;
-        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
-        if (question != null) {
-            quizQuestion = new QuizQuestion(question);
+            syncPostCachedQuestions();
+
         }
-
-        if (quizQuestion != null) {
-            JSONObject questionObj = JSONParser.parseQuiztoJSON(quizQuestion);
-            reponse = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_OK, null), null);
-
-            reponse.setEntity(new StringEntity(questionObj.toString(HttpComms.STRING_ENTITY)));
-        } else {
-            reponse = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR, null), null);
-        }
-
-        return reponse;
     }
 
     /**
@@ -106,10 +85,17 @@ public final class CacheManager {
 
     }
 
-    private void syncPostCachedQuestions() {
 
-        (new BackgroundServiceTask()).execute();
+    /**
+     * @return
+     * @throws IOException
+     * @throws JSONException
+     */
+    public HttpResponse getRandomQuestion() throws IOException, JSONException {
 
+        String question = sQuizQuestionDB.getRandomQuizQuestion();
+
+        return wrapQuizQuestion(question);
     }
 
     /**
@@ -120,91 +106,34 @@ public final class CacheManager {
 
     }
 
-    /**
-     * @author LorenzoLeon
-     * 
-     */
-    private class BackgroundServiceTask extends AsyncTask<Void, Boolean, Boolean> {
+    private void syncPostCachedQuestions() {
+        long num = DatabaseUtils.queryNumEntries(sPostQuestionDB.getReadableDatabase(),
+                QuizQuestionDBHelper.TABLE_NAME);
+        Debug.out(this.getClass(), "row count =" + num);
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see android.os.AsyncTask#doInBackground(Params[])
-         */
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            Debug.out(this.getClass(), "Attempting to sync file");
+        (new BackgroundServiceTask()).execute();
 
-            QuizQuestion quizQuestion = null;
-
-            String jsonString = sPostQuestionDB.getFirstPostQuestion();
-
-            do {
-                if (quizQuestion != null) {
-                    HttpResponse response = null;
-                    try {
-                        Debug.out(this.getClass(), "go to process post");
-                        quizQuestion = new QuizQuestion(jsonString);
-                        response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH,
-                                JSONParser.parseQuiztoJSON(quizQuestion));
-                        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-                            sPostQuestionDB.deleteQuizQuestion();
-                            quizQuestion = new QuizQuestion(sPostQuestionDB.getFirstPostQuestion());
-                            response.getEntity().consumeContent();
-                        }
-                        Debug.out(this.getClass(), "reponse got");
-
-                    } catch (ClientProtocolException e) {
-                        e.printStackTrace();
-
-                    } catch (NetworkErrorException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        Log.e(this.getClass().getName(), e.getMessage());
-                        sPostQuestionDB.deleteQuizQuestion();
-
-                    }
-
-                }
-
-            } while (quizQuestion != null);
-
-            return true;
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-         */
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            // TODO Auto-generated method stub
-            super.onPostExecute(result);
-            if (!result) {
-                QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, false);
-            }
-        }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#
-     * onSharedPreferenceChanged(android.content. SharedPreferences, java.lang.String)
-     */
-
-    public void init() {
-        Debug.out(this.getClass(), "onChange in chache manager called");
-
-        if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
-
-            syncPostCachedQuestions();
-
+    public HttpResponse wrapQuizQuestion(String question) throws IOException, JSONException {
+        HttpResponse response = null;
+        QuizQuestion quizQuestion = null;
+        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
+        if (question != null) {
+            quizQuestion = new QuizQuestion(question);
         }
+
+        if (quizQuestion != null) {
+            JSONObject questionObj = JSONParser.parseQuiztoJSON(quizQuestion);
+            response = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
+                    HttpStatus.SC_OK, null), null);
+            response.setEntity(new StringEntity(questionObj.toString(HttpComms.STRING_ENTITY)));
+        } else {
+            response = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR, null), null);
+        }
+
+        return response;
     }
 
     public HttpResponse getQueriedQuestion(String query) {
@@ -231,15 +160,58 @@ public final class CacheManager {
         return reponse;
     }
 
-    /*public HttpResponse getHashQuestion(int indexHash) throws IOException, JSONException {
-
-        String question = sQuizQuestionDB.getHashedQuestion(indexHash);
-
-        return wrapQuizQuestion(question);
-
-    }*/
     public HttpResponse getQuestion(long id) {
-        return null;
+		//TODO        
+		return null;
     }
 
+    private class BackgroundServiceTask extends AsyncTask<Void, Void, Void> {
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.os.AsyncTask#doInBackground(Params[])
+         */
+        @Override
+        protected Void doInBackground(Void... params) {
+            Debug.out(this.getClass(), "Attempting to sync file");
+            HttpResponse response = null;
+
+            String[] jsonString = new String[2];
+            QuizQuestion quizQuestion = null;
+
+            do {
+                jsonString = sPostQuestionDB.getFirstPostQuestion();
+                try {
+
+                    quizQuestion = new QuizQuestion(jsonString[1]);
+                    response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH,
+                            JSONParser.parseQuiztoJSON(quizQuestion));
+                    boolean inSync = response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED;
+                    if (inSync) {
+                        response.getEntity().consumeContent();
+                        sPostQuestionDB.deleteQuizQuestion(jsonString[0]);
+                    }
+
+                } catch (JSONException e) {
+
+                    Log.e(this.getClass().getName(), e.getMessage());
+                    e.printStackTrace();
+                    if (jsonString[0] != null) {
+                        sPostQuestionDB.deleteQuizQuestion(jsonString[0]);
+
+                    }
+
+                } catch (ClientProtocolException e) {
+                    e.printStackTrace();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            } while (HttpCommsProxy.getInstance().isConnected() && jsonString[0] != null);
+            return null;
+
+        }
+    }
 }

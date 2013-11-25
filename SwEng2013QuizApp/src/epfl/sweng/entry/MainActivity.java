@@ -86,8 +86,10 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     private void update() {
         if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
             TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_DISABLED);
+            ((CheckBox) findViewById(R.id.offline_mode)).setChecked(false);
             CacheManager.getInstance().init();
         } else {
+            ((CheckBox) findViewById(R.id.offline_mode)).setChecked(true);
             TestCoordinator.check(TTChecks.OFFLINE_CHECKBOX_ENABLED);
         }
 
@@ -103,6 +105,8 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             Log.i("New session Id is: ", newValue);
             setAthenticated(true);
             ((Button) findViewById(R.id.log_inout)).setText("Log out");
+            CacheManager.getInstance().init();
+
         }
     }
 
@@ -122,7 +126,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         if (authenticated) {
             // this means you are logging out!
             CredentialManager.getInstance().removeUserCredential();
-            
+
         } else {
             Intent loginActivityIntent = new Intent(this, AuthenticationActivity.class);
             startActivity(loginActivityIntent);
@@ -138,7 +142,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         Debug.out(this.getClass(), "listener notify");
         if (key.equals(PreferenceKeys.SESSION_ID)) {
             String newValue = pref.getString(key, "");
-            Log.d("MainActivity Listener new key value session id : ", newValue);
+            Log.i("MainActivity Listener new key value session id : ", newValue);
             checkStatus(newValue);
         }
 

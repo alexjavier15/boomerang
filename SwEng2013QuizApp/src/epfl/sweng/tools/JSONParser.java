@@ -3,6 +3,7 @@ package epfl.sweng.tools;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -24,18 +25,13 @@ public class JSONParser {
 
     public static final int HTTP_ERROR = 404;
 
-    public static JSONObject getParser(HttpResponse response) throws HttpResponseException, IOException {
+    public static JSONObject getParser(HttpResponse response) throws NullPointerException, JSONException,
+            HttpResponseException, IOException {
 
         BasicResponseHandler responseHandler = new BasicResponseHandler();
         String jsonResponse = responseHandler.handleResponse(response);
 
-        JSONObject jo;
-        try {
-            jo = new JSONObject(jsonResponse);
-        } catch (JSONException e) {
-            throw new IOException(e.getMessage());
-        }
-        return jo;
+        return new JSONObject(jsonResponse);
 
     }
 
@@ -47,16 +43,14 @@ public class JSONParser {
      * @throws IOException
      * @throws JSONException
      */
-    public static List<String> jsonArrayToList(JSONArray array) throws IOException {
+    public static List<String> jsonArrayToList(JSONArray array) throws JSONException {
         int size = array.length();
         List<String> stringList = new ArrayList<String>(size);
 
         for (int i = 0; i < size; i++) {
-            try {
-                stringList.add(array.getString(i));
-            } catch (JSONException e) {
-                throw new IOException(e.getMessage());
-            }
+
+            stringList.add(array.getString(i));
+
         }
 
         return stringList;

@@ -5,10 +5,8 @@ import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
-import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,7 +53,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     private String url = null;
     private boolean isQuery = false;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +65,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
 
         text = (TextView) findViewById(R.id.show_question);
         Debug.out(this.getClass(), text);
+
         answerListener = new OnItemClickListener() {
 
             @Override
@@ -135,7 +133,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      * 
      * @param view
      */
-
     public void askNextQuestion(View view) {
         answerChoices.setOnItemClickListener(answerListener);
         ((Button) findViewById(R.id.next_question)).setEnabled(false);
@@ -151,7 +148,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      */
     private String displayTags(Set<String> set) {
         if (set.size() > 0) {
-            System.out.println("Va afficher les tags");
             String tagsInString = "";
             int counter = 0;
 
@@ -171,7 +167,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     }
 
     private void setQuestion(QuizQuestion quizQuestion) {
-        if (quizQuestion != null) {
+        try {
             currrentQuestion = quizQuestion;
 
             text.setText(quizQuestion.getQuestion());
@@ -181,10 +177,41 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             answerChoices.setAdapter(adapter);
 
             adapter.setNotifyOnChange(true);
-        } else {
+        } catch (NullPointerException e) {
             text.append("No question can be obtained !");
             toast(getErrorMessage());
         }
+    }
+
+    @Override
+    public HttpResponse requete() {
+
+        return CacheQueryManager.getInstance().getHttpResponse(url);
+
+    }
+
+    @Override
+    public void processHttpReponse(HttpResponse httpResponse) {
+        QuizQuestion quizQuestion = null;
+
+        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            try {
+                quizQuestion = new QuizQuestion(JSONParser.getParser(httpResponse).toString());
+                Debug.out(this.getClass(), quizQuestion);
+            } catch (IOException e) {
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+                Log.e(getLocalClassName(), e.getMessage());
+            } catch (JSONException e) {
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+                e.printStackTrace();
+            }
+            setQuestion(quizQuestion);
+        } else {
+
+            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+        }
+
+        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
     }
 
     public TextView getText() {
@@ -199,48 +226,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    public void processHttpReponse(HttpResponse response) {
-        QuizQuestion quizQuestion = null;
-        if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            try {
-                quizQuestion = new QuizQuestion(JSONParser.getParser(response).toString());
-                Debug.out(this.getClass(), quizQuestion);
-            } catch (IOException e) {
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-                Log.e(this.getClass().getName(), e.getMessage());
-            } catch (JSONException e) {
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-                e.printStackTrace();
-            }
-            setQuestion(quizQuestion);
-        } else {
-            if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-            }
-        }
-        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
-
-    }
-
-    @Override
-    public HttpResponse requete() {
-        HttpResponse response = null;
-
-        try {
-            response = CacheQueryManager.getInstance().getHttpResponse(url);
-
-        } catch (ClientProtocolException e) {
-            Log.e(getClass().getName(), e.getMessage());
-        } catch (NetworkErrorException e) {
-            Log.e(getClass().getName(), e.getMessage());
-        } catch (IOException e) {
-            Log.e(getClass().getName(), e.getMessage());
-        }
-
-        return response;
-    }
-    
     public String getErrorMessage() {
         if (isQuery) {
             return ERROR_QUERY;
