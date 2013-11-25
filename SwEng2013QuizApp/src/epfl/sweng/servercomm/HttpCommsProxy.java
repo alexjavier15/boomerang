@@ -4,6 +4,7 @@
 package epfl.sweng.servercomm;
 
 import java.io.IOException;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
@@ -11,7 +12,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.accounts.NetworkErrorException;
@@ -29,7 +29,6 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
     private static IHttpConnectionHelper sRealHttpComms = null;
     private static CacheHttpComms sCacheHttpComms = null;
-    private static CacheQueryManager sQueryCacheComms = null;
     private static HttpCommsProxy proxy = null;
 
     public static HttpCommsProxy getInstance() {
@@ -52,9 +51,6 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         if (sCacheHttpComms == null) {
             sCacheHttpComms = CacheHttpComms.getInstance();
         }
-        if (sQueryCacheComms == null) {
-            sQueryCacheComms = CacheQueryManager.getInstance();
-        }
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, sRealHttpComms.isConnected());
         // TODO check if necessary
         CacheManager.getInstance();
@@ -74,6 +70,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
             return sRealHttpComms;
 
         } else {
+
             return sCacheHttpComms;
         }
     }
@@ -90,12 +87,12 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         HttpResponse response = getServerCommsInstance().getHttpResponse(urlString);
         if (response != null) {
 
-            if (checkResponseStatus(response, HttpStatus.SC_OK)) {
+            if (urlString.equals(HttpComms.URL_SWENG_RANDOM_GET) && checkResponseStatus(response, HttpStatus.SC_OK)) {
                 // Httpresponse can't be read twice
                 String entity = EntityUtils.toString(response.getEntity());
 
                 response.setEntity(new StringEntity(entity));
-                saveQuery(response, 0);
+                saveQuery(response);
                 response.setEntity(new StringEntity(entity));
 
             }
@@ -156,11 +153,11 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         return getServerCommsInstance().isConnected();
     }
 
-    public void saveQuery(HttpResponse response, int indexHash) {
+    public long saveQuery(HttpResponse response) {
         if (isOnlineMode()) {
             try {
                 String quizQuestion = JSONParser.getParser(response).toString();
-                sCacheHttpComms.pushQuestion(quizQuestion, indexHash);
+                return sCacheHttpComms.pushQuestion(quizQuestion);
             } catch (HttpResponseException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -170,10 +167,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
             }
 
         }
-    }
-
-    public HttpResponse getQueryQuestion(int indexHash) throws JSONException, IOException {
-        return CacheManager.getInstance().getHashQuestion(indexHash);
+        return -1;
     }
 
     /**
@@ -183,11 +177,6 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, isOnline).apply();
 
-    }
-
-    public HttpResponse pollQuestion(String url, JSONObject query) throws ClientProtocolException,
-            NetworkErrorException, IOException {
-        return sQueryCacheComms.postJSONObject(url, query);
     }
 
 }

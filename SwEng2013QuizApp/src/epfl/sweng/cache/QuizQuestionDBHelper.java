@@ -33,16 +33,17 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     public static final String TABLE_NAME = "quizQuestions1";
     public static final String COLUMN_NAME_JSON_QUESTION = "jsonQuestion";
     public static final String COLUMN_NAME_TAGS = "questionTags";
-    public static final String COLUMN_NAME_IXHASH = "indexHash";
     private static final int CULUMN_JSON_INDEX = 1;
     private static final String TEXT_TYPE = " TEXT";
     private static final String SQL_CREATE_ENTRIES = "CREATE TABLE " + TABLE_NAME + " (" + _ID
-            + " INTEGER PRIMARY KEY," + COLUMN_NAME_JSON_QUESTION + TEXT_TYPE + ", " + ", " + COLUMN_NAME_TAGS
-            + TEXT_TYPE + COLUMN_NAME_IXHASH + TEXT_TYPE + ", UNIQUE (" + COLUMN_NAME_JSON_QUESTION + ") "
-            + "ON CONFLICT REPLACE" + " )";
+            + " INTEGER PRIMARY KEY," + COLUMN_NAME_JSON_QUESTION + TEXT_TYPE + ", " + COLUMN_NAME_TAGS + TEXT_TYPE
+            + ", UNIQUE (" + COLUMN_NAME_JSON_QUESTION + ") " + "ON CONFLICT REPLACE" + " )";
 
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
     private int last = -1;
+
+    private String query = null;
+    private Cursor queriedCursor = null;
 
     /**
      * @param context
@@ -78,7 +79,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         onCreate(db);
     }
 
-    public void addQuizQuestion(String question, int indexHash) {
+    public long addQuizQuestion(String question) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME_JSON_QUESTION, question);
@@ -95,12 +96,12 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         } catch (IOException e) {
             e.printStackTrace();
         }
-        values.put(COLUMN_NAME_IXHASH, indexHash);
 
         // Inserting Row
-        db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        db.insert(TABLE_NAME, null, values);
+        long id = db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        // db.insert(TABLE_NAME, null, values);
         db.close();
+        return id;
     }
 
     public String getRandomQuizQuestion() {
@@ -146,50 +147,51 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         }
     }
 
-    public String getHashedQuestion(int indexHash) {
-        String quizQuestion = null;
-        
-        SQLiteDatabase db = this.getReadableDatabase();
-        String selection = COLUMN_NAME_IXHASH + " = " + indexHash;
-        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, null, null,
-                null, "RANDOM()", "1");
-        if (!cursor.isAfterLast()) {
-            cursor.moveToFirst();
-            quizQuestion = cursor.getColumnName(1);
+    /*
+     * public String getHashedQuestion(int indexHash) { String quizQuestion = null;
+     * 
+     * SQLiteDatabase db = this.getReadableDatabase(); String selection = COLUMN_NAME_IXHASH + " = " + indexHash; Cursor
+     * cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, null, null, null,
+     * "RANDOM()", "1"); if (!cursor.isAfterLast()) { cursor.moveToFirst(); quizQuestion = cursor.getColumnName(1); }
+     * db.close();
+     * 
+     * return quizQuestion; }
+     */
+
+    public List<Long> getQueriedQuestions(String queryS) throws UnsupportedOperationException, SQLiteException {
+        List<Long> quList = new ArrayList<Long>();
+
+        if (queryS == null || !this.query.equals(queryS)) {
+            if (queriedCursor != null) {
+                queriedCursor.close();
+            }
+            SQLiteDatabase db = this.getReadableDatabase();
+            String selection = translateQuery(queryS);
+            this.query = queryS;
+            queriedCursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, null,
+                    null, null, "_ID DESC", null);
+
         }
-        db.close();
+        queriedCursor.moveToFirst();
+        queriedCursor.getCount();
 
-        return quizQuestion;
-    }
-
-    public List<String> getQueriedQuestions(String query) throws UnsupportedOperationException, SQLiteException {
-        List<String> quList = new ArrayList<String>();
-
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        String selection = translateQuery(query);
-
-        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, null, null,
-                null, "_ID DESC", null);
-
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            String st = cursor.getString(1);
+        while (!queriedCursor.isAfterLast()) {
+            long id = queriedCursor.getLong(0);
+            String st = queriedCursor.getString(1);
             Log.i(this.getDatabaseName() + "Question found: ", st);
-            quList.add(st);
-            cursor.moveToNext();
+            quList.add(id);
+            queriedCursor.moveToNext();
         }
-        // make sure to close the cursor
-        cursor.close();
+
         return quList;
     }
 
-    private String translateQuery(String query) {
-        Log.d("Query before trans was: ", query);
+    private String translateQuery(String queryS) {
+        Log.d("Query before trans was: ", queryS);
         String translatedQuery = "";
         // saves a list of either words or logical operators
         Pattern pattern1 = Pattern.compile("([a-zA-Z0-9]+|[\\(\\)\\+\\*])");
-        Matcher matcher1 = pattern1.matcher(query);
+        Matcher matcher1 = pattern1.matcher(queryS);
 
         boolean lastWasWord = false;
         while (matcher1.find()) {

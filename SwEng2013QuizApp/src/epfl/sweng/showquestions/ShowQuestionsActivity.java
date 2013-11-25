@@ -1,8 +1,17 @@
 package epfl.sweng.showquestions;
 
+import java.io.IOException;
 import java.util.Set;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
+
+import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,10 +23,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import epfl.sweng.R;
 import epfl.sweng.quizquestions.QuizQuestion;
+import epfl.sweng.servercomm.CacheQueryManager;
+import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
+import epfl.sweng.servercomm.HttpCommsProxy;
+import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 import epfl.sweng.tools.Debug;
+import epfl.sweng.tools.JSONParser;
 
 /**
  * 
@@ -25,16 +39,22 @@ import epfl.sweng.tools.Debug;
  * 
  */
 
-public class ShowQuestionsActivity extends Activity {
+public class ShowQuestionsActivity extends Activity implements HttpcommunicationsAdapter {
+
+    public static final String ERROR_QUERY = "No questions match your query";
+    public static final String ERROR_MESSAGE = "There was an error retrieving the question";
 
     private ArrayAdapter<String> adapter;
     private ListView answerChoices;
     private OnItemClickListener answerListener = null;
     private QuizQuestion currrentQuestion;
-    private int lastChoice = -1;
     private TextView tags;
     private TextView text;
-    private ConnectionManager conManager = null;
+
+    private int lastChoice = -1;
+    private String url = null;
+    private boolean isQuery = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +105,13 @@ public class ShowQuestionsActivity extends Activity {
 
         };
         answerChoices.setOnItemClickListener(answerListener);
-        conManager = new QueryConManager(this);
+
+        if (getIntent().hasExtra("query_mode")) {
+            isQuery = true;
+            url = HttpComms.URL_SWENG_QUERY_POST;
+        } else {
+            url = HttpComms.URL_SWENG_RANDOM_GET;
+        }
     }
 
     /**
@@ -101,7 +127,7 @@ public class ShowQuestionsActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        askNextQuestion(this.getCurrentFocus());
+        askNextQuestion(null);
     }
 
     /**
@@ -113,7 +139,7 @@ public class ShowQuestionsActivity extends Activity {
     public void askNextQuestion(View view) {
         answerChoices.setOnItemClickListener(answerListener);
         ((Button) findViewById(R.id.next_question)).setEnabled(false);
-        new HttpCommsBackgroundTask(conManager, true).execute();
+        new HttpCommsBackgroundTask(this, true).execute();
     }
 
     /**
@@ -144,7 +170,7 @@ public class ShowQuestionsActivity extends Activity {
         }
     }
 
-    public void setQuestion(QuizQuestion quizQuestion) {
+    private void setQuestion(QuizQuestion quizQuestion) {
         if (quizQuestion != null) {
             currrentQuestion = quizQuestion;
 
@@ -157,7 +183,7 @@ public class ShowQuestionsActivity extends Activity {
             adapter.setNotifyOnChange(true);
         } else {
             text.append("No question can be obtained !");
-            toast(conManager.getErrorMessage());
+            toast(getErrorMessage());
         }
     }
 
@@ -171,6 +197,56 @@ public class ShowQuestionsActivity extends Activity {
 
     public void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void processHttpReponse(HttpResponse response) {
+        QuizQuestion quizQuestion = null;
+        if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            try {
+                quizQuestion = new QuizQuestion(JSONParser.getParser(response).toString());
+                Debug.out(this.getClass(), quizQuestion);
+            } catch (IOException e) {
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+                Log.e(this.getClass().getName(), e.getMessage());
+            } catch (JSONException e) {
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+                e.printStackTrace();
+            }
+            setQuestion(quizQuestion);
+        } else {
+            if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+            }
+        }
+        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+
+    }
+
+    @Override
+    public HttpResponse requete() {
+        HttpResponse response = null;
+
+        try {
+            response = CacheQueryManager.getInstance().getHttpResponse(url);
+
+        } catch (ClientProtocolException e) {
+            Log.e(getClass().getName(), e.getMessage());
+        } catch (NetworkErrorException e) {
+            Log.e(getClass().getName(), e.getMessage());
+        } catch (IOException e) {
+            Log.e(getClass().getName(), e.getMessage());
+        }
+
+        return response;
+    }
+    
+    public String getErrorMessage() {
+        if (isQuery) {
+            return ERROR_QUERY;
+        } else {
+            return ERROR_MESSAGE;
+        }
     }
 
 }

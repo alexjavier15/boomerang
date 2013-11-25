@@ -94,9 +94,9 @@ public final class CacheManager {
      * @param question
      * @return
      */
-    public HttpResponse addQuestionForSync(String question, int indexHash) {
+    public HttpResponse addQuestionForSync(String question) {
 
-        sPostQuestionDB.addQuizQuestion(question, indexHash);
+        sPostQuestionDB.addQuizQuestion(question);
 
         DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
         HttpResponse reponse = httpResFactory.newHttpResponse(
@@ -115,8 +115,8 @@ public final class CacheManager {
     /**
      * @param question
      */
-    public void pushFetchedQuestion(String question, int indexHash) {
-        sQuizQuestionDB.addQuizQuestion(question, indexHash);
+    public long pushFetchedQuestion(String question) {
+        return sQuizQuestionDB.addQuizQuestion(question);
 
     }
 
@@ -209,14 +209,14 @@ public final class CacheManager {
 
     public HttpResponse getQueriedQuestion(String query) {
         HttpResponse reponse = null;
-        List<String> questionList = sQuizQuestionDB.getQueriedQuestions(query);
+        List<Long> questionList = sQuizQuestionDB.getQueriedQuestions(query);
 
         DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
 
         JSONArray array = new JSONArray(questionList);
 
         try {
-            JSONObject questionObj = (new JSONObject()).put("questions", array);
+            JSONObject questionObj = (new JSONObject()).put("cacheResponse", array);
             reponse = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
                     HttpStatus.SC_OK, null), null);
             reponse.setEntity(new StringEntity(questionObj.toString(HttpComms.STRING_ENTITY)));
@@ -231,12 +231,15 @@ public final class CacheManager {
         return reponse;
     }
 
-    public HttpResponse getHashQuestion(int indexHash) throws IOException, JSONException {
+    /*public HttpResponse getHashQuestion(int indexHash) throws IOException, JSONException {
 
         String question = sQuizQuestionDB.getHashedQuestion(indexHash);
 
         return wrapQuizQuestion(question);
 
+    }*/
+    public HttpResponse getQuestion(long id) {
+        return null;
     }
 
 }

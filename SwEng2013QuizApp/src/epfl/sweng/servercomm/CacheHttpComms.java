@@ -70,7 +70,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
     public HttpResponse postJSONObject(String url, JSONObject question) throws ClientProtocolException, IOException,
             NetworkErrorException {
         if (url.equals(HttpComms.URL_SWENG_PUSH)) {
-            return CacheManager.getInstance().addQuestionForSync(question.toString(), 0);
+            return CacheManager.getInstance().addQuestionForSync(question.toString());
         } else if (url.equals(HttpComms.URL_SWENG_QUERY_POST)) {
             try {
                 return CacheManager.getInstance().getQueriedQuestion(question.getString("query"));
@@ -98,8 +98,8 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      * @param reponse
      * @param indexHash
      */
-    public void pushQuestion(String question, int indexHash) {
-        CacheManager.getInstance().pushFetchedQuestion(question, indexHash);
+    public long pushQuestion(String question) {
+        return CacheManager.getInstance().pushFetchedQuestion(question);
 
     }
 
