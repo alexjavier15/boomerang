@@ -35,17 +35,14 @@ import epfl.sweng.tools.JSONParser;
  */
 public final class CacheManager {
     public static final String POST_SYNC_DB_NAME = "PostSync.db";
-    // public static final String QUERY_CACHE_DB_NAME = "QueryCache.db";
     public static final String QUESTION_CACHE_DB_NAME = "Cache.db";
     private static CacheManager sCacheManager = null;
     private static QuizQuestionDBHelper sPostQuestionDB;
     private static QuizQuestionDBHelper sQuizQuestionDB;
 
     private CacheManager() {
-
         sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUESTION_CACHE_DB_NAME);
         sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), POST_SYNC_DB_NAME);
-        // new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUERY_CACHE_DB_NAME);
     }
 
     public static CacheManager getInstance() {
@@ -69,7 +66,6 @@ public final class CacheManager {
     public HttpResponse addQuestionForSync(String question) {
 
         sPostQuestionDB.addQuizQuestion(question);
-
         DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
         HttpResponse reponse = httpResFactory.newHttpResponse(
                 new BasicStatusLine((new HttpPost()).getProtocolVersion(), HttpStatus.SC_CREATED, null), null);
@@ -123,24 +119,19 @@ public final class CacheManager {
     }
 
     public HttpResponse getQueriedQuestions(String query) {
-        HttpResponse reponse = null;
-        List<Long> questionList = sQuizQuestionDB.getQueriedQuestions(query);
-
-        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
-
-        JSONArray array = new JSONArray(questionList);
+        HttpResponse response = null;
+        String answer = null;
 
         try {
+            JSONArray array = new JSONArray(sQuizQuestionDB.getQueriedQuestions(query));
             JSONObject questionObj = (new JSONObject()).put("cacheResponse", array);
-            reponse = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_OK, null), null);
-            reponse.setEntity(new StringEntity(questionObj.toString(HttpComms.STRING_ENTITY)));
+            answer = questionObj.toString(HttpComms.STRING_ENTITY);
         } catch (JSONException e) {
             Log.e(this.getClass().getName(), e.getMessage());
-        } catch (UnsupportedEncodingException e) {
-            Log.e(this.getClass().getName(), e.getMessage());
         }
-        return reponse;
+
+        response = wrapQuizQuestion(answer);
+        return response;
     }
 
     public HttpResponse getQuestion(long id) {
