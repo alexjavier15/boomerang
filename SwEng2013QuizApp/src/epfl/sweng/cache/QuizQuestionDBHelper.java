@@ -42,7 +42,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-    private String query = null;
+    //private String query = null;
     private Cursor queriedCursor = null;
 
     /**
@@ -150,7 +150,6 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         }
     }
 
-    
     public String getQuestionbyID(long indexID) {
         String quizQuestion = null;
 
@@ -166,24 +165,22 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
         return quizQuestion;
     }
-     
 
     public List<Long> getQueriedQuestions(String queryS) throws UnsupportedOperationException, SQLiteException {
         List<Long> quList = new ArrayList<Long>();
 
-        if (queryS == null || !this.query.equals(queryS)) {
-            if (queriedCursor != null) {
-                queriedCursor.close();
-            }
-            SQLiteDatabase db = this.getReadableDatabase();
-            String selection = translateQuery(queryS);
-            this.query = queryS;
-            queriedCursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, null,
-                    null, null, "_ID DESC", null);
+        /*
+         * if (queryS == null || !this.query.equals(queryS)) { if (queriedCursor != null) { queriedCursor.close(); }
+         */
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selection = translateQuery(queryS);
+        //this.query = queryS;
+        queriedCursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, null, null,
+                null, "_ID DESC", null);
 
-        }
+        // }
         queriedCursor.moveToFirst();
-        
+
         while (!queriedCursor.isAfterLast()) {
             long id = queriedCursor.getLong(0);
             String st = queriedCursor.getString(1);
@@ -191,7 +188,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             quList.add(id);
             queriedCursor.moveToNext();
         }
-
+        queriedCursor.close();
         return quList;
     }
 
