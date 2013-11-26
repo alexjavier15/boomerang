@@ -126,7 +126,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     @Override
     protected void onStart() {
         super.onStart();
-        askNextQuestion(null);
+        askNextQuestion(this.getCurrentFocus());
     }
 
     /**
@@ -135,7 +135,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      * @param view
      */
     public void askNextQuestion(View view) {
-        answerChoices.setOnItemClickListener(answerListener);
+        
         ((Button) findViewById(R.id.next_question)).setEnabled(false);
         new HttpCommsBackgroundTask(this, true).execute();
     }
@@ -176,6 +176,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             answerChoices.setAdapter(adapter);
 
             adapter.setNotifyOnChange(true);
+            answerChoices.setOnItemClickListener(answerListener);
         } catch (NullPointerException e) {
             text.append("No question can be obtained !");
             toast(getErrorMessage());
