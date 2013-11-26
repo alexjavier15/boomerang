@@ -50,7 +50,7 @@ public class QuizQuestionTest extends TestCase {
         for (int i = 0; i < 10; i++) {
             try {
 
-                response = HttpComms.getInstance().postJSONObject(HttpComms.URLPUSH,
+                response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH,
                         JSONParser.parseQuiztoJSON(question));
                 System.out.println(response.getStatusLine());
                 response.getEntity().consumeContent();
