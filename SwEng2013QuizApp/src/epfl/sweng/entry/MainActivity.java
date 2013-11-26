@@ -98,7 +98,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     private void checkStatus(String newValue) {
         if (newValue.equals("")) {
             Log.i("Session Id has been removed: logged out", newValue);
-            TestCoordinator.check(TTChecks.LOGGED_OUT);
             setAthenticated(false);
             ((Button) findViewById(R.id.log_inout)).setText("Log in using Tequila");
         } else {
@@ -126,6 +125,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         if (authenticated) {
             // this means you are logging out!
             CredentialManager.getInstance().removeUserCredential();
+            TestCoordinator.check(TTChecks.LOGGED_OUT);
 
         } else {
             Intent loginActivityIntent = new Intent(this, AuthenticationActivity.class);

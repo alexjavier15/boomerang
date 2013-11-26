@@ -59,7 +59,8 @@ public class LogOutLogInTest extends TestTemplate<MainActivity> {
 			EditText password = getSolo().getEditText("GASPAR Password");
 			getSolo().enterText(password, "password");
 			getSolo().clickOnButton("Log in using Tequila");
-			getSolo().clickOnButton("Log out");
+			 clickAndWaitForButton(TTChecks.LOGGED_OUT, "Log out");
+
 		} else {
 			clickAndWaitForButton(TTChecks.LOGGED_OUT, "Log out");
 		}

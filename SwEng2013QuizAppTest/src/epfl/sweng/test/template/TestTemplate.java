@@ -45,6 +45,7 @@ public class TestTemplate<T> extends ActivityInstrumentationTestCase2 {
             @Override
             public void initiate() {
                 getSolo().clickOnButton(button);
+                
             }
 
             @Override
