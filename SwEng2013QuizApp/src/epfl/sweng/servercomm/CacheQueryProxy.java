@@ -1,6 +1,7 @@
 package epfl.sweng.servercomm;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import org.apache.http.HttpResponse;
@@ -11,11 +12,12 @@ import org.json.JSONObject;
 
 import android.util.Log;
 import epfl.sweng.cache.CacheManager;
+import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
-public final class CacheQueryManager implements IHttpConnectionHelper {
+public final class CacheQueryProxy implements IHttpConnectionHelper {
 
-    private static CacheQueryManager sCacheQuery = null;
+    private static CacheQueryProxy sCacheQuery = null;
     private boolean hasNext = false;
     private String query = null;
     private String next = null;
@@ -23,14 +25,14 @@ public final class CacheQueryManager implements IHttpConnectionHelper {
     private int questionIndex = 0;
     private LinkedList<Long> idList = null;
 
-    public static CacheQueryManager getInstance() {
+    public static CacheQueryProxy getInstance() {
         if (sCacheQuery == null) {
-            sCacheQuery = new CacheQueryManager();
+            sCacheQuery = new CacheQueryProxy();
         }
         return sCacheQuery;
     }
 
-    private CacheQueryManager() {
+    private CacheQueryProxy() {
 
     }
 
@@ -43,8 +45,7 @@ public final class CacheQueryManager implements IHttpConnectionHelper {
             try {
                 joll = (new JSONObject()).put("query", query);
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Log.e(this.getClass().getName(), e.getMessage() + " trying to create Jsonquery failed");
             }
             return postJSONObject(urlString, joll);
         }
@@ -66,36 +67,32 @@ public final class CacheQueryManager implements IHttpConnectionHelper {
                 }
                 postQuery(question);
             } catch (JSONException e) {
-
+                Log.e(this.getClass().getName(), e.getMessage());
             } catch (HttpResponseException e) {
-
-            } catch (NullPointerException e) {
-
+                Log.e(this.getClass().getName(), e.getMessage());
             } catch (IOException e) {
-
+                Log.e(this.getClass().getName(), e.getMessage());
             }
 
         }
+        long id = -1;
 
         try {
-            response = CacheManager.getInstance().getQuestion(idList.poll().longValue());
+            id = idList.poll().longValue();
         } catch (NullPointerException e) {
-            // TODO Big error
-
-            update(null);
-            return null;
+            Log.e(this.getClass().getName(), "empty response query no questions received");
         }
+        response = CacheManager.getInstance().getQuestion(id);
         questionIndex++;
 
         return response;
     }
 
-    public void postQuery(JSONObject question) throws JSONException, HttpResponseException, NullPointerException,
-            IOException {
+    public void postQuery(JSONObject question) throws JSONException, HttpResponseException, IOException {
 
         HttpResponse response = HttpCommsProxy.getInstance().postJSONObject(HttpComms.URL_SWENG_QUERY_POST, question);
         JSONObject jsonResponse = JSONParser.getParser(response);
-        if (jsonResponse.has("cacheResponse")) {
+        if (jsonResponse.isNull("cacheResponse")) {
 
             hasNext = !jsonResponse.isNull("next");
             if (hasNext) {
@@ -108,10 +105,11 @@ public final class CacheQueryManager implements IHttpConnectionHelper {
             if (questionArray.length() > 0) {
                 for (int i = 0; i < questionArray.length(); i++) {
                     idList.add(CacheManager.getInstance().pushFetchedQuestion(questionArray.getString(i)));
-                    Log.d(this.getClass().getName(),
-                            "Question number " + qCount + " saved from " + questionArray.length() + " received.");
                     qCount++;
                 }// for loop ending
+                Log.d(this.getClass().getName(), "Received: " + qCount + " questions");
+                // Shuffle the list (optional) TODO
+                Collections.shuffle(idList);
             }// if array not empty ending
         } else {
             JSONArray idArray = jsonResponse.getJSONArray("cacheResponse");
@@ -126,6 +124,7 @@ public final class CacheQueryManager implements IHttpConnectionHelper {
     }// postQuery() ending
 
     public void update(String queryText) {
+        Debug.out(this.getClass(), "Updating new query created");
         hasNext = false;
         next = null;
         qCount = 0;

@@ -16,7 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import epfl.sweng.R;
-import epfl.sweng.servercomm.CacheQueryManager;
+import epfl.sweng.servercomm.CacheQueryProxy;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -88,7 +88,7 @@ public class SearchActivity extends Activity {
         Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
         showQuestionActivityIntent.putExtra("query_mode", true);
         String queryText = searchQuery.getText().toString();
-        CacheQueryManager.getInstance().update(queryText);
+        CacheQueryProxy.getInstance().update(queryText);
         showQuestionActivityIntent.putExtra("query", queryText);
         startActivity(showQuestionActivityIntent);
     }

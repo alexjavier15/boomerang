@@ -150,16 +150,23 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         }
     }
 
-    /*
-     * public String getHashedQuestion(int indexHash) { String quizQuestion = null;
-     * 
-     * SQLiteDatabase db = this.getReadableDatabase(); String selection = COLUMN_NAME_IXHASH + " = " + indexHash; Cursor
-     * cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, null, null, null,
-     * "RANDOM()", "1"); if (!cursor.isAfterLast()) { cursor.moveToFirst(); quizQuestion = cursor.getColumnName(1); }
-     * db.close();
-     * 
-     * return quizQuestion; }
-     */
+    
+    public String getQuestionbyID(long indexID) {
+        String quizQuestion = null;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selection = _ID + " = " + indexID;
+        Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, null, null,
+                null, null, null);
+        cursor.moveToFirst();
+        if (cursor.getCount() != 0) {
+            quizQuestion = cursor.getString(1);
+        }
+        db.close();
+
+        return quizQuestion;
+    }
+     
 
     public List<Long> getQueriedQuestions(String queryS) throws UnsupportedOperationException, SQLiteException {
         List<Long> quList = new ArrayList<Long>();
@@ -176,8 +183,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
         }
         queriedCursor.moveToFirst();
-        queriedCursor.getCount();
-
+        
         while (!queriedCursor.isAfterLast()) {
             long id = queriedCursor.getLong(0);
             String st = queriedCursor.getString(1);

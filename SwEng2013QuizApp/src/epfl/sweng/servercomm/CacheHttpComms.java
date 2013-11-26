@@ -77,7 +77,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
             return CacheManager.getInstance().addQuestionForSync(question.toString());
         } else if (url.equals(HttpComms.URL_SWENG_QUERY_POST)) {
             try {
-                return CacheManager.getInstance().getQueriedQuestion(question.getString("query"));
+                return CacheManager.getInstance().getQueriedQuestions(question.getString("query"));
             } catch (JSONException e) {
 
                 // TODO

@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import epfl.sweng.R;
 import epfl.sweng.quizquestions.QuizQuestion;
-import epfl.sweng.servercomm.CacheQueryManager;
+import epfl.sweng.servercomm.CacheQueryProxy;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpCommsProxy;
@@ -185,7 +185,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     @Override
     public HttpResponse requete() {
 
-        return CacheQueryManager.getInstance().getHttpResponse(url);
+        return CacheQueryProxy.getInstance().getHttpResponse(url);
 
     }
 

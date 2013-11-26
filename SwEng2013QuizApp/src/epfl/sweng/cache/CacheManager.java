@@ -35,7 +35,7 @@ import epfl.sweng.tools.JSONParser;
  */
 public final class CacheManager {
     public static final String POST_SYNC_DB_NAME = "PostSync.db";
-    public static final String QUERY_CACHE_DB_NAME = "QueryCache.db";
+    // public static final String QUERY_CACHE_DB_NAME = "QueryCache.db";
     public static final String QUESTION_CACHE_DB_NAME = "Cache.db";
     private static CacheManager sCacheManager = null;
     private static QuizQuestionDBHelper sPostQuestionDB;
@@ -45,27 +45,20 @@ public final class CacheManager {
 
         sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUESTION_CACHE_DB_NAME);
         sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), POST_SYNC_DB_NAME);
-        new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUERY_CACHE_DB_NAME);
-
+        // new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUERY_CACHE_DB_NAME);
     }
 
     public static CacheManager getInstance() {
         if (sCacheManager == null) {
             sCacheManager = new CacheManager();
-
         }
         return sCacheManager;
-
     }
-
 
     public void init() {
         Debug.out(this.getClass(), "onChange in chache manager called");
-
         if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
-
             syncPostCachedQuestions();
-
         }
     }
 
@@ -82,9 +75,7 @@ public final class CacheManager {
                 new BasicStatusLine((new HttpPost()).getProtocolVersion(), HttpStatus.SC_CREATED, null), null);
 
         return reponse;
-
     }
-
 
     /**
      * @return
@@ -94,7 +85,6 @@ public final class CacheManager {
     public HttpResponse getRandomQuestion() throws IOException, JSONException {
 
         String question = sQuizQuestionDB.getRandomQuizQuestion();
-
         return wrapQuizQuestion(question);
     }
 
@@ -103,14 +93,12 @@ public final class CacheManager {
      */
     public long pushFetchedQuestion(String question) {
         return sQuizQuestionDB.addQuizQuestion(question);
-
     }
 
     private void syncPostCachedQuestions() {
         long num = DatabaseUtils.queryNumEntries(sPostQuestionDB.getReadableDatabase(),
                 QuizQuestionDBHelper.TABLE_NAME);
         Debug.out(this.getClass(), "row count =" + num);
-
         (new BackgroundServiceTask()).execute();
 
     }
@@ -136,7 +124,7 @@ public final class CacheManager {
         return response;
     }
 
-    public HttpResponse getQueriedQuestion(String query) {
+    public HttpResponse getQueriedQuestions(String query) {
         HttpResponse reponse = null;
         List<Long> questionList = sQuizQuestionDB.getQueriedQuestions(query);
 
@@ -150,19 +138,33 @@ public final class CacheManager {
                     HttpStatus.SC_OK, null), null);
             reponse.setEntity(new StringEntity(questionObj.toString(HttpComms.STRING_ENTITY)));
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         }
-
         return reponse;
     }
 
     public HttpResponse getQuestion(long id) {
-		//TODO        
-		return null;
+        HttpResponse response = null;
+        String question = sQuizQuestionDB.getQuestionbyID(id);
+        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
+         
+        if (question == null) {
+            
+            response = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
+                    HttpStatus.SC_BAD_REQUEST, null), null);
+        } else {
+            response = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
+                    HttpStatus.SC_OK, null), null);
+            try {
+                response.setEntity(new StringEntity(question));
+            } catch (UnsupportedEncodingException e) {
+                Log.e(this.getClass().getName(), e.getMessage());
+            }
+        }
+
+        return response;
     }
 
     private class BackgroundServiceTask extends AsyncTask<Void, Void, Void> {
@@ -195,8 +197,8 @@ public final class CacheManager {
 
                 } catch (JSONException e) {
 
-                    Log.e(this.getClass().getName(), e.getMessage());
-                    e.printStackTrace();
+                    Debug.out(this.getClass(), "No more post-questions to sync");
+                    // e.printStackTrace();
                     if (jsonString[0] != null) {
                         sPostQuestionDB.deleteQuizQuestion(jsonString[0]);
 
