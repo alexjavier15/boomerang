@@ -82,7 +82,7 @@ public final class CacheManager {
      * @throws IOException
      * @throws JSONException
      */
-    public HttpResponse getRandomQuestion() throws IOException, JSONException {
+    public HttpResponse getRandomQuestion() {
 
         String question = sQuizQuestionDB.getRandomQuizQuestion();
         return wrapQuizQuestion(question);
@@ -103,24 +103,22 @@ public final class CacheManager {
 
     }
 
-    public HttpResponse wrapQuizQuestion(String question) throws IOException, JSONException {
+    public HttpResponse wrapQuizQuestion(String question) {
         HttpResponse response = null;
-        QuizQuestion quizQuestion = null;
         DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
-        if (question != null) {
-            quizQuestion = new QuizQuestion(question);
-        }
 
-        if (quizQuestion != null) {
-            JSONObject questionObj = JSONParser.parseQuiztoJSON(quizQuestion);
+        if (question == null) {
             response = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_OK, null), null);
-            response.setEntity(new StringEntity(questionObj.toString(HttpComms.STRING_ENTITY)));
+                    HttpStatus.SC_BAD_REQUEST, null), null);
         } else {
             response = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR, null), null);
+                    HttpStatus.SC_OK, null), null);
+            try {
+                response.setEntity(new StringEntity(question));
+            } catch (UnsupportedEncodingException e) {
+                Log.e(this.getClass().getName(), e.getMessage());
+            }
         }
-
         return response;
     }
 
@@ -146,25 +144,7 @@ public final class CacheManager {
     }
 
     public HttpResponse getQuestion(long id) {
-        HttpResponse response = null;
-        String question = sQuizQuestionDB.getQuestionbyID(id);
-        DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
-         
-        if (question == null) {
-            
-            response = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_BAD_REQUEST, null), null);
-        } else {
-            response = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_OK, null), null);
-            try {
-                response.setEntity(new StringEntity(question));
-            } catch (UnsupportedEncodingException e) {
-                Log.e(this.getClass().getName(), e.getMessage());
-            }
-        }
-
-        return response;
+        return wrapQuizQuestion(sQuizQuestionDB.getQuestionbyID(id));
     }
 
     private class BackgroundServiceTask extends AsyncTask<Void, Void, Void> {

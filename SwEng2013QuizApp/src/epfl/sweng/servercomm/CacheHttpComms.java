@@ -42,15 +42,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
         HttpResponse response = null;
 
         if (urlString.equals(HttpComms.URL_SWENG_RANDOM_GET)) {
-
-            try {
-                response = CacheManager.getInstance().getRandomQuestion();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            response = CacheManager.getInstance().getRandomQuestion();
         }
         return response;
 
