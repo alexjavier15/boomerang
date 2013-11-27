@@ -122,7 +122,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             Intent loginActivityIntent = new Intent(this, AuthenticationActivity.class);
             startActivity(loginActivityIntent);
         }
-    
     }
 
     /**
@@ -134,7 +133,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         CheckBox offlineCheckBox = (CheckBox) view;
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, !offlineCheckBox.isChecked()).apply();
         update();
-    
     }
 
     /**
