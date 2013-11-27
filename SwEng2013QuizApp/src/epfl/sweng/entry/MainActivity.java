@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         String newValue = CredentialManager.getInstance().getUserCredential();
         Debug.out(this.getClass(), "CREDENTIAL MANAGER IS RETURNING : " + newValue);
         checkStatus(newValue);
-        TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
+     
 
     }
 
@@ -75,6 +75,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 
             // onSharedPreferenceChanged(QuizApp.getPreferences(), PreferenceKeys.ONLINE_MODE);
         }
+        TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
     }
 
     private void setUpPreferences() {

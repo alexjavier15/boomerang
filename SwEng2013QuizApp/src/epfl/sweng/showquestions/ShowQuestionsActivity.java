@@ -5,7 +5,9 @@ import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -54,8 +56,20 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     private String url = null;
     private boolean isQuery = false;
 
+    /**
+     * Inflate the menu; this adds items to the action bar if it is present.
+     * 
+     */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public boolean onCreateOptionsMenu(
+            Menu menu) {
+        getMenuInflater().inflate(R.menu.show_questions, menu);
+        return true;
+    }
+
+    @Override
+    protected void onCreate(
+            Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_questions);
 
@@ -70,7 +84,8 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         answerListener = new OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> listAdapter, View view, int selectedAnswer, long arg3) {
+            public void onItemClick(
+                    AdapterView<?> listAdapter, View view, int selectedAnswer, long arg3) {
 
                 ListView list = (ListView) listAdapter;
                 TextView textListener = (TextView) list.getChildAt(selectedAnswer);
@@ -113,16 +128,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         }
     }
 
-    /**
-     * Inflate the menu; this adds items to the action bar if it is present.
-     * 
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.show_questions, menu);
-        return true;
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -134,10 +139,47 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      * 
      * @param view
      */
-    public void askNextQuestion(View view) {
-        
+    public void askNextQuestion(
+            View view) {
+
         ((Button) findViewById(R.id.next_question)).setEnabled(false);
         new HttpCommsBackgroundTask(this, true).execute();
+    }
+
+    @Override
+    public HttpResponse requete() {
+
+        return CacheQueryProxy.getInstance().getHttpResponse(url);
+
+    }
+
+    @Override
+    public void processHttpReponse(
+            HttpResponse httpResponse) {
+        QuizQuestion quizQuestion = null;
+        JSONObject jsonObj = null;
+        String jsonString = null;
+        try {
+            jsonObj = JSONParser.getParser(httpResponse);
+            if (jsonObj != null) {
+                jsonString = jsonObj.toString();
+            }
+            quizQuestion = new QuizQuestion(jsonString);
+            Debug.out(this.getClass(), quizQuestion);
+        } catch (JSONException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        } catch (HttpResponseException e) {
+            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            setQuestion(quizQuestion);
+        }
+
+        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+
     }
 
     /**
@@ -147,7 +189,8 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      *            : set of Strings
      * @return the tags
      */
-    private String displayTags(Set<String> set) {
+    private String displayTags(
+            Set<String> set) {
         if (set.size() > 0) {
             String tagsInString = "";
             int counter = 0;
@@ -165,7 +208,8 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         }
     }
 
-    private void setQuestion(QuizQuestion quizQuestion) {
+    private void setQuestion(
+            QuizQuestion quizQuestion) {
         try {
             currrentQuestion = quizQuestion;
 
@@ -183,43 +227,8 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         }
     }
 
-    @Override
-    public HttpResponse requete() {
-
-        return CacheQueryProxy.getInstance().getHttpResponse(url);
-
-    }
-
-    @Override
-    public void processHttpReponse(HttpResponse httpResponse) {
-        QuizQuestion quizQuestion = null;
-
-        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            try {
-                quizQuestion = new QuizQuestion(JSONParser.getParser(httpResponse).toString());
-                Debug.out(this.getClass(), quizQuestion);
-            } catch (IOException e) {
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-                Log.e(getLocalClassName(), e.getMessage());
-            } catch (JSONException e) {
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-                e.printStackTrace();
-            }
-            setQuestion(quizQuestion);
-        } else {
-
-            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-        }
-
-        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
-
-    }
-
-    public void setText(TextView view) {
-        text = view;
-    }
-
-    public void toast(String message) {
+    public void toast(
+            String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 

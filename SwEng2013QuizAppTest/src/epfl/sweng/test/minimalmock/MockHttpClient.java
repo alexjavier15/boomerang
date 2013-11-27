@@ -51,12 +51,13 @@ public class MockHttpClient extends DefaultHttpClient {
     private final List<CannedResponse> responses = new ArrayList<CannedResponse>();
 
     @Override
-    protected RequestDirector createClientRequestDirector(final HttpRequestExecutor requestExec,
-        final ClientConnectionManager conman, final ConnectionReuseStrategy reustrat,
-        final ConnectionKeepAliveStrategy kastrat, final HttpRoutePlanner rouplan, final HttpProcessor httpProcessor,
-        final HttpRequestRetryHandler retryHandler, final RedirectHandler redirectHandler,
-        final AuthenticationHandler targetAuthHandler, final AuthenticationHandler proxyAuthHandler,
-        final UserTokenHandler stateHandler, final HttpParams params) {
+    protected RequestDirector createClientRequestDirector(
+            final HttpRequestExecutor requestExec, final ClientConnectionManager conman,
+            final ConnectionReuseStrategy reustrat, final ConnectionKeepAliveStrategy kastrat,
+            final HttpRoutePlanner rouplan, final HttpProcessor httpProcessor,
+            final HttpRequestRetryHandler retryHandler, final RedirectHandler redirectHandler,
+            final AuthenticationHandler targetAuthHandler, final AuthenticationHandler proxyAuthHandler,
+            final UserTokenHandler stateHandler, final HttpParams params) {
         return new MockRequestDirector(this);
     }
 
@@ -67,7 +68,8 @@ public class MockHttpClient extends DefaultHttpClient {
         responses.remove(0);
     }
 
-    public HttpResponse processRequest(HttpRequest request) {
+    public HttpResponse processRequest(
+            HttpRequest request) {
         for (CannedResponse cr : responses) {
             if (cr.pattern.matcher(request.getRequestLine().toString()).find()) {
                 Log.v("HTTP", "Mocking request since it matches pattern " + cr.pattern);
@@ -79,7 +81,8 @@ public class MockHttpClient extends DefaultHttpClient {
         return null;
     }
 
-    public void pushCannedResponse(String requestRegex, int status, String responseBody, String contentType) {
+    public void pushCannedResponse(
+            String requestRegex, int status, String responseBody, String contentType) {
         responses.add(0, new CannedResponse(Pattern.compile(requestRegex), status, responseBody, contentType));
     }
 }
@@ -87,8 +90,8 @@ public class MockHttpClient extends DefaultHttpClient {
 /** The HTTP Response returned by a MockHttpServer */
 class MockHttpResponse extends BasicHttpResponse {
     public MockHttpResponse(int statusCode, String responseBody, String contentType) {
-        super(new ProtocolVersion("HTTP", 1, 1), statusCode, EnglishReasonPhraseCatalog.INSTANCE.getReason(statusCode,
-            Locale.getDefault()));
+        super(new ProtocolVersion("HTTP", 1, 1), statusCode, EnglishReasonPhraseCatalog.INSTANCE.getReason(
+                statusCode, Locale.getDefault()));
 
         if (responseBody != null) {
             try {
@@ -105,8 +108,7 @@ class MockHttpResponse extends BasicHttpResponse {
 }
 
 /**
- * A request director which does nothing else than passing the request back to
- * the MockHttpCient.
+ * A request director which does nothing else than passing the request back to the MockHttpCient.
  */
 class MockRequestDirector implements RequestDirector {
 
@@ -117,13 +119,14 @@ class MockRequestDirector implements RequestDirector {
     }
 
     @Override
-    public HttpResponse execute(HttpHost target, HttpRequest request, HttpContext context) {
+    public HttpResponse execute(
+            HttpHost target, HttpRequest request, HttpContext context) {
         Log.v("HTTP", request.getRequestLine().toString());
 
         HttpResponse response = httpClient.processRequest(request);
         if (response == null) {
             throw new AssertionError("Request \"" + request.getRequestLine().toString()
-                + "\" did not match any known pattern");
+                    + "\" did not match any known pattern");
         }
 
         Log.v("HTTP", response.getStatusLine().toString());

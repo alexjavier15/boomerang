@@ -25,13 +25,21 @@ public class JSONParser {
 
     public static final int HTTP_ERROR = 404;
 
-    public static JSONObject getParser(HttpResponse response) throws NullPointerException, JSONException,
-            HttpResponseException, IOException {
+    public static JSONObject getParser(
+            HttpResponse response) throws JSONException, HttpResponseException {
+        JSONObject json = null;
 
         BasicResponseHandler responseHandler = new BasicResponseHandler();
-        String jsonResponse = responseHandler.handleResponse(response);
+        String jsonResponse = null;
+        try {
+            jsonResponse = responseHandler.handleResponse(response);
+            json = new JSONObject(jsonResponse);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-        return new JSONObject(jsonResponse);
+        return json;
 
     }
 
@@ -43,7 +51,8 @@ public class JSONParser {
      * @throws IOException
      * @throws JSONException
      */
-    public static List<String> jsonArrayToList(JSONArray array) throws JSONException {
+    public static List<String> jsonArrayToList(
+            JSONArray array) throws JSONException {
         int size = array.length();
         List<String> stringList = new ArrayList<String>(size);
 
@@ -64,7 +73,8 @@ public class JSONParser {
      * @throws IOException
      * @throws JSONException
      */
-    public static JSONObject parseQuiztoJSON(QuizQuestion question) throws JSONException {
+    public static JSONObject parseQuiztoJSON(
+            QuizQuestion question) throws JSONException {
 
         JSONObject jsonQuestion = new JSONObject();
 
@@ -75,7 +85,7 @@ public class JSONParser {
         jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
         jsonQuestion.put("question", question.getQuestion());
 
-        //Debug.out(jsonQuestion);
+        // Debug.out(jsonQuestion);
 
         return jsonQuestion;
     }
