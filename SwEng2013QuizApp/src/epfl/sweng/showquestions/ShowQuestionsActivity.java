@@ -1,17 +1,14 @@
 package epfl.sweng.showquestions;
 
-import java.io.IOException;
 import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpResponseException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -42,6 +39,7 @@ import epfl.sweng.tools.JSONParser;
 public class ShowQuestionsActivity extends Activity implements HttpcommunicationsAdapter {
 
     public static final String ERROR_QUERY = "No questions match your query";
+    public static final String EMPTY_TAGS_MSG = "No tags for this question";
     public static final String ERROR_MESSAGE = "There was an error retrieving the question";
 
     private ArrayAdapter<String> adapter;
@@ -170,9 +168,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             HttpCommsProxy.getInstance().setOnlineMode(false);
             Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
             e.printStackTrace();
-        } catch (HttpResponseException e) {
-            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-            e.printStackTrace();
         }
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             setQuestion(quizQuestion);
@@ -204,7 +199,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             }
             return tagsInString;
         } else {
-            return "No tags for this question";
+            return EMPTY_TAGS_MSG;
         }
     }
 

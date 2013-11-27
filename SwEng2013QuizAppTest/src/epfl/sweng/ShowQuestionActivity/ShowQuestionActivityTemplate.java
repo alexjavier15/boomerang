@@ -14,14 +14,16 @@ import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.testing.TestCoordinator;
-import epfl.sweng.testing.TestingTransaction;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
+import epfl.sweng.testing.TestingTransaction;
 
 public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCase2<ShowQuestionsActivity> {
 
     private Solo mSolo;
     private MockHttpClient mMock = new MockHttpClient();
     public final static String CORRECT_ANS = "Forty-two";
+    public final static String DEFAULT_TAGS = "\"h2g2\", \"trivia\"";
+    public final static String DEFAULT_QUESTION = "What is the answer to life, the universe, and everything?";
 
     public Solo getSolo() {
 
@@ -44,7 +46,7 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
 
     protected void pushCannedResponse(
             String type, int httpStatus) {
-        pushCannedResponse(type, httpStatus, "What is the answer to life, the universe, and everything?");
+        pushCannedResponse(type, httpStatus, DEFAULT_QUESTION, DEFAULT_TAGS);
 
     }
 
@@ -54,18 +56,18 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
     }
 
     protected void pushCannedResponse(
-            String type, int httpStatus, String question) {
+            String type, int httpStatus, String question, String tags) {
         mMock.pushCannedResponse(type + " (?:https?://[^/]+|[^/]+)?/+quizquestions/random HTTP/1.1", httpStatus,
                 "{\"question\": \"" + question + "\", "
                         + "\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\", \"solutionIndex\":"
-                        + " 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }", "application/json");
+                        + " 0, \"tags\": [" + tags + "], \"id\": \"1\" }", "application/json");
 
     }
-    
-    protected void pushMalformedCannedResponse(String type, int httpStatus){
-        pushCannedResponse(type, httpStatus, "\""+"}*****");
-        
-        
+
+    protected void pushMalformedCannedResponse(
+            String type, int httpStatus) {
+        pushCannedResponse(type, httpStatus, "\"" + "}*****", "h2g2\", \"trivia\"");
+
     }
 
     protected void chooseCorrectAnswer() {
@@ -114,6 +116,7 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
         super.tearDown();
         cleanUpData();
         QuizApp.getPreferences().edit().clear().commit();
+        
 
     }
 

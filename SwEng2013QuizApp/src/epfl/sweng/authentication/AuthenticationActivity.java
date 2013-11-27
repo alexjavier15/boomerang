@@ -60,7 +60,8 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     // private int failedCount;
     private String token;
 
-    private HttpResponse checkTequila(HttpResponse response) throws AuthenticationException {
+    private HttpResponse checkTequila(
+            HttpResponse response) throws AuthenticationException {
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
             state = CONFIRMATION;
             return response;
@@ -75,8 +76,9 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
 
     }
 
-    private HttpResponse confirm(HttpResponse response) throws ClientProtocolException, IOException, JSONException,
-            NetworkErrorException, AuthenticationException {
+    private HttpResponse confirm(
+            HttpResponse response) throws ClientProtocolException, IOException, JSONException, NetworkErrorException,
+            AuthenticationException {
         response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_SWERVER_LOGIN,
                 (new JSONObject()).put("token", token));
 
@@ -97,7 +99,8 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
     }
 
-    public void logIn(View view) {
+    public void logIn(
+            View view) {
         if (HttpComms.getInstance().isConnected()) {
             new HttpCommsBackgroundTask(this).execute();
         } else {
@@ -107,7 +110,8 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(
+            Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
         // by default initial state is
@@ -116,15 +120,16 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(
+            Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.authentication, menu);
         return true;
     }
 
-    private HttpResponse postTequilaToken(HttpResponse tokenResponse) throws JSONException, IOException,
-            NetworkErrorException {
-    	
+    private HttpResponse postTequilaToken(
+            HttpResponse tokenResponse) throws JSONException, IOException, NetworkErrorException {
+
         token = JSONParser.getParser(tokenResponse).getString("token");
         String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
         String password = ((EditText) findViewById(R.id.GasparPassword_EditText)).getText().toString();
@@ -140,7 +145,8 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     }
 
     @Override
-    public void processHttpReponse(HttpResponse response) {
+    public void processHttpReponse(
+            HttpResponse response) {
         if (response != null) {
             try {
                 String sessionID = JSONParser.getParser(response).getString("session");
@@ -148,30 +154,23 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
                 Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
                 Debug.out(this.getClass(), sessionID);
 
-
                 this.finish();
-            } catch (NullPointerException e) {
+
+            } catch (JSONException e) {
                 mStatusMsg = UNEXPECTED_ERROR_MSG;
                 failedAuthenReset();
                 Log.e(getLocalClassName(), e.getMessage());
-            } catch (IOException e) {
-                mStatusMsg = INTERNAL_ERROR_MSG;
-                failedAuthenReset();
-                Log.e(getLocalClassName(), e.getMessage());
-
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            
+
         } else {
             failedAuthenReset();
         }
     }
 
-    private HttpResponse requestAuthToken(HttpResponse starter) throws ClientProtocolException, IOException,
-            NetworkErrorException {
-    	
+    private HttpResponse requestAuthToken(
+            HttpResponse starter) throws ClientProtocolException, IOException, NetworkErrorException {
+
         HttpResponse response = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             state = TOKEN;
@@ -210,8 +209,9 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         return response;
     }
 
-    private HttpResponse stateMachine(HttpResponse response) throws ClientProtocolException, IOException,
-            JSONException, NetworkErrorException, AuthenticationException {
+    private HttpResponse stateMachine(
+            HttpResponse response) throws ClientProtocolException, IOException, JSONException, NetworkErrorException,
+            AuthenticationException {
         /*
          * if (failedCount > MAX_NUMBER_OF_FAILS) { // too many fails! reset fields! state = ERROR_OVERLOAD; return
          * null; }

@@ -3,8 +3,6 @@
  */
 package epfl.sweng.servercomm;
 
-import java.io.IOException;
-
 import org.apache.http.HttpResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,7 +36,8 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      * @see epfl.sweng.servercomm.IHttpConnection#getHttpResponse(java.lang.String)
      */
     @Override
-    public HttpResponse getHttpResponse(String urlString) {
+    public HttpResponse getHttpResponse(
+            String urlString) {
         HttpResponse response = null;
 
         if (urlString.equals(HttpComms.URL_SWENG_RANDOM_GET)) {
@@ -64,7 +63,8 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      * @see epfl.sweng.servercomm.IHttpConnection#postQuestion(java.lang.String, org.json.JSONObject)
      */
     @Override
-    public HttpResponse postJSONObject(String url, JSONObject question) {
+    public HttpResponse postJSONObject(
+            String url, JSONObject question) {
         if (url.equals(HttpComms.URL_SWENG_PUSH)) {
             return CacheManager.getInstance().addQuestionForSync(question.toString());
         } else if (url.equals(HttpComms.URL_SWENG_QUERY_POST)) {
@@ -85,17 +85,14 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
      * @throws JSONException
      * @throws NullPointerException
      */
-    public void pushQuestion(HttpResponse reponse) {
+    public void pushQuestion(
+            HttpResponse reponse) {
 
         JSONObject quizQuestion;
 
         try {
             quizQuestion = JSONParser.getParser(reponse);
             CacheManager.getInstance().pushFetchedQuestion(quizQuestion.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,7 +25,7 @@ public class JSONParser {
     public static final int HTTP_ERROR = 404;
 
     public static JSONObject getParser(
-            HttpResponse response) throws JSONException, HttpResponseException {
+            HttpResponse response) throws JSONException {
         JSONObject json = null;
 
         BasicResponseHandler responseHandler = new BasicResponseHandler();

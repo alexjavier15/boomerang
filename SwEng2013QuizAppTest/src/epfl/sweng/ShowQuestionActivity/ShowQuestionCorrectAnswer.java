@@ -3,7 +3,6 @@ package epfl.sweng.ShowQuestionActivity;
 import org.apache.http.HttpStatus;
 
 import android.widget.Button;
-
 import epfl.sweng.R;
 
 public class ShowQuestionCorrectAnswer extends ShowQuestionActivityTemplate {
