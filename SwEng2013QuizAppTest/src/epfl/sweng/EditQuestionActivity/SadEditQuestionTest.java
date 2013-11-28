@@ -2,9 +2,7 @@ package epfl.sweng.EditQuestionActivity;
 
 import org.apache.http.HttpStatus;
 
-import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.editquestions.EditQuestionActivity;
-import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -28,8 +26,7 @@ public class SadEditQuestionTest extends EditQuestionActivityTemplate {
                         + " \"solutionIndex\": 0, \"tags\": [\"stupid\", \"me\"], \"id\": \"-1\" }",
                 "application/json");
         SwengHttpClientFactory.setInstance(mock);
-        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
-        QuizApp.getPreferences().edit().putString(PreferenceKeys.SESSION_ID, "test").apply();
+   
     }
 
     public void testServerNotAccessible() {

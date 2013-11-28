@@ -1,5 +1,7 @@
 package epfl.sweng.EditQuestionActivity;
 
+import java.io.File;
+
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.EditText;
 
@@ -29,12 +31,25 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        cleanUpData();
         CacheManager.reset();
+
         mSolo = new Solo(getInstrumentation());
-        
+
     }
 
-    protected void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
+    private void cleanUpData() {
+
+        File postDB = QuizApp.getContexStatic().getDatabasePath(CacheManager.POST_SYNC_DB_NAME);
+        File cacheDB = QuizApp.getContexStatic().getDatabasePath(CacheManager.QUESTION_CACHE_DB_NAME);
+        postDB.delete();
+        cacheDB.delete();
+        QuizApp.getPreferences().edit().clear().commit();
+
+    }
+
+    protected void getActivityAndWaitFor(
+            final TestCoordinator.TTChecks expected) {
         TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
@@ -48,7 +63,8 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
             }
 
             @Override
-            public void verify(TestCoordinator.TTChecks notification) {
+            public void verify(
+                    TestCoordinator.TTChecks notification) {
                 assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
                         expected, notification);
             }
@@ -64,12 +80,12 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
     protected void tearDown() throws Exception {
         // TODO Auto-generated method stub
         super.tearDown();
-        QuizApp.getPreferences().edit().clear().commit();
-  
+        cleanUpData();
 
     }
 
-    protected void clickAndWaitForButton(final TestCoordinator.TTChecks expected, final String button) {
+    protected void clickAndWaitForButton(
+            final TestCoordinator.TTChecks expected, final String button) {
         TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
@@ -83,14 +99,16 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
             }
 
             @Override
-            public void verify(TestCoordinator.TTChecks notification) {
+            public void verify(
+                    TestCoordinator.TTChecks notification) {
                 assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
                         expected, notification);
             }
         });
     }
 
-    protected void enterTextAndWaitFor(final TestCoordinator.TTChecks expected, final EditText et, final String text) {
+    protected void enterTextAndWaitFor(
+            final TestCoordinator.TTChecks expected, final EditText et, final String text) {
         TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
@@ -103,14 +121,16 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
             }
 
             @Override
-            public void verify(TestCoordinator.TTChecks notification) {
+            public void verify(
+                    TestCoordinator.TTChecks notification) {
                 assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
                         expected, notification);
             }
         });
     }
 
-    protected void clickAndWaitForAnswer(final TestCoordinator.TTChecks expected, final String answer) {
+    protected void clickAndWaitForAnswer(
+            final TestCoordinator.TTChecks expected, final String answer) {
         TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
@@ -123,14 +143,16 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
             }
 
             @Override
-            public void verify(TestCoordinator.TTChecks notification) {
+            public void verify(
+                    TestCoordinator.TTChecks notification) {
                 assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
                         expected, notification);
             }
         });
     }
 
-    protected void goBackAndWaitFor(final TestCoordinator.TTChecks expected) {
+    protected void goBackAndWaitFor(
+            final TestCoordinator.TTChecks expected) {
         TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
@@ -143,7 +165,8 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
             }
 
             @Override
-            public void verify(TestCoordinator.TTChecks notification) {
+            public void verify(
+                    TestCoordinator.TTChecks notification) {
                 assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
                         expected, notification);
             }

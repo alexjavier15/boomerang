@@ -1,18 +1,28 @@
 package epfl.sweng.AuthenticationActivity;
 
+import org.apache.http.HttpStatus;
+
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.EditText;
 
 import com.jayway.android.robotium.solo.Solo;
 
 import epfl.sweng.authentication.AuthenticationActivity;
+import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.servercomm.QuizApp;
+import epfl.sweng.servercomm.SwengHttpClientFactory;
+import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestingTransaction;
 
 public class AuthenticationActivityTemplate extends ActivityInstrumentationTestCase2<AuthenticationActivity> {
 
     private Solo mSolo;
+    private MockHttpClient mMock = new MockHttpClient();
+    public final static int TEQUILA_REQUEST_STATUS= HttpStatus.SC_MOVED_TEMPORARILY;
+    public final static int OTHER_STATUS= HttpStatus.SC_OK;
+    
+    
 
     public AuthenticationActivityTemplate() {
         super(AuthenticationActivity.class);
@@ -29,9 +39,42 @@ public class AuthenticationActivityTemplate extends ActivityInstrumentationTestC
     protected void setUp() throws Exception {
         super.setUp();
         mSolo = new Solo(getInstrumentation());
+
+        SwengHttpClientFactory.setInstance(mMock);
+        QuizApp.getPreferences().edit().putString(PreferenceKeys.SESSION_ID, "").apply();
+
     }
 
-    protected void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
+    protected void pushCannedPostTequilaToken(
+            int httpStatus) {
+        mMock.pushCannedResponse("POST https://tequila.epfl.ch/cgi-bin/tequila/login HTTP/1.1", httpStatus,
+                "{\"requestkey\": \"rqtvk5d3za2x6ocak1a41dsmywogrdlv5\"," + " \"username\": \"test\","
+                        + " \"password\": \"password\"}", "application/json");
+
+    }
+
+  
+
+    protected void pushCannedPostRequestSessionID(
+            int httpStatus) {
+        mMock.pushCannedResponse("POST https://sweng-quiz.appspot.com/login\\b", httpStatus,
+                "{\"session\": \"test\","
+                        + " \"message\": \"Here's your session id. Please include the following HTTP"
+                        + " header in your subsequent requests:\n Authorization: Tequila test\"}", "application/json");
+
+    }
+
+    protected void pushCannedGetSwengtoken(
+            int httpStatus) {
+        mMock.pushCannedResponse("GET (?:https?://[^/]+|[^/]+)?/+sweng-quiz.appspot.com/login\\b", httpStatus,
+                "{\"token\": \"rqtvk5d3za2x6ocak1a41dsmywogrdlv5\","
+                        + " \"message\": \"Here's your authentication token. Please validate it with Tequila"
+                        + " at https://tequila.epfl.ch/cgi-bin/tequila/login\"}", "application/json");
+
+    }
+
+    protected void getActivityAndWaitFor(
+            final TestCoordinator.TTChecks expected) {
         TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
@@ -45,7 +88,8 @@ public class AuthenticationActivityTemplate extends ActivityInstrumentationTestC
             }
 
             @Override
-            public void verify(TestCoordinator.TTChecks notification) {
+            public void verify(
+                    TestCoordinator.TTChecks notification) {
                 assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
                         expected, notification);
             }
@@ -62,11 +106,13 @@ public class AuthenticationActivityTemplate extends ActivityInstrumentationTestC
         // TODO Auto-generated method stub
         super.tearDown();
         QuizApp.getPreferences().edit().clear().commit();
-
+        
+    
 
     }
 
-    protected void clickAndWaitForButton(final TestCoordinator.TTChecks expected, final String button) {
+    protected void clickAndWaitForButton(
+            final TestCoordinator.TTChecks expected, final String button) {
         TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
@@ -80,14 +126,16 @@ public class AuthenticationActivityTemplate extends ActivityInstrumentationTestC
             }
 
             @Override
-            public void verify(TestCoordinator.TTChecks notification) {
+            public void verify(
+                    TestCoordinator.TTChecks notification) {
                 assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
                         expected, notification);
             }
         });
     }
 
-    protected void enterTextAndWaitFor(final TestCoordinator.TTChecks expected, final EditText et, final String text) {
+    protected void enterTextAndWaitFor(
+            final TestCoordinator.TTChecks expected, final EditText et, final String text) {
         TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
@@ -100,14 +148,16 @@ public class AuthenticationActivityTemplate extends ActivityInstrumentationTestC
             }
 
             @Override
-            public void verify(TestCoordinator.TTChecks notification) {
+            public void verify(
+                    TestCoordinator.TTChecks notification) {
                 assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
                         expected, notification);
             }
         });
     }
 
-    protected void clickAndWaitForAnswer(final TestCoordinator.TTChecks expected, final String answer) {
+    protected void clickAndWaitForAnswer(
+            final TestCoordinator.TTChecks expected, final String answer) {
         TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
@@ -120,14 +170,16 @@ public class AuthenticationActivityTemplate extends ActivityInstrumentationTestC
             }
 
             @Override
-            public void verify(TestCoordinator.TTChecks notification) {
+            public void verify(
+                    TestCoordinator.TTChecks notification) {
                 assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
                         expected, notification);
             }
         });
     }
 
-    protected void goBackAndWaitFor(final TestCoordinator.TTChecks expected) {
+    protected void goBackAndWaitFor(
+            final TestCoordinator.TTChecks expected) {
         TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
@@ -140,7 +192,8 @@ public class AuthenticationActivityTemplate extends ActivityInstrumentationTestC
             }
 
             @Override
-            public void verify(TestCoordinator.TTChecks notification) {
+            public void verify(
+                    TestCoordinator.TTChecks notification) {
                 assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
                         expected, notification);
             }

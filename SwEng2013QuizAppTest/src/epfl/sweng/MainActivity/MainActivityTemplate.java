@@ -30,6 +30,8 @@ public class MainActivityTemplate extends ActivityInstrumentationTestCase2<MainA
     protected void setUp() throws Exception {
         super.setUp();
         cleanUpData();
+        CacheManager.reset();
+
         mSolo = new Solo(getInstrumentation());
     }
 
@@ -66,6 +68,7 @@ public class MainActivityTemplate extends ActivityInstrumentationTestCase2<MainA
         // TODO Auto-generated method stub
         super.tearDown();
         cleanUpData();
+        
 
     }
 

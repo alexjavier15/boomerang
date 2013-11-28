@@ -1,8 +1,6 @@
 package epfl.sweng.EditQuestionActivity;
 
 import android.widget.Button;
-import epfl.sweng.authentication.PreferenceKeys;
-import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class EditQuestionsActivityTest extends EditQuestionActivityTemplate {
@@ -13,7 +11,6 @@ public class EditQuestionsActivityTest extends EditQuestionActivityTemplate {
     protected void setUp() throws Exception {
         super.setUp();
 
-        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
     }
 
     public void test2ButtonsMustBeDisplayed() {

@@ -5,8 +5,6 @@ import org.apache.http.HttpStatus;
 import android.widget.Button;
 import android.widget.EditText;
 import epfl.sweng.R;
-import epfl.sweng.authentication.PreferenceKeys;
-import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -29,8 +27,7 @@ public class MultipleAnswersTest extends EditQuestionActivityTemplate {
                         + " \"solutionIndex\": 1, \"tags\": [\"stupid\", \"alex\"], \"id\": \"-1\" }",
                 "application/json");
         SwengHttpClientFactory.setInstance(mock);
-        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
-        QuizApp.getPreferences().edit().putString(PreferenceKeys.SESSION_ID, "test").apply();
+       
     }
 
     public void test1AddMultipleanswers2() {

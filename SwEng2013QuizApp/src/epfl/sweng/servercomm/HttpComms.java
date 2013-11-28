@@ -27,15 +27,15 @@ import epfl.sweng.authentication.CredentialManager;
  */
 public final class HttpComms implements IHttpConnectionHelper {
 
-	public final static String HEADER = "Authorization";
-	public final static int STRING_ENTITY = 1;
-	public final static String URL_SWENG_RANDOM_GET = "https://sweng-quiz.appspot.com/quizquestions/random";
-	public final static String URL_SWENG_SWERVER_LOGIN = "https://sweng-quiz.appspot.com/login";
-	public final static String URL_TEQUILA_LOGIN = "https://tequila.epfl.ch/cgi-bin/tequila/login";
-	public final static String URL_SWENG_PUSH = "https://sweng-quiz.appspot.com/quizquestions/";
-	public final static String URL_SWENG_QUERY_POST = "https://sweng-quiz.appspot.com/search";
-	private static HttpComms singleHTTPComs = null;
-	private String authenticationValue = null;
+    public final static String HEADER = "Authorization";
+    public final static int STRING_ENTITY = 1;
+    public final static String URL_SWENG_RANDOM_GET = "https://sweng-quiz.appspot.com/quizquestions/random";
+    public final static String URL_SWENG_SWERVER_LOGIN = "https://sweng-quiz.appspot.com/login";
+    public final static String URL_TEQUILA_LOGIN = "https://tequila.epfl.ch/cgi-bin/tequila/login";
+    public final static String URL_SWENG_PUSH = "https://sweng-quiz.appspot.com/quizquestions/";
+    public final static String URL_SWENG_QUERY_POST = "https://sweng-quiz.appspot.com/search";
+    private static HttpComms singleHTTPComs = null;
+    private String authenticationValue = null;
 
     public static HttpComms getInstance() {
 
@@ -50,22 +50,26 @@ public final class HttpComms implements IHttpConnectionHelper {
 
     }
 
-    private HttpResponse execute(HttpUriRequest request) {
+    private HttpResponse execute(
+            HttpUriRequest request) throws NetworkErrorException {
         HttpResponse response = null;
+        if (isConnected()) {
+            try {
 
-        try {
+                if (checkLoginStatus()) {
+                    request.addHeader(HEADER, authenticationValue);
+                }
+                response = SwengHttpClientFactory.getInstance().execute(request);
 
-            if (checkLoginStatus()) {
-                request.addHeader(HEADER, authenticationValue);
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            response = SwengHttpClientFactory.getInstance().execute(request);
-
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            return response;
+        } else {
+            throw new NetworkErrorException("A network error has ocurred when trying to contact the server");
         }
-        return response;
 
     }
 
@@ -79,7 +83,7 @@ public final class HttpComms implements IHttpConnectionHelper {
         }
     }
 
-	/**
+    /**
      * Gets an HttpResponse from the server in parameter
      * 
      * @param urlString
@@ -90,10 +94,17 @@ public final class HttpComms implements IHttpConnectionHelper {
      * @throws NetworkErrorException
      */
     @Override
-    public HttpResponse getHttpResponse(String urlString) {
+    public HttpResponse getHttpResponse(
+            String urlString) {
         HttpGet request = new HttpGet(urlString);
-
-        return execute(request);
+        HttpResponse response = null;
+        try {
+            response = execute(request);
+        } catch (NetworkErrorException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return response;
 
     }
 
@@ -107,13 +118,20 @@ public final class HttpComms implements IHttpConnectionHelper {
 
     }
 
-    public HttpResponse postEntity(String url, HttpEntity entity) throws ClientProtocolException, IOException,
-            NetworkErrorException {
+    public HttpResponse postEntity(
+            String url, HttpEntity entity) throws ClientProtocolException, IOException {
 
         HttpPost post = new HttpPost(url);
         post.setEntity(entity);
-        return execute(post);
+        HttpResponse response = null;
 
+        try {
+            response = execute(post);
+        } catch (NetworkErrorException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return response;
     }
 
     /**
@@ -127,7 +145,8 @@ public final class HttpComms implements IHttpConnectionHelper {
      */
     // TODO do so no code is repeated
     @Override
-    public HttpResponse postJSONObject(String url, JSONObject question) {
+    public HttpResponse postJSONObject(
+            String url, JSONObject question) {
 
         HttpPost post = new HttpPost(url);
         HttpResponse response = null;
@@ -139,6 +158,9 @@ public final class HttpComms implements IHttpConnectionHelper {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (NetworkErrorException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

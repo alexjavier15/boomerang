@@ -37,11 +37,12 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        cleanUpData();
         CacheManager.reset();
-        mSolo = new Solo(getInstrumentation());
-
         SwengHttpClientFactory.setInstance(mMock);
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
+        mSolo = new Solo(getInstrumentation());
+
     }
 
     protected void pushCannedResponse(
@@ -115,8 +116,7 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
         // TODO Auto-generated method stub
         super.tearDown();
         cleanUpData();
-        QuizApp.getPreferences().edit().clear().commit();
-        
+       
 
     }
 

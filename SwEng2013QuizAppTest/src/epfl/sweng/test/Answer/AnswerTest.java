@@ -5,9 +5,10 @@ import epfl.sweng.editquestions.Answer;
 
 public class AnswerTest extends TestCase {
 
-    private Answer answer = new Answer();
+  
 
     public void answerTest() {
+        Answer answer = new Answer(null, null);
         answer.setAnswer("salut");
         assertEquals(answer.getAnswer(), "salut");
         answer.setChecked("lol");

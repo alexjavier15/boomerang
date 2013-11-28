@@ -4,8 +4,6 @@ import org.apache.http.HttpStatus;
 
 import android.widget.Button;
 import android.widget.EditText;
-import epfl.sweng.authentication.PreferenceKeys;
-import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.servercomm.SwengHttpClientFactory;
 import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
@@ -28,7 +26,6 @@ public class SubmitCorrectQuestionTest extends EditQuestionActivityTemplate {
                 "application/json");
         SwengHttpClientFactory.setInstance(mock);
 
-        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
 
     }
 
@@ -39,15 +36,13 @@ public class SubmitCorrectQuestionTest extends EditQuestionActivityTemplate {
         assertFalse("Submit button should be disabled", submit.isEnabled());
 
         getSolo().clickOnButton(0);
+        getSolo().enterText(getSolo().getEditText(0), question);
 
         getSolo().enterText(1, answer2);
         clickAndWaitForButton(TTChecks.QUESTION_EDITED, "+");
         EditText et = getSolo().getEditText(2);
         enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et, answer1);
-
-        getSolo().enterText(getSolo().getEditText(0), question);
-
-        getSolo().enterText(getSolo().getEditText(2 + 1), "debile, alex");
+        getSolo().enterText(getSolo().getEditText(3), "debile, alex");
       
         clickAndWaitForButton(TTChecks.NEW_QUESTION_SUBMITTED, "Submit");
 

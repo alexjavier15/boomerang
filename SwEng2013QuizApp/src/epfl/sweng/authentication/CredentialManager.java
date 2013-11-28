@@ -26,10 +26,6 @@ public final class CredentialManager {
         mUserPreferences = QuizApp.getPreferences();
     }
 
-    public boolean getOnlineStatus() {
-        return mUserPreferences.getBoolean(PreferenceKeys.ONLINE_MODE, true);
-    }
-
     public String getUserCredential() {
 
         return mUserPreferences.getString(PreferenceKeys.SESSION_ID, "");
@@ -39,7 +35,8 @@ public final class CredentialManager {
         return setUserCredential("");
     }
 
-    public boolean setUserCredential(String value) {
+    public boolean setUserCredential(
+            String value) {
         return mUserPreferences.edit().putString(PreferenceKeys.SESSION_ID, value).commit();
     }
 }

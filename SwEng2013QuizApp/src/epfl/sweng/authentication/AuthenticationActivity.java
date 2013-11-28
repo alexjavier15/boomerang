@@ -13,7 +13,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -42,16 +41,16 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     private static final int AUTHENTICATED = 4;
     private static final int CONFIRMATION = 3;
     private static final int ERROR = -1;
-    private static final String INTERNAL_ERROR_MSG = "An internal error has occurred during "
+    public static final String INTERNAL_ERROR_MSG = "An internal error has occurred during "
             + "authentication. Please try again.";
     private static final String SUCCEFUL_MSG = "You have succesfully logged in";
-    private static final String SWENG_ERROR_MSG = "Authentication with SwEgQuizServed has failed.";
+    public static final String SWENG_ERROR_MSG = "Authentication with SwEgQuizServed has failed.";
     private static final int TEQUILA = 2;
-    private static final String TEQUILA_ERROR_MSG = "Login with Tequila was  NOT successful. "
+    public static final String TEQUILA_ERROR_MSG = "Login with Tequila was  NOT successful. "
             + "Please check your account infos.";
     private static final int TOKEN = 1;
     private static final int UNAUTHENTICATED = 0;
-    private static final String UNEXPECTED_ERROR_MSG = "An unexpected error has occured. "
+    public static final String UNEXPECTED_ERROR_MSG = "An unexpected error has occured. "
             + "Your credentials couldn't be saved. Please try again";
     private String mStatusMsg = "";
 
@@ -77,7 +76,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     }
 
     private HttpResponse confirm(
-            HttpResponse response) throws ClientProtocolException, IOException, JSONException, NetworkErrorException,
+            HttpResponse response) throws ClientProtocolException, IOException, JSONException,
             AuthenticationException {
         response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_SWERVER_LOGIN,
                 (new JSONObject()).put("token", token));
@@ -128,7 +127,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     }
 
     private HttpResponse postTequilaToken(
-            HttpResponse tokenResponse) throws JSONException, IOException, NetworkErrorException {
+            HttpResponse tokenResponse) throws JSONException, IOException {
 
         token = JSONParser.getParser(tokenResponse).getString("token");
         String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
@@ -169,7 +168,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     }
 
     private HttpResponse requestAuthToken(
-            HttpResponse starter) throws ClientProtocolException, IOException, NetworkErrorException {
+            HttpResponse starter) throws ClientProtocolException, IOException {
 
         HttpResponse response = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -190,10 +189,6 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         } catch (AuthenticationException e) {
             mStatusMsg = e.getMessage();
             Log.e(getLocalClassName(), e.getMessage());
-        } catch (NetworkErrorException e) {
-            mStatusMsg = e.getMessage();
-            Log.e(getLocalClassName(), e.getMessage());
-            e.printStackTrace();
         } catch (ClientProtocolException e) {
             mStatusMsg = INTERNAL_ERROR_MSG;
             Log.e(getLocalClassName(), e.getMessage());
@@ -210,7 +205,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     }
 
     private HttpResponse stateMachine(
-            HttpResponse response) throws ClientProtocolException, IOException, JSONException, NetworkErrorException,
+            HttpResponse response) throws ClientProtocolException, IOException, JSONException,
             AuthenticationException {
         /*
          * if (failedCount > MAX_NUMBER_OF_FAILS) { // too many fails! reset fields! state = ERROR_OVERLOAD; return
