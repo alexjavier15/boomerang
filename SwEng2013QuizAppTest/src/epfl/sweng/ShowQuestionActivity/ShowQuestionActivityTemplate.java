@@ -109,6 +109,6 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
     }
 
     protected void goBackAndWaitFor(final TestCoordinator.TTChecks expected) {
-        mCoordinator.getActivityAndWaitFor(expected);
+        mCoordinator.goBackAndWaitFor(expected);
     }
 }

@@ -60,7 +60,4 @@ public class SearchQuestionActivityTemplate extends ActivityInstrumentationTestC
         mCoordinator.clickAndWaitForAnswer(expected, answer);
     }
 
-    protected void goBackAndWaitFor(final TestCoordinator.TTChecks expected) {
-        mCoordinator.getActivityAndWaitFor(expected);
-    }
 }

@@ -60,6 +60,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         String newValue = CredentialManager.getInstance().getUserCredential();
         Debug.out(this.getClass(), "CREDENTIAL MANAGER IS RETURNING : " + newValue);
         checkStatus(newValue);
+        TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
 
     }
 
@@ -69,12 +70,17 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         Debug.out(this.getClass(), (new CheckProxyHelper()).getServerCommunicationClass());
         HttpCommsProxy.getInstance();
         CheckBox check = (CheckBox) findViewById(R.id.offline_mode);
+
         if (!check.isChecked() != QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
             update();
 
             // onSharedPreferenceChanged(QuizApp.getPreferences(), PreferenceKeys.ONLINE_MODE);
         }
-        TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
+        if (authenticated && QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
+            CacheManager.getInstance().init();
+
+        }
+
     }
 
     /**
@@ -117,7 +123,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             // this means you are logging out!
             CredentialManager.getInstance().removeUserCredential();
             TestCoordinator.check(TTChecks.LOGGED_OUT);
-    
+
         } else {
             Intent loginActivityIntent = new Intent(this, AuthenticationActivity.class);
             startActivity(loginActivityIntent);
@@ -129,7 +135,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
      * @param view
      */
     public void changeNetworkMode(View view) {
-    
+
         CheckBox offlineCheckBox = (CheckBox) view;
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, !offlineCheckBox.isChecked()).apply();
         update();
@@ -146,7 +152,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             Log.d("MainActivity Listener new key value session id : ", newValue);
             checkStatus(newValue);
         }
-    
+
     }
 
     private void setUpPreferences() {
@@ -176,7 +182,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             Log.i("New session Id is: ", newValue);
             setAthenticated(true);
             ((Button) findViewById(R.id.log_inout)).setText("Log out");
-            CacheManager.getInstance().init();
 
         }
     }

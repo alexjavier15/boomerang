@@ -54,9 +54,8 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
             + "Your credentials couldn't be saved. Please try again";
     private String mStatusMsg = "";
 
-    // private static final int MAX_NUMBER_OF_FAILS = 3;
+   
     private int state;
-    // private int failedCount;
     private String token;
 
     @Override

@@ -11,18 +11,32 @@ import epfl.sweng.Tools.TTCoordinatorUtility;
 import epfl.sweng.cache.CacheManager;
 import epfl.sweng.editquestions.EditQuestionActivity;
 import epfl.sweng.servercomm.QuizApp;
+import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.testing.TestCoordinator;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCase2<EditQuestionActivity> {
 
     private Solo mSolo;
     private TTCoordinatorUtility mCoordinator;
+    public final static String TAGS_DEF = "debile, alex";
+    public final static String ANSWER1_DEF = "a cause de la cigarrette";
+    public final static String ANSWER2_DEF = "de naissance";
+    public final static String QUESTION_DEF = "Pourquoi suis je si con?";
+    private MockHttpClient mMock = new MockHttpClient();
 
     /**
      * @return the mSolo
      */
     public Solo getSolo() {
         return mSolo;
+    }
+
+    /**
+     * @return the mMock
+     */
+    public MockHttpClient getMock() {
+        return mMock;
     }
 
     public EditQuestionActivityTemplate() {
@@ -78,7 +92,29 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
     }
 
     protected void goBackAndWaitFor(final TestCoordinator.TTChecks expected) {
-        mCoordinator.getActivityAndWaitFor(expected);
+        mCoordinator.goBackAndWaitFor(expected);
+    }
+
+    protected void pushCannedResponse(int httpStatus) {
+
+        mMock.pushCannedResponse("POST (?:https?://[^/]+|[^/]+)?/+sweng-quiz.appspot.com/quizquestions/ HTTP/1.1",
+                httpStatus, "{\"question\": \"Pourquoi je suis si con?\","
+                        + " \"answers\": [\"A cause de la cigarette\", \"Je ne suis pas con\", \"De naissance\"],"
+                        + " \"solutionIndex\": 1, \"tags\": [\"stupid\", \"alex\"], \"id\": \"-1\" }",
+                "application/json");
+
+    }
+
+    protected void fillCorrectQuizQuestion() {
+
+        getSolo().clickOnButton(0);
+        getSolo().enterText(getSolo().getEditText(0), QUESTION_DEF);
+        getSolo().enterText(1, ANSWER2_DEF);
+        clickAndWaitForButton(TTChecks.QUESTION_EDITED, "+");
+        EditText et = getSolo().getEditText(2);
+        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et, ANSWER1_DEF);
+        getSolo().enterText(getSolo().getEditText(3), TAGS_DEF);
+
     }
 
 }

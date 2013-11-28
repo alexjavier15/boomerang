@@ -1,6 +1,7 @@
 package epfl.sweng.showquestions;
 
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -121,12 +122,26 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } else {
             url = HttpComms.URL_SWENG_RANDOM_GET;
         }
+        
+        
+        try {
+            
+            processHttpReponse(new HttpCommsBackgroundTask(this, false).execute().get());
+        
+        } catch (InterruptedException e) {
+            toast(ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            toast(ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         askNextQuestion(this.getCurrentFocus());
+    
     }
 
     /**
@@ -161,7 +176,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             Debug.out(this.getClass(), quizQuestion);
         } catch (JSONException e) {
             HttpCommsProxy.getInstance().setOnlineMode(false);
-            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+            toast(ERROR_MESSAGE);
             e.printStackTrace();
         }
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {

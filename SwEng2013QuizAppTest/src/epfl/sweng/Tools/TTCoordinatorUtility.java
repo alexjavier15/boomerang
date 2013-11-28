@@ -55,7 +55,7 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
 
             @Override
             public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
+                return String.format("clickAndWaitForButton(%s)", expected);
             }
 
             @Override
@@ -76,7 +76,7 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
 
             @Override
             public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
+                return String.format("enterTextAndWaitFor(%s)", expected);
             }
 
             @Override
@@ -97,7 +97,7 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
 
             @Override
             public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
+                return String.format("clickAndWaitForAnswer(%s)", expected);
             }
 
             @Override
@@ -118,7 +118,7 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
 
             @Override
             public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
+                return String.format("goBackAndWaitFor(%s)", expected);
             }
 
             @Override

@@ -32,7 +32,7 @@ public final class CredentialManager {
     }
 
     public boolean removeUserCredential() {
-        return setUserCredential("");
+        return mUserPreferences.edit().remove(PreferenceKeys.SESSION_ID).commit();
     }
 
     public boolean setUserCredential(String value) {
