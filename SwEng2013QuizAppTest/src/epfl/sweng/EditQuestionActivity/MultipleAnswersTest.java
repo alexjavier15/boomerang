@@ -27,7 +27,7 @@ public class MultipleAnswersTest extends EditQuestionActivityTemplate {
                         + " \"solutionIndex\": 1, \"tags\": [\"stupid\", \"alex\"], \"id\": \"-1\" }",
                 "application/json");
         SwengHttpClientFactory.setInstance(mock);
-       
+
     }
 
     public void test1AddMultipleanswers2() {
@@ -52,12 +52,10 @@ public class MultipleAnswersTest extends EditQuestionActivityTemplate {
                 assertFalse("Submit button should be disabled", submit.isEnabled());
 
             }
-            if(i!=NUM_ANSWERS){
-            clickAndWaitForButton(TTChecks.QUESTION_EDITED, "+");}
+            if (i != NUM_ANSWERS) {
+                clickAndWaitForButton(TTChecks.QUESTION_EDITED, "+");
+            }
         }
-      
-     
-     
 
         submit = getSolo().getButton("Submit");
         assertFalse("Submit button should be disabled", submit.isEnabled());
@@ -71,7 +69,6 @@ public class MultipleAnswersTest extends EditQuestionActivityTemplate {
         enterTextAndWaitFor(TTChecks.QUESTION_EDITED, tags, "stupid, alex");
 
         clickAndWaitForButton(TTChecks.NEW_QUESTION_SUBMITTED, "Submit");
-        
 
     }
 

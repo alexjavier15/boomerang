@@ -59,15 +59,13 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      * 
      */
     @Override
-    public boolean onCreateOptionsMenu(
-            Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.show_questions, menu);
         return true;
     }
 
     @Override
-    protected void onCreate(
-            Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_questions);
 
@@ -82,8 +80,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         answerListener = new OnItemClickListener() {
 
             @Override
-            public void onItemClick(
-                    AdapterView<?> listAdapter, View view, int selectedAnswer, long arg3) {
+            public void onItemClick(AdapterView<?> listAdapter, View view, int selectedAnswer, long arg3) {
 
                 ListView list = (ListView) listAdapter;
                 TextView textListener = (TextView) list.getChildAt(selectedAnswer);
@@ -137,8 +134,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      * 
      * @param view
      */
-    public void askNextQuestion(
-            View view) {
+    public void askNextQuestion(View view) {
 
         ((Button) findViewById(R.id.next_question)).setEnabled(false);
         new HttpCommsBackgroundTask(this, true).execute();
@@ -152,8 +148,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     }
 
     @Override
-    public void processHttpReponse(
-            HttpResponse httpResponse) {
+    public void processHttpReponse(HttpResponse httpResponse) {
         QuizQuestion quizQuestion = null;
         JSONObject jsonObj = null;
         String jsonString = null;
@@ -184,8 +179,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      *            : set of Strings
      * @return the tags
      */
-    private String displayTags(
-            Set<String> set) {
+    private String displayTags(Set<String> set) {
         if (set.size() > 0) {
             String tagsInString = "";
             int counter = 0;
@@ -203,8 +197,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         }
     }
 
-    private void setQuestion(
-            QuizQuestion quizQuestion) {
+    private void setQuestion(QuizQuestion quizQuestion) {
         try {
             currrentQuestion = quizQuestion;
 
@@ -222,8 +215,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         }
     }
 
-    public void toast(
-            String message) {
+    public void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 

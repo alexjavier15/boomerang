@@ -42,7 +42,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-    //private String query = null;
+    // private String query = null;
     private Cursor queriedCursor = null;
 
     /**
@@ -174,7 +174,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
          */
         SQLiteDatabase db = this.getReadableDatabase();
         String selection = translateQuery(queryS);
-        //this.query = queryS;
+        // this.query = queryS;
         queriedCursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, selection, null, null,
                 null, "_ID DESC", null);
 

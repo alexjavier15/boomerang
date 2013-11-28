@@ -26,7 +26,6 @@ public class SubmitCorrectQuestionTest extends EditQuestionActivityTemplate {
                 "application/json");
         SwengHttpClientFactory.setInstance(mock);
 
-
     }
 
     public void test1SubmitSingleQuestion() {
@@ -43,7 +42,7 @@ public class SubmitCorrectQuestionTest extends EditQuestionActivityTemplate {
         EditText et = getSolo().getEditText(2);
         enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et, answer1);
         getSolo().enterText(getSolo().getEditText(3), "debile, alex");
-      
+
         clickAndWaitForButton(TTChecks.NEW_QUESTION_SUBMITTED, "Submit");
 
     }

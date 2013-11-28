@@ -15,7 +15,7 @@ public class TestLogInLogOutTest extends MainActivityTemplate {
     protected void setUp() throws Exception {
         super.setUp();
         MockHttpClient mock = new MockHttpClient();
-       
+
         mock.pushCannedResponse("GET (?:https?://[^/]+|[^/]+)?/+sweng-quiz.appspot.com/login\\b", HttpStatus.SC_OK,
                 "{\"token\": \"rqtvk5d3za2x6ocak1a41dsmywogrdlv5\","
                         + " \"message\": \"Here's your authentication token. Please validate it with Tequila"
@@ -41,7 +41,7 @@ public class TestLogInLogOutTest extends MainActivityTemplate {
         EditText password = getSolo().getEditText("GASPAR Password");
         getSolo().enterText(password, "password");
         clickAndWaitForButton(TTChecks.MAIN_ACTIVITY_SHOWN, "Log in using Tequila");
-        
+
         assertTrue("Logged In:", getSolo().searchButton("Log out"));
 
     }

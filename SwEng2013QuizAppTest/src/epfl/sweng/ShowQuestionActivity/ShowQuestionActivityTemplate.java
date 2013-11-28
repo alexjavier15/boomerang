@@ -7,6 +7,7 @@ import android.widget.EditText;
 
 import com.jayway.android.robotium.solo.Solo;
 
+import epfl.sweng.Tools.TTCoordinatorUtility;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.cache.CacheManager;
 import epfl.sweng.servercomm.QuizApp;
@@ -15,11 +16,12 @@ import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
-import epfl.sweng.testing.TestingTransaction;
 
 public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCase2<ShowQuestionsActivity> {
 
     private Solo mSolo;
+    private TTCoordinatorUtility mCoordinator;
+
     private MockHttpClient mMock = new MockHttpClient();
     public final static String CORRECT_ANS = "Forty-two";
     public final static String DEFAULT_TAGS = "\"h2g2\", \"trivia\"";
@@ -32,6 +34,7 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
 
     public ShowQuestionActivityTemplate() {
         super(ShowQuestionsActivity.class);
+        mCoordinator = new TTCoordinatorUtility(this, getSolo());
     }
 
     @Override
@@ -45,8 +48,17 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
 
     }
 
-    protected void pushCannedResponse(
-            String type, int httpStatus) {
+    private void cleanUpData() {
+
+        File postDB = QuizApp.getContexStatic().getDatabasePath(CacheManager.POST_SYNC_DB_NAME);
+        File cacheDB = QuizApp.getContexStatic().getDatabasePath(CacheManager.QUESTION_CACHE_DB_NAME);
+        postDB.delete();
+        cacheDB.delete();
+        QuizApp.getPreferences().edit().clear().commit();
+
+    }
+
+    protected void pushCannedResponse(String type, int httpStatus) {
         pushCannedResponse(type, httpStatus, DEFAULT_QUESTION, DEFAULT_TAGS);
 
     }
@@ -56,8 +68,7 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
         mMock.popCannedResponse();
     }
 
-    protected void pushCannedResponse(
-            String type, int httpStatus, String question, String tags) {
+    protected void pushCannedResponse(String type, int httpStatus, String question, String tags) {
         mMock.pushCannedResponse(type + " (?:https?://[^/]+|[^/]+)?/+quizquestions/random HTTP/1.1", httpStatus,
                 "{\"question\": \"" + question + "\", "
                         + "\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\", \"solutionIndex\":"
@@ -65,8 +76,7 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
 
     }
 
-    protected void pushMalformedCannedResponse(
-            String type, int httpStatus) {
+    protected void pushMalformedCannedResponse(String type, int httpStatus) {
         pushCannedResponse(type, httpStatus, "\"" + "}*****", "h2g2\", \"trivia\"");
 
     }
@@ -83,140 +93,23 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
 
     }
 
-    protected void getActivityAndWaitFor(
-            final TestCoordinator.TTChecks expected) {
-        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
-            @Override
-            public void initiate() {
-                getActivity();
-
-            }
-
-            @Override
-            public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
-            }
-
-            @Override
-            public void verify(
-                    TestCoordinator.TTChecks notification) {
-                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
-                        expected, notification);
-            }
-        });
+    protected void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
+        mCoordinator.getActivityAndWaitFor(expected);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.test.ActivityInstrumentationTestCase2#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        // TODO Auto-generated method stub
-        super.tearDown();
-        cleanUpData();
-       
-
+    protected void clickAndWaitForButton(final TestCoordinator.TTChecks expected, final String button) {
+        mCoordinator.clickAndWaitForButton(expected, button);
     }
 
-    private void cleanUpData() {
-
-        File postDB = QuizApp.getContexStatic().getDatabasePath(CacheManager.POST_SYNC_DB_NAME);
-        File cacheDB = QuizApp.getContexStatic().getDatabasePath(CacheManager.QUESTION_CACHE_DB_NAME);
-        postDB.delete();
-        cacheDB.delete();
-        QuizApp.getPreferences().edit().clear().commit();
-
+    protected void enterTextAndWaitFor(final TestCoordinator.TTChecks expected, final EditText et, final String text) {
+        mCoordinator.enterTextAndWaitFor(expected, et, text);
     }
 
-    protected void clickAndWaitForButton(
-            final TestCoordinator.TTChecks expected, final String button) {
-        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
-            @Override
-            public void initiate() {
-                mSolo.clickOnButton(button);
-
-            }
-
-            @Override
-            public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
-            }
-
-            @Override
-            public void verify(
-                    TestCoordinator.TTChecks notification) {
-                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
-                        expected, notification);
-            }
-        });
+    protected void clickAndWaitForAnswer(final TestCoordinator.TTChecks expected, final String answer) {
+        mCoordinator.clickAndWaitForAnswer(expected, answer);
     }
 
-    protected void enterTextAndWaitFor(
-            final TestCoordinator.TTChecks expected, final EditText et, final String text) {
-        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
-            @Override
-            public void initiate() {
-                mSolo.enterText(et, text);
-            }
-
-            @Override
-            public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
-            }
-
-            @Override
-            public void verify(
-                    TestCoordinator.TTChecks notification) {
-                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
-                        expected, notification);
-            }
-        });
+    protected void goBackAndWaitFor(final TestCoordinator.TTChecks expected) {
+        mCoordinator.getActivityAndWaitFor(expected);
     }
-
-    protected void clickAndWaitForAnswer(
-            final TestCoordinator.TTChecks expected, final String answer) {
-        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
-            @Override
-            public void initiate() {
-                mSolo.clickOnText(answer);
-            }
-
-            @Override
-            public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
-            }
-
-            @Override
-            public void verify(
-                    TestCoordinator.TTChecks notification) {
-                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
-                        expected, notification);
-            }
-        });
-    }
-
-    protected void goBackAndWaitFor(
-            final TestCoordinator.TTChecks expected) {
-        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
-            @Override
-            public void initiate() {
-                mSolo.goBack();
-            }
-
-            @Override
-            public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
-            }
-
-            @Override
-            public void verify(
-                    TestCoordinator.TTChecks notification) {
-                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
-                        expected, notification);
-            }
-        });
-    }
-
 }

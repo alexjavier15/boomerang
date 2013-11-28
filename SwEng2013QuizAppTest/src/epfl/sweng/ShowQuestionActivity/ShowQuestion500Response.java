@@ -12,7 +12,7 @@ public class ShowQuestion500Response extends ShowQuestionActivityTemplate {
     }
 
     public void test2Get500HttpResponse() {
-       
+
         getActivity();
         @SuppressWarnings("static-access")
         boolean errorText = getSolo().waitForText(getActivity().ERROR_MESSAGE);

@@ -25,7 +25,7 @@ public class ShowQuestionBadAnswer extends ShowQuestionActivityTemplate {
         Button next = getSolo().getButton(getActivity().getResources().getString(R.string.next_question));
 
         assertFalse("Next Button is Enable", next.isEnabled());
-        
+
     }
 
 }

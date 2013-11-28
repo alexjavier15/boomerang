@@ -4,6 +4,7 @@ import org.apache.http.HttpStatus;
 
 public class ShowQuestionMalformedResponse extends ShowQuestionActivityTemplate {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         pushMalformedCannedResponse("GET", HttpStatus.SC_OK);

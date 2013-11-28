@@ -60,7 +60,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         String newValue = CredentialManager.getInstance().getUserCredential();
         Debug.out(this.getClass(), "CREDENTIAL MANAGER IS RETURNING : " + newValue);
         checkStatus(newValue);
-     
 
     }
 
@@ -76,6 +75,80 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             // onSharedPreferenceChanged(QuizApp.getPreferences(), PreferenceKeys.ONLINE_MODE);
         }
         TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
+    }
+
+    /**
+     * Launches the new Activity ShowQuestionsActivity to display a random question
+     * 
+     * @param view
+     *            The view that was clicked.
+     */
+    public void askQuestion(View view) {
+        Toast.makeText(this, "You are on the page to show a random question!", Toast.LENGTH_SHORT).show();
+        Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
+        this.startActivity(showQuestionActivityIntent);
+    }
+
+    /**
+     * Launches a new Search activity where a query can be composed to the server.
+     * 
+     * @param view
+     */
+    public void searchQuestion(View view) {
+        Toast.makeText(this, "You are on the page to search a question!", Toast.LENGTH_SHORT).show();
+        Intent searchActivityIntent = new Intent(this, SearchActivity.class);
+        startActivity(searchActivityIntent);
+    }
+
+    /**
+     * Launches the new Activity EditQuestionActivity to permit the user to submit a new question to the server
+     * 
+     * @param view
+     *            The view that was clicked.
+     */
+    public void submitQuestion(View view) {
+        Toast.makeText(this, "You are on the page to submit a question!", Toast.LENGTH_SHORT).show();
+        Intent submitActivityIntent = new Intent(this, EditQuestionActivity.class);
+        startActivity(submitActivityIntent);
+    }
+
+    public void logInOut(View view) {
+        if (authenticated) {
+            // this means you are logging out!
+            CredentialManager.getInstance().removeUserCredential();
+            TestCoordinator.check(TTChecks.LOGGED_OUT);
+    
+        } else {
+            Intent loginActivityIntent = new Intent(this, AuthenticationActivity.class);
+            startActivity(loginActivityIntent);
+        }
+    
+    }
+
+    /**
+     * 
+     * @param view
+     */
+    public void changeNetworkMode(View view) {
+    
+        CheckBox offlineCheckBox = (CheckBox) view;
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, !offlineCheckBox.isChecked()).apply();
+        update();
+    
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
+        Debug.out(this.getClass(), "listener notify");
+        if (key.equals(PreferenceKeys.SESSION_ID)) {
+            String newValue = pref.getString(key, "");
+            Log.d("MainActivity Listener new key value session id : ", newValue);
+            checkStatus(newValue);
+        }
+    
     }
 
     private void setUpPreferences() {
@@ -111,45 +184,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     }
 
     /**
-     * Launches the new Activity ShowQuestionsActivity to display a random question
-     * 
-     * @param view
-     *            The view that was clicked.
-     */
-    public void askQuestion(View view) {
-        Toast.makeText(this, "You are on the page to show a random question!", Toast.LENGTH_SHORT).show();
-        Intent showQuestionActivityIntent = new Intent(this, ShowQuestionsActivity.class);
-        this.startActivity(showQuestionActivityIntent);
-    }
-
-    public void logInOut(View view) {
-        if (authenticated) {
-            // this means you are logging out!
-            CredentialManager.getInstance().removeUserCredential();
-            TestCoordinator.check(TTChecks.LOGGED_OUT);
-
-        } else {
-            Intent loginActivityIntent = new Intent(this, AuthenticationActivity.class);
-            startActivity(loginActivityIntent);
-        }
-
-    }
-
-    /**
-	 * 
-	 */
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
-        Debug.out(this.getClass(), "listener notify");
-        if (key.equals(PreferenceKeys.SESSION_ID)) {
-            String newValue = pref.getString(key, "");
-            Log.d("MainActivity Listener new key value session id : ", newValue);
-            checkStatus(newValue);
-        }
-
-    }
-
-    /**
      * 
      * @param newState
      */
@@ -159,40 +193,5 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         ((Button) findViewById(R.id.SubmitQuestionButton)).setEnabled(newState);
         ((Button) findViewById(R.id.SearchQuestionButton)).setEnabled(newState);
         ((CheckBox) findViewById(R.id.offline_mode)).setEnabled(newState);
-    }
-
-    /**
-     * Launches the new Activity EditQuestionActivity to permit the user to submit a new question to the server
-     * 
-     * @param view
-     *            The view that was clicked.
-     */
-    public void submitQuestion(View view) {
-        Toast.makeText(this, "You are on the page to submit a question!", Toast.LENGTH_SHORT).show();
-        Intent submitActivityIntent = new Intent(this, EditQuestionActivity.class);
-        startActivity(submitActivityIntent);
-    }
-
-    /**
-     * Launches a new Search activity where a query can be composed to the server.
-     * 
-     * @param view
-     */
-    public void searchQuestion(View view) {
-        Toast.makeText(this, "You are on the page to search a question!", Toast.LENGTH_SHORT).show();
-        Intent searchActivityIntent = new Intent(this, SearchActivity.class);
-        startActivity(searchActivityIntent);
-    }
-
-    /**
-     * 
-     * @param view
-     */
-    public void changeNetworkMode(View view) {
-
-        CheckBox offlineCheckBox = (CheckBox) view;
-        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, !offlineCheckBox.isChecked()).apply();
-        update();
-
     }
 }

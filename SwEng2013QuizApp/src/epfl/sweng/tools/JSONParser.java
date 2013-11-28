@@ -24,8 +24,7 @@ public class JSONParser {
 
     public static final int HTTP_ERROR = 404;
 
-    public static JSONObject getParser(
-            HttpResponse response) throws JSONException {
+    public static JSONObject getParser(HttpResponse response) throws JSONException {
         JSONObject json = null;
 
         BasicResponseHandler responseHandler = new BasicResponseHandler();
@@ -50,8 +49,7 @@ public class JSONParser {
      * @throws IOException
      * @throws JSONException
      */
-    public static List<String> jsonArrayToList(
-            JSONArray array) throws JSONException {
+    public static List<String> jsonArrayToList(JSONArray array) throws JSONException {
         int size = array.length();
         List<String> stringList = new ArrayList<String>(size);
 
@@ -72,8 +70,7 @@ public class JSONParser {
      * @throws IOException
      * @throws JSONException
      */
-    public static JSONObject parseQuiztoJSON(
-            QuizQuestion question) throws JSONException {
+    public static JSONObject parseQuiztoJSON(QuizQuestion question) throws JSONException {
 
         JSONObject jsonQuestion = new JSONObject();
 

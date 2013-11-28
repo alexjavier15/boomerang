@@ -35,8 +35,7 @@ public final class CredentialManager {
         return setUserCredential("");
     }
 
-    public boolean setUserCredential(
-            String value) {
+    public boolean setUserCredential(String value) {
         return mUserPreferences.edit().putString(PreferenceKeys.SESSION_ID, value).commit();
     }
 }

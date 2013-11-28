@@ -7,15 +7,16 @@ import android.widget.EditText;
 
 import com.jayway.android.robotium.solo.Solo;
 
+import epfl.sweng.Tools.TTCoordinatorUtility;
 import epfl.sweng.cache.CacheManager;
 import epfl.sweng.entry.MainActivity;
 import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.testing.TestCoordinator;
-import epfl.sweng.testing.TestingTransaction;
 
 public class MainActivityTemplate extends ActivityInstrumentationTestCase2<MainActivity> {
 
     private Solo mSolo;
+    private TTCoordinatorUtility mCoordinator;
 
     public Solo getSolo() {
 
@@ -24,6 +25,8 @@ public class MainActivityTemplate extends ActivityInstrumentationTestCase2<MainA
 
     public MainActivityTemplate() {
         super(MainActivity.class);
+        mCoordinator = new TTCoordinatorUtility(this, getSolo());
+
     }
 
     @Override
@@ -33,29 +36,6 @@ public class MainActivityTemplate extends ActivityInstrumentationTestCase2<MainA
         CacheManager.reset();
 
         mSolo = new Solo(getInstrumentation());
-    }
-
-    protected void getActivityAndWaitFor(
-            final TestCoordinator.TTChecks expected) {
-        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
-            @Override
-            public void initiate() {
-                getActivity();
-
-            }
-
-            @Override
-            public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
-            }
-
-            @Override
-            public void verify(
-                    TestCoordinator.TTChecks notification) {
-                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
-                        expected, notification);
-            }
-        });
     }
 
     /*
@@ -68,7 +48,6 @@ public class MainActivityTemplate extends ActivityInstrumentationTestCase2<MainA
         // TODO Auto-generated method stub
         super.tearDown();
         cleanUpData();
-        
 
     }
 
@@ -82,93 +61,24 @@ public class MainActivityTemplate extends ActivityInstrumentationTestCase2<MainA
 
     }
 
-    protected void clickAndWaitForButton(
-            final TestCoordinator.TTChecks expected, final String button) {
-        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
-            @Override
-            public void initiate() {
-                mSolo.clickOnButton(button);
-
-            }
-
-            @Override
-            public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
-            }
-
-            @Override
-            public void verify(
-                    TestCoordinator.TTChecks notification) {
-                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
-                        expected, notification);
-            }
-        });
+    protected void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
+        mCoordinator.getActivityAndWaitFor(expected);
     }
 
-    protected void enterTextAndWaitFor(
-            final TestCoordinator.TTChecks expected, final EditText et, final String text) {
-        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
-            @Override
-            public void initiate() {
-                mSolo.enterText(et, text);
-            }
-
-            @Override
-            public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
-            }
-
-            @Override
-            public void verify(
-                    TestCoordinator.TTChecks notification) {
-                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
-                        expected, notification);
-            }
-        });
+    protected void clickAndWaitForButton(final TestCoordinator.TTChecks expected, final String button) {
+        mCoordinator.clickAndWaitForButton(expected, button);
     }
 
-    protected void clickAndWaitForAnswer(
-            final TestCoordinator.TTChecks expected, final String answer) {
-        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
-            @Override
-            public void initiate() {
-                mSolo.clickOnText(answer);
-            }
-
-            @Override
-            public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
-            }
-
-            @Override
-            public void verify(
-                    TestCoordinator.TTChecks notification) {
-                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
-                        expected, notification);
-            }
-        });
+    protected void enterTextAndWaitFor(final TestCoordinator.TTChecks expected, final EditText et, final String text) {
+        mCoordinator.enterTextAndWaitFor(expected, et, text);
     }
 
-    protected void goBackAndWaitFor(
-            final TestCoordinator.TTChecks expected) {
-        TestCoordinator.run(getInstrumentation(), new TestingTransaction() {
-            @Override
-            public void initiate() {
-                mSolo.goBack();
-            }
+    protected void clickAndWaitForAnswer(final TestCoordinator.TTChecks expected, final String answer) {
+        mCoordinator.clickAndWaitForAnswer(expected, answer);
+    }
 
-            @Override
-            public String toString() {
-                return String.format("getActivityAndWaitFor(%s)", expected);
-            }
-
-            @Override
-            public void verify(
-                    TestCoordinator.TTChecks notification) {
-                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
-                        expected, notification);
-            }
-        });
+    protected void goBackAndWaitFor(final TestCoordinator.TTChecks expected) {
+        mCoordinator.getActivityAndWaitFor(expected);
     }
 
 }

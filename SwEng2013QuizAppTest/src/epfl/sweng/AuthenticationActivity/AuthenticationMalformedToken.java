@@ -6,7 +6,7 @@ import android.widget.EditText;
 import epfl.sweng.authentication.AuthenticationActivity;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
-public class AuthenticationBadPostToken extends AuthenticationActivityTemplate {
+public class AuthenticationMalformedToken extends AuthenticationActivityTemplate {
 
     /*
      * (non-Javadoc)
@@ -18,22 +18,27 @@ public class AuthenticationBadPostToken extends AuthenticationActivityTemplate {
 
         super.setUp();
 
-        pushCannedPostTequilaToken(HttpStatus.SC_FORBIDDEN);
-        pushCannedGetSwengtoken(HttpStatus.SC_OK);
+        getmMock().pushCannedResponse(
+                "GET (?:https?://[^/]+|[^/]+)?/+sweng-quiz.appspot.com/login\\b",
+                HttpStatus.SC_OK,
+                "\"token\": \"rqtvk5d3za2x6ocak1a41dsmywogrdlv5\","
+                        + " \"message\": \"Here's your authentication token. Please validate it with Tequila"
+                        + " at https://tequila.epfl.ch/cgi-bin/tequila/login\"}", "application/json");
+
+        pushCannedPostTequilaToken(TEQUILA_REQUEST_STATUS);
         pushCannedPostRequestSessionID(HttpStatus.SC_OK);
 
     }
 
-    public void testBadReponseFromPostTequilaServer() {
+    public void testResponseMalformedToken() {
         getActivityAndWaitFor(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
         EditText username = getSolo().getEditText("GASPAR Username");
         getSolo().enterText(username, "test");
         EditText password = getSolo().getEditText("GASPAR Password");
         getSolo().enterText(password, "password");
         getSolo().clickOnButton("Log in using Tequila");
-        boolean isErrorShown = getSolo().waitForText(AuthenticationActivity.TEQUILA_ERROR_MSG);
+        boolean isErrorShown = getSolo().waitForText(AuthenticationActivity.INTERNAL_ERROR_MSG);
         assertTrue("request to sweng failed", isErrorShown);
-
     }
 
 }

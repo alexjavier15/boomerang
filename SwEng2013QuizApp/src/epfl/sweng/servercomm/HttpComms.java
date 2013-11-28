@@ -50,8 +50,7 @@ public final class HttpComms implements IHttpConnectionHelper {
 
     }
 
-    private HttpResponse execute(
-            HttpUriRequest request) throws NetworkErrorException {
+    private HttpResponse execute(HttpUriRequest request) throws NetworkErrorException {
         HttpResponse response = null;
         if (isConnected()) {
             try {
@@ -94,8 +93,7 @@ public final class HttpComms implements IHttpConnectionHelper {
      * @throws NetworkErrorException
      */
     @Override
-    public HttpResponse getHttpResponse(
-            String urlString) {
+    public HttpResponse getHttpResponse(String urlString) {
         HttpGet request = new HttpGet(urlString);
         HttpResponse response = null;
         try {
@@ -118,8 +116,7 @@ public final class HttpComms implements IHttpConnectionHelper {
 
     }
 
-    public HttpResponse postEntity(
-            String url, HttpEntity entity) throws ClientProtocolException, IOException {
+    public HttpResponse postEntity(String url, HttpEntity entity) throws ClientProtocolException, IOException {
 
         HttpPost post = new HttpPost(url);
         post.setEntity(entity);
@@ -145,8 +142,7 @@ public final class HttpComms implements IHttpConnectionHelper {
      */
     // TODO do so no code is repeated
     @Override
-    public HttpResponse postJSONObject(
-            String url, JSONObject question) {
+    public HttpResponse postJSONObject(String url, JSONObject question) {
 
         HttpPost post = new HttpPost(url);
         HttpResponse response = null;

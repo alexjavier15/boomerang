@@ -26,7 +26,7 @@ public class SadEditQuestionTest extends EditQuestionActivityTemplate {
                         + " \"solutionIndex\": 0, \"tags\": [\"stupid\", \"me\"], \"id\": \"-1\" }",
                 "application/json");
         SwengHttpClientFactory.setInstance(mock);
-   
+
     }
 
     public void testServerNotAccessible() {

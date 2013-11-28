@@ -28,7 +28,7 @@ public class ShowQuestionCorrectAnswerNextQuestion extends ShowQuestionActivityT
         assertFalse("New Question shown", getSolo().searchText(QUESTION));
 
         popCannedResponse();
-        pushCannedResponse("GET", HttpStatus.SC_OK, QUESTION,DEFAULT_TAGS);
+        pushCannedResponse("GET", HttpStatus.SC_OK, QUESTION, DEFAULT_TAGS);
         clickAndWaitForButton(TTChecks.QUESTION_SHOWN, getActivity().getResources().getString(R.string.next_question));
         assertTrue("New Question shown", getSolo().searchText(QUESTION));
 

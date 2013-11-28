@@ -17,7 +17,7 @@ public class AuthenticationBadSessionIDRequest extends AuthenticationActivityTem
 
         super.setUp();
         pushCannedPostTequilaToken(TEQUILA_REQUEST_STATUS);
-        pushCannedGetSwengtoken(OTHER_STATUS);
+        pushCannedGetSwengtoken(HttpStatus.SC_OK);
         pushCannedPostRequestSessionID(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 
     }

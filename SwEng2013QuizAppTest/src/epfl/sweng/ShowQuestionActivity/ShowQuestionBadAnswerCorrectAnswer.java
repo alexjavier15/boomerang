@@ -7,7 +7,7 @@ import epfl.sweng.R;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class ShowQuestionBadAnswerCorrectAnswer extends ShowQuestionActivityTemplate {
-    
+
     @Override
     protected void setUp() throws Exception {
 

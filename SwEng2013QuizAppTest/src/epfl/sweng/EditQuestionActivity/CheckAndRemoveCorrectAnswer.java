@@ -2,7 +2,6 @@ package epfl.sweng.EditQuestionActivity;
 
 import android.widget.Button;
 import android.widget.EditText;
-
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class CheckAndRemoveCorrectAnswer extends EditQuestionActivityTemplate {

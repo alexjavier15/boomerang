@@ -58,10 +58,10 @@ public final class CacheManager {
         }
         return sCacheManager;
     }
-    
-    public  static void  reset() {
+
+    public static void reset() {
         sCacheManager = new CacheManager();
-        
+
     }
 
     public void init() {
