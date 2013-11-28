@@ -52,7 +52,6 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
             @Override
             public void initiate() {
                 mSolo.clickOnButton(button);
-
             }
 
             @Override
