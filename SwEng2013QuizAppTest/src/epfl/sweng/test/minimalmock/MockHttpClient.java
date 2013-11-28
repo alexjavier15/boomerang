@@ -56,7 +56,8 @@ public class MockHttpClient extends DefaultHttpClient {
             final ConnectionKeepAliveStrategy kastrat, final HttpRoutePlanner rouplan,
             final HttpProcessor httpProcessor, final HttpRequestRetryHandler retryHandler,
             final RedirectHandler redirectHandler, final AuthenticationHandler targetAuthHandler,
-            final AuthenticationHandler proxyAuthHandler, final UserTokenHandler stateHandler, final HttpParams params) {
+            final AuthenticationHandler proxyAuthHandler, final UserTokenHandler stateHandler,
+            final HttpParams params) {
         return new MockRequestDirector(this);
     }
 
