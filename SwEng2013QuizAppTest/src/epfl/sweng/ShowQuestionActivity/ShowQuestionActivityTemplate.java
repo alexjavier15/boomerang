@@ -34,7 +34,6 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
 
     public ShowQuestionActivityTemplate() {
         super(ShowQuestionsActivity.class);
-        mCoordinator = new TTCoordinatorUtility(this, getSolo());
     }
 
     @Override
@@ -45,7 +44,7 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
         SwengHttpClientFactory.setInstance(mMock);
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
         mSolo = new Solo(getInstrumentation());
-
+        mCoordinator = new TTCoordinatorUtility(this, mSolo);
     }
 
     private void cleanUpData() {

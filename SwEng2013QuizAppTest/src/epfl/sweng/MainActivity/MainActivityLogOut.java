@@ -20,7 +20,6 @@ public class MainActivityLogOut extends MainActivityTemplate {
     }
 
     public void testalreadyLogInAndLogOut() {
-
         getActivityAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
         Button logOut = getSolo().getButton("Log out");
         assertTrue("Log out button is enabled ", logOut.isEnabled());

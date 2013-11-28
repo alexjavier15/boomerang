@@ -25,8 +25,6 @@ public class MainActivityTemplate extends ActivityInstrumentationTestCase2<MainA
 
     public MainActivityTemplate() {
         super(MainActivity.class);
-        mCoordinator = new TTCoordinatorUtility(this, getSolo());
-
     }
 
     @Override
@@ -34,8 +32,8 @@ public class MainActivityTemplate extends ActivityInstrumentationTestCase2<MainA
         super.setUp();
         cleanUpData();
         CacheManager.reset();
-
         mSolo = new Solo(getInstrumentation());
+        mCoordinator = new TTCoordinatorUtility(this, mSolo);
     }
 
     /*

@@ -27,7 +27,6 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
 
     public EditQuestionActivityTemplate() {
         super(EditQuestionActivity.class);
-        mCoordinator = new TTCoordinatorUtility(this, getSolo());
     }
 
     @Override
@@ -35,9 +34,8 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
         super.setUp();
         cleanUpData();
         CacheManager.reset();
-
         mSolo = new Solo(getInstrumentation());
-
+        mCoordinator = new TTCoordinatorUtility(this, mSolo);
     }
 
     /*
