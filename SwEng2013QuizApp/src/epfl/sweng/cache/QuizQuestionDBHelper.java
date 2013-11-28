@@ -109,7 +109,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         SQLiteDatabase db = this.getWritableDatabase();
         Debug.out(getClass(), DatabaseUtils.queryNumEntries(db, TABLE_NAME));
 
-        db.delete(TABLE_NAME, _ID + "=?", new String[] {index});
+        db.delete(TABLE_NAME, _ID + "= ?", new String[] {index});
 
         Debug.out(getClass(), DatabaseUtils.queryNumEntries(db, TABLE_NAME));
         db.close();
@@ -123,7 +123,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         Cursor cursor = db.query(TABLE_NAME, new String[] {_ID, COLUMN_NAME_JSON_QUESTION}, null, null, null, null,
                 _ID + " ASC");
         if (cursor.moveToFirst()) {
-            cursorArray[0] = String.valueOf(cursor.getInt(CULUMN_JSON_INDEX));
+            cursorArray[0] = String.valueOf(cursor.getInt(0));
             cursorArray[1] = cursor.getString(CULUMN_JSON_INDEX);
 
         }
