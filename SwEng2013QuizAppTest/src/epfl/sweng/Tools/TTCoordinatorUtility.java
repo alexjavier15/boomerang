@@ -30,7 +30,6 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
             @Override
             public void initiate() {
                 mTest.getActivity();
-
             }
 
             @Override
