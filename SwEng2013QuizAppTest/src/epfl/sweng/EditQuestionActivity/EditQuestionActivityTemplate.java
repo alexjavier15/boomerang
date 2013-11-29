@@ -9,6 +9,7 @@ import com.jayway.android.robotium.solo.Solo;
 
 import epfl.sweng.Tools.ITTCordinatorHelper;
 import epfl.sweng.Tools.TTCoordinatorUtility;
+import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.cache.CacheManager;
 import epfl.sweng.editquestions.EditQuestionActivity;
 import epfl.sweng.servercomm.QuizApp;
@@ -37,7 +38,9 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
         cleanUpData();
         CacheManager.reset();
         mSolo = new Solo(getInstrumentation());
+    
         mCoordinator = new TTCoordinatorUtility(this, mSolo);
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true);
     }
 
     /*

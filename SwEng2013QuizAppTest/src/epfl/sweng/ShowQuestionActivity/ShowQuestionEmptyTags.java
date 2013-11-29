@@ -7,19 +7,20 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class ShowQuestionEmptyTags extends ShowQuestionActivityTemplate {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
 
-        pushCannedResponse("GET", HttpStatus.SC_OK, DEFAULT_QUESTION, "");
+		pushCannedResponse("GET", HttpStatus.SC_OK, DEFAULT_QUESTION, "");
 
-    }
+	}
 
-//    public void testEmptyTags() {
-//
-//        getActivityAndWaitFor(TTChecks.QUESTION_SHOWN);
-//        boolean emptyTagMsg = getSolo().searchText(ShowQuestionsActivity.EMPTY_TAGS_MSG);
-//        assertTrue("Error Toast Shown : ", emptyTagMsg);
-//
-//    }
+	public void testEmptyTags() {
+
+		getActivityAndWaitFor(TTChecks.QUESTION_SHOWN);
+		boolean emptyTagMsg = getSolo().searchText(
+				ShowQuestionsActivity.EMPTY_TAGS_MSG);
+		assertTrue("Error Toast Shown : ", emptyTagMsg);
+
+	}
 }
