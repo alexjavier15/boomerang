@@ -27,8 +27,9 @@ public class SubmitCorrectQuestionTest extends EditQuestionActivityTemplate {
         assertFalse("Submit button should be disabled", submit.isEnabled());
 
         fillCorrectQuizQuestion();
+        //assertTrue("Submit button should be enabled", submit.isEnabled());
 
-        clickAndWaitForButton(TTChecks.NEW_QUESTION_SUBMITTED, "Submit");
+        //clickAndWaitForButton(TTChecks.NEW_QUESTION_SUBMITTED, "Submit");
 
     }
 }

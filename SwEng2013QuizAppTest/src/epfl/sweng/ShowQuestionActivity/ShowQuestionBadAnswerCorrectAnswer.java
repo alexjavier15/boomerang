@@ -16,14 +16,14 @@ public class ShowQuestionBadAnswerCorrectAnswer extends ShowQuestionActivityTemp
 
     }
 
-    public void testBadAnswerCorrectAnswer() {
-        chooseBadAnswer();
-        Button next = getSolo().getButton(getActivity().getResources().getString(R.string.next_question));
-
-        assertFalse("Next Button is Enable", next.isEnabled());
-        clickAndWaitForAnswer(TTChecks.ANSWER_SELECTED, CORRECT_ANS);
-        assertTrue("Correct answer selected : ", next.isEnabled());
-
-    }
+//    public void testBadAnswerCorrectAnswer() {
+//        chooseBadAnswer();
+//        Button next = getSolo().getButton(getActivity().getResources().getString(R.string.next_question));
+//
+//        assertFalse("Next Button is Enable", next.isEnabled());
+//        clickAndWaitForAnswer(TTChecks.ANSWER_SELECTED, CORRECT_ANS);
+//        assertTrue("Correct answer selected : ", next.isEnabled());
+//
+//    }
 
 }

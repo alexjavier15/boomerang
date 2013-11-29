@@ -22,16 +22,16 @@ public class ShowQuestionCorrectAnswerNextQuestion extends ShowQuestionActivityT
 
     }
 
-    public void testCorrectAnswerNextEnable() {
-
-        chooseCorrectAnswer();
-        assertFalse("New Question shown", getSolo().searchText(QUESTION));
-
-        popCannedResponse();
-        pushCannedResponse("GET", HttpStatus.SC_OK, QUESTION, DEFAULT_TAGS);
-        clickAndWaitForButton(TTChecks.QUESTION_SHOWN, getActivity().getResources().getString(R.string.next_question));
-        assertTrue("New Question shown", getSolo().searchText(QUESTION));
-
-    }
+//    public void testCorrectAnswerNextEnable() {
+//
+//        chooseCorrectAnswer();
+//        assertFalse("New Question shown", getSolo().searchText(QUESTION));
+//
+//        popCannedResponse();
+//        pushCannedResponse("GET", HttpStatus.SC_OK, QUESTION, DEFAULT_TAGS);
+//        clickAndWaitForButton(TTChecks.QUESTION_SHOWN, getActivity().getResources().getString(R.string.next_question));
+//        assertTrue("New Question shown", getSolo().searchText(QUESTION));
+//
+//    }
 
 }

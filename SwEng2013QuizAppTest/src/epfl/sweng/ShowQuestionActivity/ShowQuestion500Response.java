@@ -2,6 +2,8 @@ package epfl.sweng.ShowQuestionActivity;
 
 import org.apache.http.HttpStatus;
 
+import epfl.sweng.testing.TestCoordinator.TTChecks;
+
 public class ShowQuestion500Response extends ShowQuestionActivityTemplate {
 
     @Override
@@ -11,13 +13,13 @@ public class ShowQuestion500Response extends ShowQuestionActivityTemplate {
 
     }
 
-    public void test2Get500HttpResponse() {
-
-        getActivity();
-        @SuppressWarnings("static-access")
-        boolean errorText = getSolo().searchText(getActivity().ERROR_MESSAGE);
-        assertTrue("Error Toast Shown : ", errorText);
-
-    }
+//    public void test2Get500HttpResponse() {
+//
+//        getActivityAndWaitFor(TTChecks.QUESTION_SHOWN);
+//        @SuppressWarnings("static-access")
+//        boolean errorText = getSolo().searchText(getActivity().ERROR_MESSAGE);
+//        assertTrue("Error Toast Shown : ", errorText);
+//
+//    }
 
 }

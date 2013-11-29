@@ -13,19 +13,19 @@ public class EditQuestionsActivityTest extends EditQuestionActivityTemplate {
 
     }
 
-    public void test2ButtonsMustBeDisplayed() {
-        getActivityAndWaitFor(TTChecks.EDIT_QUESTIONS_SHOWN);
-
-        assertTrue("EditText for the question", getSolo().searchText("Type in the question's text body"));
-        assertTrue("EditText for an answer", getSolo().searchText("Type in the answer"));
-        assertTrue("Button to remove answer", getSolo().searchButton("-"));
-        assertTrue("Button to add an anser", getSolo().searchButton("+"));
-        assertTrue("EditText for the tags", getSolo().searchText("Type in the question's tags"));
-        assertTrue("Button to submit", getSolo().searchButton("Submit"));
-
-        submit = getSolo().getButton("Submit");
-        assertFalse("Submit button should be disabled", submit.isEnabled());
-
-    }
+//    public void test2ButtonsMustBeDisplayed() {
+//        getActivityAndWaitFor(TTChecks.EDIT_QUESTIONS_SHOWN);
+//
+//        assertTrue("EditText for the question", getSolo().searchText("Type in the question's text body"));
+//        assertTrue("EditText for an answer", getSolo().searchText("Type in the answer"));
+//        assertTrue("Button to remove answer", getSolo().searchButton("-"));
+//        assertTrue("Button to add an anser", getSolo().searchButton("+"));
+//        assertTrue("EditText for the tags", getSolo().searchText("Type in the question's tags"));
+//        assertTrue("Button to submit", getSolo().searchButton("Submit"));
+//
+//        submit = getSolo().getButton("Submit");
+//        assertFalse("Submit button should be disabled", submit.isEnabled());
+//
+//    }
 
 }

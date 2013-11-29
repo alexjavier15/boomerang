@@ -20,12 +20,12 @@ public class ShowQuestionBadAnswer extends ShowQuestionActivityTemplate {
 
     }
 
-    public void testBadAnswerNextDisable() {
-        chooseBadAnswer();
-        Button next = getSolo().getButton(getActivity().getResources().getString(R.string.next_question));
-
-        assertFalse("Next Button is Enable", next.isEnabled());
-
-    }
+//    public void testBadAnswerNextDisable() {
+//        chooseBadAnswer();
+//        Button next = getSolo().getButton(getActivity().getResources().getString(R.string.next_question));
+//
+//        assertFalse("Next Button is Enable", next.isEnabled());
+//
+//    }
 
 }

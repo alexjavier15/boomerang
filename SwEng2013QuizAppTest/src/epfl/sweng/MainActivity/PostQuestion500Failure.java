@@ -25,16 +25,16 @@ public class PostQuestion500Failure extends MainActivityTemplate {
 
     }
 
-    public void testBackMainOfflineEnable() {
-
-        getActivityAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
-        assertEquals(true, getSolo().getButton("Submit a quiz question").isEnabled());
-        clickAndWaitForButton(TTChecks.EDIT_QUESTIONS_SHOWN, "Submit a quiz question");
-        fillCorrectQuizQuestion();
-        assertEquals(true, getSolo().getButton("Submit").isEnabled());
-        clickAndWaitForAnswer(TTChecks.NEW_QUESTION_SUBMITTED, "Submit");
-        goBackAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
-
-    }
+//    public void testBackMainOfflineEnable() {
+//
+//        getActivityAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
+//        assertEquals(true, getSolo().getButton("Submit a quiz question").isEnabled());
+//        clickAndWaitForButton(TTChecks.EDIT_QUESTIONS_SHOWN, "Submit a quiz question");
+//        fillCorrectQuizQuestion();
+//        assertEquals(true, getSolo().getButton("Submit").isEnabled());
+//        clickAndWaitForAnswer(TTChecks.NEW_QUESTION_SUBMITTED, "Submit");
+//        goBackAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
+//
+//    }
 
 }

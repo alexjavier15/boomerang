@@ -20,12 +20,12 @@ public class ShowQuestionCorrectAnswer extends ShowQuestionActivityTemplate {
 
     }
 
-    public void testCorrectAnswerNextEnable() {
-        chooseCorrectAnswer();
-        Button next = getSolo().getButton(getActivity().getResources().getString(R.string.next_question));
-
-        assertTrue("Next Button is Enable", next.isEnabled());
-
-    }
+//    public void testCorrectAnswerNextEnable() {
+//        chooseCorrectAnswer();
+//        Button next = getSolo().getButton(getActivity().getResources().getString(R.string.next_question));
+//
+//        assertTrue("Next Button is Enable", next.isEnabled());
+//
+//    }
 
 }
