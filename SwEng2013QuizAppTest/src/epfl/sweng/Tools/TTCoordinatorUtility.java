@@ -7,6 +7,7 @@ import android.widget.EditText;
 import com.jayway.android.robotium.solo.Solo;
 
 import epfl.sweng.testing.TestCoordinator;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
 import epfl.sweng.testing.TestingTransaction;
 
 public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelper {
@@ -156,5 +157,25 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
             }
         });
     }
+
+	public void clickAndWaitForCheckBox(final TTChecks expected) {
+		TestCoordinator.run(mTest.getInstrumentation(), new TestingTransaction() {
+            @Override
+            public void initiate() {
+                mSolo.clickOnCheckBox(0);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("clickAndWaitForOnffline(%s)", expected);
+            }
+
+            @Override
+            public void verify(TestCoordinator.TTChecks notification) {
+                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
+                        expected, notification);
+            }
+        });
+	}
 
 }

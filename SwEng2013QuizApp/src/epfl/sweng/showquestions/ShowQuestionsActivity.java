@@ -140,8 +140,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     @Override
     protected void onStart() {
         super.onStart();
-        askNextQuestion(this.getCurrentFocus());
-    
     }
 
     /**

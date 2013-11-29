@@ -43,14 +43,9 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.test.ActivityInstrumentationTestCase2#tearDown()
-     */
+    
     @Override
     protected void tearDown() throws Exception {
-        // TODO Auto-generated method stub
         super.tearDown();
         cleanUpData();
 
@@ -118,13 +113,16 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
 
     protected void fillCorrectQuizQuestion() {
 
-        getSolo().clickOnButton(0);
-        getSolo().enterText(getSolo().getEditText(0), QUESTION_DEF);
-        getSolo().enterText(1, ANSWER2_DEF);
+        clickAndWaitForButton(TTChecks.QUESTION_EDITED, "✘");
+        EditText q = getSolo().getEditText("body");
+        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, q, QUESTION_DEF);
+        EditText et1 = getSolo().getEditText("answer");
+        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et1, ANSWER2_DEF);
         clickAndWaitForButton(TTChecks.QUESTION_EDITED, "+");
-        EditText et = getSolo().getEditText(2);
-        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et, ANSWER1_DEF);
-        getSolo().enterText(getSolo().getEditText(3), TAGS_DEF);
+        EditText et2 = getSolo().getEditText("answer");
+        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et2, ANSWER1_DEF);
+        EditText t = getSolo().getEditText("tags");
+        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, t, TAGS_DEF);
 
     }
 
