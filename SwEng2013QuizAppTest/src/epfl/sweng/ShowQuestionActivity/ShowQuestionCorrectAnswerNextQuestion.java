@@ -32,7 +32,7 @@ public class ShowQuestionCorrectAnswerNextQuestion extends
 		pushCannedResponse("GET", HttpStatus.SC_OK, QUESTION, DEFAULT_TAGS);
 		clickAndWaitForButton(TTChecks.QUESTION_SHOWN, getActivity()
 				.getResources().getString(R.string.next_question));
-		assertFalse("New Question shown", getSolo().searchText(QUESTION));
+		assertTrue("New Question shown", getSolo().searchText(QUESTION));
 	}
 
 }

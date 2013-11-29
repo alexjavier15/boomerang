@@ -78,6 +78,12 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
         }
     }
 
+    public void pushQuestion(JSONObject quizQuestion) {
+
+        CacheManager.getInstance().pushFetchedQuestion(quizQuestion.toString());
+
+    }
+
     /**
      * @param reponse
      * @throws JSONException
@@ -89,7 +95,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
 
         try {
             quizQuestion = JSONParser.getParser(reponse);
-            CacheManager.getInstance().pushFetchedQuestion(quizQuestion.toString());
+            pushQuestion(quizQuestion);
         } catch (JSONException e) {
             e.printStackTrace();
         }
