@@ -27,7 +27,7 @@ public class QuizQuestionTest extends TestCase {
     private QuizQuestion mQuestion = createQuestion();
     private final static int MAX_QUESTION = 4;
 
-    public QuizQuestion createQuestion() {
+    private QuizQuestion createQuestion() {
         String question = "What is the answer to life, the universe, and everything?";
         ArrayList<String> answers = new ArrayList<String>();
         answers.add("Forty-two");
