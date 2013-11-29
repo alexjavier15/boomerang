@@ -96,15 +96,20 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         } catch (AuthenticationException e) {
             mResult = null;
             mStatusMsg = e.getMessage();
+            mMyToast.setText(mStatusMsg);
             Log.e(getLocalClassName(), e.getMessage());
+            e.printStackTrace();
         } catch (JSONException e) {
             mResult = null;
             mStatusMsg = INTERNAL_ERROR_MSG;
+            mMyToast.setText(INTERNAL_ERROR_MSG);
             Log.e(getLocalClassName(), e.getMessage());
+            e.printStackTrace();
 
         } catch (IOException e) {
             mResult = null;
             mStatusMsg = INTERNAL_ERROR_MSG;
+            mMyToast.setText(INTERNAL_ERROR_MSG);
             Log.e(getLocalClassName(), e.getMessage());
         }
 
@@ -122,9 +127,8 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
                 this.finish();
 
             } catch (JSONException e) {
+                mStatusMsg = UNEXPECTED_ERROR_MSG;
                 mMyToast.setText(UNEXPECTED_ERROR_MSG);
-                mMyToast.show();
-                Log.e(getLocalClassName(), e.getMessage());
                 e.printStackTrace();
                 failedAuthenReset();
             }
@@ -184,9 +188,13 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     }
 
     private void failedAuthenReset() {
+        Log.v("message", mStatusMsg);
+        mMyToast.show();
+        TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
+
         ((EditText) findViewById(R.id.GasparPassword_EditText)).setText("");
         ((EditText) findViewById(R.id.GasparUsername_EditText)).setText("");
-        TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
+
     }
 
 }
