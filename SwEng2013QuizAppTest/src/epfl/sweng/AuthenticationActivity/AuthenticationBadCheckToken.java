@@ -29,9 +29,8 @@ public class AuthenticationBadCheckToken extends AuthenticationActivityTemplate 
         getSolo().enterText(username, "test");
         EditText password = getSolo().getEditText("GASPAR Password");
         getSolo().enterText(password, "password");
-        getSolo().clickOnButton("Log in using Tequila");
-        boolean isErrorShown = getSolo().waitForText(AuthenticationActivity.INTERNAL_ERROR_MSG);
-        assertTrue("request to sweng failed", isErrorShown);
+        clickAndGetToastAndWaitFor(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN, "Log in using Tequila",
+                AuthenticationActivity.INTERNAL_ERROR_MSG);
 
     }
 

@@ -15,4 +15,6 @@ public interface ITTCordinatorHelper {
 
     void goBackAndWaitFor(final TestCoordinator.TTChecks expected);
 
+    void clickAndGetToastAndWaitFor(final TestCoordinator.TTChecks expected, final String button, final String text );
+
 }

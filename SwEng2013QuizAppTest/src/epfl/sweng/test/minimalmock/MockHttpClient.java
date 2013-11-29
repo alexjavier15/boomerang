@@ -50,6 +50,7 @@ public class MockHttpClient extends DefaultHttpClient {
 
     private final List<CannedResponse> responses = new ArrayList<CannedResponse>();
 
+    //@formatter:off
     @Override
     protected RequestDirector createClientRequestDirector(final HttpRequestExecutor requestExec,
             final ClientConnectionManager conman, final ConnectionReuseStrategy reustrat,
@@ -114,6 +115,7 @@ class MockRequestDirector implements RequestDirector {
 
     public MockRequestDirector(MockHttpClient client) {
         this.httpClient = client;
+
     }
 
     @Override

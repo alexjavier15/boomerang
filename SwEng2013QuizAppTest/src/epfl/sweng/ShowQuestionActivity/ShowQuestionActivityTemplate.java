@@ -7,6 +7,7 @@ import android.widget.EditText;
 
 import com.jayway.android.robotium.solo.Solo;
 
+import epfl.sweng.Tools.ITTCordinatorHelper;
 import epfl.sweng.Tools.TTCoordinatorUtility;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.cache.CacheManager;
@@ -17,7 +18,8 @@ import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
-public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCase2<ShowQuestionsActivity> {
+public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCase2<ShowQuestionsActivity> implements
+        ITTCordinatorHelper {
 
     private Solo mSolo;
     private TTCoordinatorUtility mCoordinator;
@@ -26,11 +28,6 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
     public final static String CORRECT_ANS = "Forty-two";
     public final static String DEFAULT_TAGS = "\"h2g2\", \"trivia\"";
     public final static String DEFAULT_QUESTION = "What is the answer to life, the universe, and everything?";
-
-    public Solo getSolo() {
-
-        return mSolo;
-    }
 
     public ShowQuestionActivityTemplate() {
         super(ShowQuestionsActivity.class);
@@ -55,6 +52,11 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
         cacheDB.delete();
         QuizApp.getPreferences().edit().clear().commit();
 
+    }
+
+    public Solo getSolo() {
+
+        return mSolo;
     }
 
     protected void pushCannedResponse(String type, int httpStatus) {
@@ -92,23 +94,28 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
 
     }
 
-    protected void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
+    public void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
         mCoordinator.getActivityAndWaitFor(expected);
     }
 
-    protected void clickAndWaitForButton(final TestCoordinator.TTChecks expected, final String button) {
+    public void clickAndWaitForButton(final TestCoordinator.TTChecks expected, final String button) {
         mCoordinator.clickAndWaitForButton(expected, button);
     }
 
-    protected void enterTextAndWaitFor(final TestCoordinator.TTChecks expected, final EditText et, final String text) {
+    public void enterTextAndWaitFor(final TestCoordinator.TTChecks expected, final EditText et, final String text) {
         mCoordinator.enterTextAndWaitFor(expected, et, text);
     }
 
-    protected void clickAndWaitForAnswer(final TestCoordinator.TTChecks expected, final String answer) {
+    public void clickAndWaitForAnswer(final TestCoordinator.TTChecks expected, final String answer) {
         mCoordinator.clickAndWaitForAnswer(expected, answer);
     }
 
-    protected void goBackAndWaitFor(final TestCoordinator.TTChecks expected) {
+    public void goBackAndWaitFor(final TestCoordinator.TTChecks expected) {
         mCoordinator.goBackAndWaitFor(expected);
+    }
+
+    @Override
+    public void clickAndGetToastAndWaitFor(TTChecks expected, final String button, String text) {
+        mCoordinator.clickAndGetToastAndWaitFor(expected, button, text);
     }
 }

@@ -5,12 +5,15 @@ import android.widget.EditText;
 
 import com.jayway.android.robotium.solo.Solo;
 
+import epfl.sweng.Tools.ITTCordinatorHelper;
 import epfl.sweng.Tools.TTCoordinatorUtility;
 import epfl.sweng.searchquestions.SearchActivity;
 import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.testing.TestCoordinator;
+import epfl.sweng.testing.TestCoordinator.TTChecks;
 
-public class SearchQuestionActivityTemplate extends ActivityInstrumentationTestCase2<SearchActivity> {
+public class SearchQuestionActivityTemplate extends ActivityInstrumentationTestCase2<SearchActivity> implements
+        ITTCordinatorHelper {
 
     private Solo mSolo;
     private TTCoordinatorUtility mCoordinator;
@@ -22,13 +25,14 @@ public class SearchQuestionActivityTemplate extends ActivityInstrumentationTestC
 
     public SearchQuestionActivityTemplate() {
         super(SearchActivity.class);
-        mCoordinator = new TTCoordinatorUtility(this, getSolo());
     }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         mSolo = new Solo(getInstrumentation());
+        mCoordinator = new TTCoordinatorUtility(this, getSolo());
+
     }
 
     /*
@@ -44,20 +48,31 @@ public class SearchQuestionActivityTemplate extends ActivityInstrumentationTestC
 
     }
 
-    protected void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
+    public void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
         mCoordinator.getActivityAndWaitFor(expected);
     }
 
-    protected void clickAndWaitForButton(final TestCoordinator.TTChecks expected, final String button) {
+    public void clickAndWaitForButton(final TestCoordinator.TTChecks expected, final String button) {
         mCoordinator.clickAndWaitForButton(expected, button);
     }
 
-    protected void enterTextAndWaitFor(final TestCoordinator.TTChecks expected, final EditText et, final String text) {
+    public void enterTextAndWaitFor(final TestCoordinator.TTChecks expected, final EditText et, final String text) {
         mCoordinator.enterTextAndWaitFor(expected, et, text);
     }
 
-    protected void clickAndWaitForAnswer(final TestCoordinator.TTChecks expected, final String answer) {
+    public void clickAndWaitForAnswer(final TestCoordinator.TTChecks expected, final String answer) {
         mCoordinator.clickAndWaitForAnswer(expected, answer);
+    }
+
+    @Override
+    public void goBackAndWaitFor(TTChecks expected) {
+        mCoordinator.goBackAndWaitFor(expected);
+
+    }
+
+    @Override
+    public void clickAndGetToastAndWaitFor(TTChecks expected, String button, String text) {
+        mCoordinator.clickAndGetToastAndWaitFor(expected, button, text);
     }
 
 }

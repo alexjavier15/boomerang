@@ -25,6 +25,34 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
     }
 
     @Override
+    public void clickAndGetToastAndWaitFor(final TestCoordinator.TTChecks expected, final String button,
+            final String text) {
+        TestCoordinator.run(mTest.getInstrumentation(), new TestingTransaction() {
+            boolean isTextShown = false;
+
+            @Override
+            public void initiate() {
+                mTest.getActivity();
+                mSolo.clickOnButton(button);
+              
+            }
+
+            @Override
+            public String toString() {
+                return String.format("clickAndGetToastAndWaitFor(%s)", expected);
+            }
+
+            @Override
+            public void verify(TestCoordinator.TTChecks notification) {
+                isTextShown = mSolo.searchText(text);
+                assertEquals("Expected a Toast with text : " + text, true, isTextShown);
+                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
+                        expected, notification);
+            }
+        });
+    }
+
+    @Override
     public void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
         TestCoordinator.run(mTest.getInstrumentation(), new TestingTransaction() {
             @Override

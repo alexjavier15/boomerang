@@ -33,7 +33,7 @@ public class JSONParser {
             jsonResponse = responseHandler.handleResponse(response);
             json = new JSONObject(jsonResponse);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            
             e.printStackTrace();
         }
 

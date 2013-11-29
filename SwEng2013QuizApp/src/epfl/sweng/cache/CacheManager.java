@@ -47,7 +47,7 @@ public final class CacheManager {
         sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), POST_SYNC_DB_NAME);
         Log.v("Cahce has beed initialized :", sQuizQuestionDB.getDatabaseName());
         Log.v("Cahce has beed initialized :", sPostQuestionDB.getDatabaseName());
-       
+
         // new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUERY_CACHE_DB_NAME);
     }
 

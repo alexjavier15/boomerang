@@ -7,7 +7,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthenticationException;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -24,9 +23,9 @@ import epfl.sweng.R;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsBackgroundTask;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
+import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
-import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -38,32 +37,25 @@ import epfl.sweng.tools.JSONParser;
 
 public class AuthenticationActivity extends Activity implements HttpcommunicationsAdapter {
 
-    private static final int AUTHENTICATED = 4;
-    private static final int CONFIRMATION = 3;
-    private static final int ERROR = -1;
     public static final String INTERNAL_ERROR_MSG = "An internal error has occurred during "
             + "authentication. Please try again.";
     private static final String SUCCEFUL_MSG = "You have succesfully logged in";
     public static final String SWENG_ERROR_MSG = "Authentication with SwEgQuizServed has failed.";
-    private static final int TEQUILA = 2;
     public static final String TEQUILA_ERROR_MSG = "Login with Tequila was  NOT successful. "
             + "Please check your account infos.";
-    private static final int TOKEN = 1;
-    private static final int UNAUTHENTICATED = 0;
     public static final String UNEXPECTED_ERROR_MSG = "An unexpected error has occured. "
             + "Your credentials couldn't be saved. Please try again";
+    private HttpResponse mResult = null;
     private String mStatusMsg = "";
 
-   
-    private int state;
     private String token;
+    private Toast mMyToast = Toast.makeText(QuizApp.getContexStatic(), null, Toast.LENGTH_LONG);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
         // by default initial state is
-        state = UNAUTHENTICATED;
         TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
     }
 
@@ -74,38 +66,49 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         return true;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onStop()
+     */
+    @Override
+    protected void onDestroy() {
+
+        super.onStop();
+        mMyToast.cancel();
+    }
+
     public void logIn(View view) {
         if (HttpComms.getInstance().isConnected()) {
             new HttpCommsBackgroundTask(this).execute();
         } else {
 
-            Toast.makeText(this, "Not internet connection", Toast.LENGTH_SHORT).show();
+            mMyToast.setText("Not internet connection");
+            mMyToast.show();
         }
     }
 
     @Override
     public HttpResponse requete() {
 
-        HttpResponse response = null;
-
         try {
-            response = stateMachine(null);
+            requestAuthToken();
         } catch (AuthenticationException e) {
+            mResult = null;
             mStatusMsg = e.getMessage();
             Log.e(getLocalClassName(), e.getMessage());
-        } catch (ClientProtocolException e) {
-            mStatusMsg = INTERNAL_ERROR_MSG;
-            Log.e(getLocalClassName(), e.getMessage());
-        } catch (IOException e) {
-            mStatusMsg = INTERNAL_ERROR_MSG;
-            Log.e(getLocalClassName(), e.getMessage());
         } catch (JSONException e) {
+            mResult = null;
             mStatusMsg = INTERNAL_ERROR_MSG;
             Log.e(getLocalClassName(), e.getMessage());
 
+        } catch (IOException e) {
+            mResult = null;
+            mStatusMsg = INTERNAL_ERROR_MSG;
+            Log.e(getLocalClassName(), e.getMessage());
         }
 
-        return response;
+        return mResult;
     }
 
     @Override
@@ -114,16 +117,16 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
             try {
                 String sessionID = JSONParser.getParser(response).getString("session");
                 CredentialManager.getInstance().setUserCredential(sessionID);
-                Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
-                Debug.out(this.getClass(), sessionID);
-
+                mMyToast.setText(mStatusMsg);
+                mMyToast.show();
                 this.finish();
 
             } catch (JSONException e) {
-                mStatusMsg = UNEXPECTED_ERROR_MSG;
-                failedAuthenReset();
+                mMyToast.setText(UNEXPECTED_ERROR_MSG);
+                mMyToast.show();
                 Log.e(getLocalClassName(), e.getMessage());
                 e.printStackTrace();
+                failedAuthenReset();
             }
 
         } else {
@@ -131,95 +134,58 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
         }
     }
 
-    private HttpResponse stateMachine(HttpResponse response) throws ClientProtocolException, IOException,
-            JSONException, AuthenticationException {
-        /*
-         * if (failedCount > MAX_NUMBER_OF_FAILS) { // too many fails! reset fields! state = ERROR_OVERLOAD; return
-         * null; }
-         */
-        switch (state) {
-            case UNAUTHENTICATED:
-                Log.i("Authentication state: ", "UNAUTHENTICATED, requesting token");
-                return stateMachine(requestAuthToken(response));
-            case TOKEN:
-                Log.i("Authentication state: ", "TOKEN, posting token");
-                return stateMachine(postTequilaToken(response));
-            case TEQUILA:
-                Log.i("Authentication state: ", "TEQUILA, checking tequila response");
-                return stateMachine(checkTequila(response));
-            case CONFIRMATION:
-                Log.i("Authentication state: ", "CONFIRMATION, confirming with server");
-                return stateMachine(confirm(response));
-            case AUTHENTICATED:
-                Log.i("Authentication state: ", "AUTHENTICATED, returning session id");
-                return response;
-            default:
-                // nullPointerException => failedAuthenReset()
-                return null;
-        }
-    }
+    private void requestAuthToken() throws AuthenticationException, JSONException, IOException {
 
-    private HttpResponse requestAuthToken(HttpResponse starter) throws ClientProtocolException, IOException {
+        mResult = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
 
-        HttpResponse response = HttpComms.getInstance().getHttpResponse(HttpComms.URL_SWENG_SWERVER_LOGIN);
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            state = TOKEN;
-            return response;
+        if (mResult != null && mResult.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            postTequilaToken();
         } else {
-            throw new ClientProtocolException(INTERNAL_ERROR_MSG);
+            Log.w("Authentication state: UNAUTHENTICATED", INTERNAL_ERROR_MSG);
+            throw new AuthenticationException(INTERNAL_ERROR_MSG);
         }
     }
 
-    private HttpResponse postTequilaToken(HttpResponse tokenResponse) throws JSONException, IOException {
+    private void postTequilaToken() throws AuthenticationException, JSONException, IOException {
 
-        token = JSONParser.getParser(tokenResponse).getString("token");
+        token = JSONParser.getParser(mResult).getString("token");
         String username = ((EditText) findViewById(R.id.GasparUsername_EditText)).getText().toString();
         String password = ((EditText) findViewById(R.id.GasparPassword_EditText)).getText().toString();
         NameValuePair[] namList = {new BasicNameValuePair("requestkey", token),
             new BasicNameValuePair("username", username), new BasicNameValuePair("password", password)};
         UrlEncodedFormEntity urlEntity = new UrlEncodedFormEntity(Arrays.asList(namList));
-
-        state = TEQUILA;
-        Debug.out(this.getClass(), urlEntity.toString());
-
-        return HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA_LOGIN, urlEntity);
+        mResult = HttpComms.getInstance().postEntity(HttpComms.URL_TEQUILA_LOGIN, urlEntity);
+        checkTequila();
 
     }
 
-    private HttpResponse checkTequila(HttpResponse response) throws AuthenticationException {
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
-            state = CONFIRMATION;
-            return response;
+    private void checkTequila() throws AuthenticationException, JSONException, IOException {
+        if (mResult != null && mResult.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
+            confirm();
 
         } else {
-            state = ERROR;
-            // failedCount++;
-
-            Log.w("Authentication state: TEQUILA", ", failedcount: ");
+            Log.w("Authentication state: TEQUILA", TEQUILA_ERROR_MSG);
             throw new AuthenticationException(TEQUILA_ERROR_MSG);
         }
 
     }
 
-    private HttpResponse confirm(HttpResponse response) throws ClientProtocolException, IOException, JSONException,
-            AuthenticationException {
-        response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_SWERVER_LOGIN,
+    private void confirm() throws AuthenticationException, JSONException, IOException {
+        mResult = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_SWERVER_LOGIN,
                 (new JSONObject()).put("token", token));
 
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            state = AUTHENTICATED;
+        if (mResult != null && mResult.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             mStatusMsg = SUCCEFUL_MSG;
-            return response;
+
         } else {
+            Log.w("Authentication state: CONFIRMATION", SWENG_ERROR_MSG);
             throw new AuthenticationException(SWENG_ERROR_MSG);
         }
     }
 
     private void failedAuthenReset() {
-        Toast.makeText(this, mStatusMsg, Toast.LENGTH_SHORT).show();
         ((EditText) findViewById(R.id.GasparPassword_EditText)).setText("");
         ((EditText) findViewById(R.id.GasparUsername_EditText)).setText("");
-        state = UNAUTHENTICATED;
         TestCoordinator.check(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN);
     }
 

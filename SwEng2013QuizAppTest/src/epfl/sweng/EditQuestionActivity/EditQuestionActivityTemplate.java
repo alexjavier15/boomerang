@@ -7,6 +7,7 @@ import android.widget.EditText;
 
 import com.jayway.android.robotium.solo.Solo;
 
+import epfl.sweng.Tools.ITTCordinatorHelper;
 import epfl.sweng.Tools.TTCoordinatorUtility;
 import epfl.sweng.cache.CacheManager;
 import epfl.sweng.editquestions.EditQuestionActivity;
@@ -15,7 +16,8 @@ import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
-public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCase2<EditQuestionActivity> {
+public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCase2<EditQuestionActivity> implements
+        ITTCordinatorHelper {
 
     private Solo mSolo;
     private TTCoordinatorUtility mCoordinator;
@@ -24,20 +26,6 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
     public final static String ANSWER2_DEF = "de naissance";
     public final static String QUESTION_DEF = "Pourquoi suis je si con?";
     private MockHttpClient mMock = new MockHttpClient();
-
-    /**
-     * @return the mSolo
-     */
-    public Solo getSolo() {
-        return mSolo;
-    }
-
-    /**
-     * @return the mMock
-     */
-    public MockHttpClient getMock() {
-        return mMock;
-    }
 
     public EditQuestionActivityTemplate() {
         super(EditQuestionActivity.class);
@@ -75,24 +63,44 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
 
     }
 
-    protected void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
+    /**
+     * @return the mSolo
+     */
+    public Solo getSolo() {
+        return mSolo;
+    }
+
+    /**
+     * @return the mMock
+     */
+    public MockHttpClient getMock() {
+        return mMock;
+    }
+
+    public void getActivityAndWaitFor(final TestCoordinator.TTChecks expected) {
         mCoordinator.getActivityAndWaitFor(expected);
     }
 
-    protected void clickAndWaitForButton(final TestCoordinator.TTChecks expected, final String button) {
+    public void clickAndWaitForButton(final TestCoordinator.TTChecks expected, final String button) {
         mCoordinator.clickAndWaitForButton(expected, button);
     }
 
-    protected void enterTextAndWaitFor(final TestCoordinator.TTChecks expected, final EditText et, final String text) {
+    public void enterTextAndWaitFor(final TestCoordinator.TTChecks expected, final EditText et, final String text) {
         mCoordinator.enterTextAndWaitFor(expected, et, text);
     }
 
-    protected void clickAndWaitForAnswer(final TestCoordinator.TTChecks expected, final String answer) {
+    public void clickAndWaitForAnswer(final TestCoordinator.TTChecks expected, final String answer) {
         mCoordinator.clickAndWaitForAnswer(expected, answer);
     }
 
-    protected void goBackAndWaitFor(final TestCoordinator.TTChecks expected) {
+    public void goBackAndWaitFor(final TestCoordinator.TTChecks expected) {
         mCoordinator.goBackAndWaitFor(expected);
+    }
+
+    @Override
+    public void clickAndGetToastAndWaitFor(TTChecks expected, final String button, String text) {
+        mCoordinator.clickAndGetToastAndWaitFor(expected, button, text);
+
     }
 
     protected void pushCannedResponse(int httpStatus) {

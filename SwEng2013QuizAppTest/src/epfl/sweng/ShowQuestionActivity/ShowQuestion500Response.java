@@ -15,7 +15,7 @@ public class ShowQuestion500Response extends ShowQuestionActivityTemplate {
 
         getActivity();
         @SuppressWarnings("static-access")
-        boolean errorText = getSolo().waitForText(getActivity().ERROR_MESSAGE);
+        boolean errorText = getSolo().searchText(getActivity().ERROR_MESSAGE);
         assertTrue("Error Toast Shown : ", errorText);
 
     }
