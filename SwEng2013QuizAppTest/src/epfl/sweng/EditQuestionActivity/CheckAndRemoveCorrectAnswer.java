@@ -40,11 +40,13 @@ public class CheckAndRemoveCorrectAnswer extends EditQuestionActivityTemplate {
         clickAndWaitForButton(TTChecks.QUESTION_EDITED, "+");
         EditText et1 = getSolo().getEditText(3);
         enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et1, answer1);
+        EditText tags = getSolo().getEditText(4);
+        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, tags, "debile, alex");
 
-        getSolo().enterText(getSolo().getEditText(4), "debile, alex");
-
-        //assertTrue("submit button must be enabled ", submit.isEnabled());
-        //getSolo().clickOnButton(1);
-        //assertFalse("submit button must be disabled ", submit.isEnabled());
+        assertTrue("submit button must be enabled ", submit.isEnabled());
+        clickAndWaitForButton(TTChecks.QUESTION_EDITED, "-");
+        getSolo().clickOnButton(1);
+        assertFalse("submit button must be disabled ", submit.isEnabled());
+        getActivity().finish();
     }
 }

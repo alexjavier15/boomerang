@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 import epfl.sweng.R;
 import epfl.sweng.servercomm.CacheQueryProxy;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
@@ -65,6 +64,7 @@ public class SearchActivity extends Activity {
 
         searchButton = (Button) findViewById(R.id.search_button);
         searchButton.setEnabled(false);
+        searchQuery.addTextChangedListener(watcher);
     }
 
     @Override
@@ -78,7 +78,6 @@ public class SearchActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        searchQuery.addTextChangedListener(watcher);
         TestCoordinator.check(TTChecks.SEARCH_ACTIVITY_SHOWN);
     }
 

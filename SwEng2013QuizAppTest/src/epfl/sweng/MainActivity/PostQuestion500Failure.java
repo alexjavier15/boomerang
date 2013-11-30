@@ -5,7 +5,6 @@ import org.apache.http.HttpStatus;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.servercomm.SwengHttpClientFactory;
-import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class PostQuestion500Failure extends MainActivityTemplate {
 

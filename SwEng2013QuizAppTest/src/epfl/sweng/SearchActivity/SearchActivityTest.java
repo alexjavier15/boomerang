@@ -28,15 +28,17 @@ public class SearchActivityTest extends SearchQuestionActivityTemplate {
         getActivityAndWaitFor(TTChecks.SEARCH_ACTIVITY_SHOWN);
 
         assertTrue("EditText for search query must exist", getSolo().searchEditText("Type in the search query"));
-        assertTrue("Button for submitting the query must exist", getSolo().searchButton("Search"));
 
         Button search = getSolo().getButton("Search");
+        assertTrue("Button for submitting the query must exist", getSolo().searchButton("Search"));
+
 
         assertFalse("Search button is disabled", search.isEnabled());
         getSolo().enterText(getSolo().getEditText(0), "h2g2");
         assertTrue("Search button is enabled", search.isEnabled());
 
         clickAndWaitForButton(TTChecks.QUESTION_SHOWN, "Search");
+        getActivity().finish();
     }
 
 }

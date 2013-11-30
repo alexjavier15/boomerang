@@ -9,6 +9,7 @@ public class EditQuestionsAuditsTest extends EditQuestionActivityTemplate {
         getActivityAndWaitFor(TTChecks.EDIT_QUESTIONS_SHOWN);
 
         assertEquals(0, getActivity().auditErrors());
+        getActivity().finish();
 
     }
 

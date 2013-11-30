@@ -49,10 +49,11 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
     private String mStatusMsg = "";
 
     private String token;
-    private Toast mMyToast = Toast.makeText(QuizApp.getContexStatic(), null, Toast.LENGTH_LONG);
+    private Toast mMyToast = Toast.makeText(QuizApp.getContexStatic(), null, Toast.LENGTH_SHORT);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+  
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
         // by default initial state is

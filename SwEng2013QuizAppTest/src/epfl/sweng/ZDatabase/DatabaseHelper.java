@@ -6,9 +6,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import junit.framework.TestCase;
+
 import org.json.JSONException;
 
-import junit.framework.TestCase;
 import epfl.sweng.cache.QuizQuestionDBHelper;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.QuizApp;

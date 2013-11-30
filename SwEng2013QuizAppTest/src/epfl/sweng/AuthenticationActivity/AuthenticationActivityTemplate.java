@@ -36,7 +36,6 @@ public class AuthenticationActivityTemplate extends ActivityInstrumentationTestC
         mCoordinator = new TTCoordinatorUtility(this, mSolo);
         SwengHttpClientFactory.setInstance(mMock);
         QuizApp.getPreferences().edit().putString(PreferenceKeys.SESSION_ID, "").apply();
-       
 
     }
 
@@ -49,6 +48,7 @@ public class AuthenticationActivityTemplate extends ActivityInstrumentationTestC
     protected void tearDown() throws Exception {
         // TODO Auto-generated method stub
         super.tearDown();
+
         QuizApp.getPreferences().edit().clear().commit();
 
     }

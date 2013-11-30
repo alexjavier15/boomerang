@@ -3,7 +3,7 @@ package epfl.sweng.EditQuestionActivity;
 import android.widget.Button;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
-public class EditQuestionsActivityTest extends EditQuestionActivityTemplate {
+public class EditQuestionsActivityUITest extends EditQuestionActivityTemplate {
 
     private Button submit;
 
@@ -25,6 +25,7 @@ public class EditQuestionsActivityTest extends EditQuestionActivityTemplate {
 
         submit = getSolo().getButton("Submit");
         assertFalse("Submit button should be disabled", submit.isEnabled());
+        getActivity().finish();
 
     }
 
