@@ -2,6 +2,7 @@ package epfl.sweng.EditQuestionActivity;
 
 import android.widget.Button;
 import android.widget.EditText;
+import epfl.sweng.R;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class CheckAndRemoveCorrectAnswer extends EditQuestionActivityTemplate {
@@ -10,15 +11,9 @@ public class CheckAndRemoveCorrectAnswer extends EditQuestionActivityTemplate {
     private String answer2 = "de naissance";
     private String question = "Pourquoi suis je si con?";
     private Button submit;
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.EditQuestionActivity.EditQuestionActivityTemplate#setUp()
-     */
+    
     @Override
     protected void setUp() throws Exception {
-        // TODO Auto-generated method stub
         super.setUp();
     }
 
@@ -27,25 +22,35 @@ public class CheckAndRemoveCorrectAnswer extends EditQuestionActivityTemplate {
 
         submit = getSolo().getButton("Submit");
         assertFalse("Submit button should be disabled", submit.isEnabled());
-        // Check first answer as correct
-        getSolo().clickOnButton(0);
-        getSolo().enterText(getSolo().getEditText(0), question);
-
-        getSolo().enterText(1, answer2);
+        
+        clickAndWaitForButton(TTChecks.QUESTION_EDITED, getActivity().getResources().getString(R.string.heavy_ballot_x));
+        
+        EditText q = getSolo().getEditText("text body");
+        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, q, question);
+        
+        
+        EditText et1 = getSolo().getEditText("answer");
+        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et1, answer2);
 
         clickAndWaitForButton(TTChecks.QUESTION_EDITED, "+");
-        EditText et = getSolo().getEditText(2);
-        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et, answer1);
+        
+        EditText et2 = getSolo().getEditText("answer");
+        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et2, answer1);
 
         clickAndWaitForButton(TTChecks.QUESTION_EDITED, "+");
-        EditText et1 = getSolo().getEditText(3);
-        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et1, answer1);
-        EditText tags = getSolo().getEditText(4);
+        
+        EditText et3 = getSolo().getEditText("answer");
+        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et3, answer1);
+        
+        EditText tags = getSolo().getEditText("tags");
         enterTextAndWaitFor(TTChecks.QUESTION_EDITED, tags, "debile, alex");
 
         assertTrue("submit button must be enabled ", submit.isEnabled());
+        
         clickAndWaitForButton(TTChecks.QUESTION_EDITED, "-");
-        getSolo().clickOnButton(1);
+        
+        clickAndWaitForButton(TTChecks.QUESTION_EDITED, getActivity().getResources().getString(R.string.heavy_ballot_x));
+        
         assertFalse("submit button must be disabled ", submit.isEnabled());
         getActivity().finish();
     }
