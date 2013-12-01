@@ -1,6 +1,7 @@
 package epfl.sweng.EditQuestionActivity;
 
 import android.widget.Button;
+import epfl.sweng.R;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class EditQuestionsActivityUITest extends EditQuestionActivityTemplate {
@@ -16,11 +17,12 @@ public class EditQuestionsActivityUITest extends EditQuestionActivityTemplate {
     public void test2ButtonsMustBeDisplayed() {
         getActivityAndWaitFor(TTChecks.EDIT_QUESTIONS_SHOWN);
 
-        assertTrue("EditText for the question", getSolo().searchText("Type in the question's text body"));
-        assertTrue("EditText for an answer", getSolo().searchText("Type in the answer"));
+        assertTrue("EditText for the question", getSolo().searchEditText("text body"));
+        assertTrue("EditText for an answer", getSolo().searchEditText("answer"));
         assertTrue("Button to remove answer", getSolo().searchButton("-"));
         assertTrue("Button to add an anser", getSolo().searchButton("+"));
-        assertTrue("EditText for the tags", getSolo().searchText("Type in the question's tags"));
+        assertTrue("EditText for the tags", getSolo().searchEditText("tags"));
+        assertTrue("Button to check correct answer", getSolo().searchButton(getActivity().getResources().getString(R.string.heavy_ballot_x)));
         assertTrue("Button to submit", getSolo().searchButton("Submit"));
 
         submit = getSolo().getButton("Submit");

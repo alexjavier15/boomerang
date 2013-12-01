@@ -49,8 +49,6 @@ public class CheckAndRemoveCorrectAnswer extends EditQuestionActivityTemplate {
         
         clickAndWaitForButton(TTChecks.QUESTION_EDITED, "-");
         
-        clickAndWaitForButton(TTChecks.QUESTION_EDITED, getActivity().getResources().getString(R.string.heavy_ballot_x));
-        
         assertFalse("submit button must be disabled ", submit.isEnabled());
         getActivity().finish();
     }
