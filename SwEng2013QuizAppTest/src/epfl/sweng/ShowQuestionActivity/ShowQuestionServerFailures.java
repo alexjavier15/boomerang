@@ -20,7 +20,7 @@ public class ShowQuestionServerFailures extends ShowQuestionActivityTemplate {
         assertTrue("Error Toast Shown : ", errorText);
         popCannedResponse();
         getActivity().finish();
-
+        getSolo().goBack();
     }
 
     public void test2Get500HttpResponse() {
@@ -31,7 +31,7 @@ public class ShowQuestionServerFailures extends ShowQuestionActivityTemplate {
         assertTrue("Error Toast Shown : ", errorText);
         popCannedResponse();
         getActivity().finish();
-
+        getSolo().goBack();
     }
 
     public void testGetMalformedResponse() {
@@ -42,6 +42,6 @@ public class ShowQuestionServerFailures extends ShowQuestionActivityTemplate {
         assertTrue("Error Toast Shown : ", errorText);
         popCannedResponse();
         getActivity().finish();
-
+        getSolo().goBack();
     }
 }
