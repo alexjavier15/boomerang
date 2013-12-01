@@ -98,7 +98,8 @@ public class SearchActivity extends Activity {
         // At least one alphanumeric character
         Pattern pattern2 = Pattern.compile("[A-Za-z0-9]+");
         Matcher matcher2 = pattern2.matcher(text);
-        return text.length() <= maxLengthOfQuery && matcher1.matches() && matcher2.find() && nestedText(text);
+        return text.length() <= maxLengthOfQuery && matcher1.matches() && matcher2.find() && nestedText(text)
+                && checkQueryCongruency(text);
     }
 
     @SuppressWarnings("finally")
@@ -117,5 +118,36 @@ public class SearchActivity extends Activity {
         } finally {
             return stack.isEmpty();
         }
+    }
+
+    private boolean checkQueryCongruency(String text) {
+        // saves a list of either words or logical operators
+        Pattern pattern1 = Pattern.compile("([a-zA-Z0-9]+|[\\(\\)\\+\\*])");
+        Matcher matcher1 = pattern1.matcher(text);
+
+        boolean lastWasWord = false;
+        while (matcher1.find()) {
+            if (matcher1.group(1).equals("(")) {
+                lastWasWord = false;
+            } else if (matcher1.group(1).equals(")")) {
+                if (!lastWasWord) {
+                    return false;
+                }
+            } else if (matcher1.group(1).equals("+")) {
+                if (!lastWasWord) {
+                    return false;
+                }
+                lastWasWord = false;
+            } else if (matcher1.group(1).equals("*")) {
+                if (!lastWasWord) {
+                    return false;
+                }
+                lastWasWord = false;
+            } else {
+                lastWasWord = true;
+            }
+
+        }
+        return true;
     }
 }
