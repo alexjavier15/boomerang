@@ -10,6 +10,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    
 
     <application
         android:name="epfl.sweng.servercomm.QuizApp"
@@ -33,20 +35,10 @@
         <activity
             android:name="epfl.sweng.editquestions.EditQuestionActivity"
             android:label="@string/title_activity_edit_question" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+         </activity>
         <activity
             android:name="epfl.sweng.authentication.AuthenticationActivity"
             android:label="@string/title_activity_authentication" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service

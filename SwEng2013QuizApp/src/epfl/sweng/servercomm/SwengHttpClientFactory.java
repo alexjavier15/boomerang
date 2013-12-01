@@ -67,7 +67,7 @@ public class SwengHttpClientFactory {
             Log.d("HTTP RESPONSE", response.getStatusLine().toString());
         }
     };
-
+  //@formatter:off
     final private static RedirectHandler REDIRECT_NO_FOLLOW = new RedirectHandler() {
         @Override
         public URI getLocationURI(HttpResponse response, HttpContext context)

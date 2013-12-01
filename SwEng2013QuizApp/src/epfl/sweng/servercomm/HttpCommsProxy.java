@@ -123,6 +123,9 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
         HttpResponse response = null;
         if (question != null) {
             response = getServerCommsInstance().postJSONObject(url, question);
+
+            sCacheHttpComms.pushQuestion(question);
+
         }
 
         if (response != null) {

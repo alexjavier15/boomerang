@@ -43,11 +43,9 @@ public class HttpCommsBackgroundTask extends AsyncTask<Void, Void, HttpResponse>
      */
     @Override
     protected void onPostExecute(HttpResponse result) {
-
         if (doPostExecute) {
             adapter.processHttpReponse(result);
         }
-
     }
 
 }

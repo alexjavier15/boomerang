@@ -1,5 +1,5 @@
 package epfl.sweng.testing;
-
+//@formatter:off
 /**
  * An exception that is thrown whenever the TestCoordinator detects an inconsistency.
  */

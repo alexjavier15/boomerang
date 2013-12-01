@@ -50,13 +50,15 @@ public class MockHttpClient extends DefaultHttpClient {
 
     private final List<CannedResponse> responses = new ArrayList<CannedResponse>();
 
+    //@formatter:off
     @Override
     protected RequestDirector createClientRequestDirector(final HttpRequestExecutor requestExec,
-        final ClientConnectionManager conman, final ConnectionReuseStrategy reustrat,
-        final ConnectionKeepAliveStrategy kastrat, final HttpRoutePlanner rouplan, final HttpProcessor httpProcessor,
-        final HttpRequestRetryHandler retryHandler, final RedirectHandler redirectHandler,
-        final AuthenticationHandler targetAuthHandler, final AuthenticationHandler proxyAuthHandler,
-        final UserTokenHandler stateHandler, final HttpParams params) {
+            final ClientConnectionManager conman, final ConnectionReuseStrategy reustrat,
+            final ConnectionKeepAliveStrategy kastrat, final HttpRoutePlanner rouplan,
+            final HttpProcessor httpProcessor, final HttpRequestRetryHandler retryHandler,
+            final RedirectHandler redirectHandler, final AuthenticationHandler targetAuthHandler,
+            final AuthenticationHandler proxyAuthHandler, final UserTokenHandler stateHandler,
+            final HttpParams params) {
         return new MockRequestDirector(this);
     }
 
@@ -87,8 +89,8 @@ public class MockHttpClient extends DefaultHttpClient {
 /** The HTTP Response returned by a MockHttpServer */
 class MockHttpResponse extends BasicHttpResponse {
     public MockHttpResponse(int statusCode, String responseBody, String contentType) {
-        super(new ProtocolVersion("HTTP", 1, 1), statusCode, EnglishReasonPhraseCatalog.INSTANCE.getReason(statusCode,
-            Locale.getDefault()));
+        super(new ProtocolVersion("HTTP", 1, 1), statusCode, EnglishReasonPhraseCatalog.INSTANCE.getReason(
+                statusCode, Locale.getDefault()));
 
         if (responseBody != null) {
             try {
@@ -105,8 +107,7 @@ class MockHttpResponse extends BasicHttpResponse {
 }
 
 /**
- * A request director which does nothing else than passing the request back to
- * the MockHttpCient.
+ * A request director which does nothing else than passing the request back to the MockHttpCient.
  */
 class MockRequestDirector implements RequestDirector {
 
@@ -114,6 +115,7 @@ class MockRequestDirector implements RequestDirector {
 
     public MockRequestDirector(MockHttpClient client) {
         this.httpClient = client;
+
     }
 
     @Override
@@ -123,7 +125,7 @@ class MockRequestDirector implements RequestDirector {
         HttpResponse response = httpClient.processRequest(request);
         if (response == null) {
             throw new AssertionError("Request \"" + request.getRequestLine().toString()
-                + "\" did not match any known pattern");
+                    + "\" did not match any known pattern");
         }
 
         Log.v("HTTP", response.getStatusLine().toString());

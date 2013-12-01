@@ -1,15 +1,15 @@
 package epfl.sweng.showquestions;
 
-import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -40,6 +40,7 @@ import epfl.sweng.tools.JSONParser;
 public class ShowQuestionsActivity extends Activity implements HttpcommunicationsAdapter {
 
     public static final String ERROR_QUERY = "No questions match your query";
+    public static final String EMPTY_TAGS_MSG = "No tags for this question";
     public static final String ERROR_MESSAGE = "There was an error retrieving the question";
 
     private ArrayAdapter<String> adapter;
@@ -53,6 +54,16 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
     private int lastChoice = -1;
     private String url = null;
     private boolean isQuery = false;
+
+    /**
+     * Inflate the menu; this adds items to the action bar if it is present.
+     * 
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.show_questions, menu);
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,22 +122,24 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } else {
             url = HttpComms.URL_SWENG_RANDOM_GET;
         }
-    }
-
-    /**
-     * Inflate the menu; this adds items to the action bar if it is present.
-     * 
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.show_questions, menu);
-        return true;
+        
+        
+        try {
+            
+            processHttpReponse(new HttpCommsBackgroundTask(this, false).execute().get());
+        
+        } catch (InterruptedException e) {
+            toast(ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            toast(ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        askNextQuestion(this.getCurrentFocus());
     }
 
     /**
@@ -135,9 +148,41 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      * @param view
      */
     public void askNextQuestion(View view) {
-        
+
         ((Button) findViewById(R.id.next_question)).setEnabled(false);
         new HttpCommsBackgroundTask(this, true).execute();
+    }
+
+    @Override
+    public HttpResponse requete() {
+
+        return CacheQueryProxy.getInstance().getHttpResponse(url);
+
+    }
+
+    @Override
+    public void processHttpReponse(HttpResponse httpResponse) {
+        QuizQuestion quizQuestion = null;
+        JSONObject jsonObj = null;
+        String jsonString = null;
+        try {
+            jsonObj = JSONParser.getParser(httpResponse);
+            if (jsonObj != null) {
+                jsonString = jsonObj.toString();
+            }
+            quizQuestion = new QuizQuestion(jsonString);
+            Debug.out(this.getClass(), quizQuestion);
+        } catch (JSONException e) {
+            HttpCommsProxy.getInstance().setOnlineMode(false);
+            toast(ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            setQuestion(quizQuestion);
+        }
+
+        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
+
     }
 
     /**
@@ -161,7 +206,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             }
             return tagsInString;
         } else {
-            return "No tags for this question";
+            return EMPTY_TAGS_MSG;
         }
     }
 
@@ -181,42 +226,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             text.append("No question can be obtained !");
             toast(getErrorMessage());
         }
-    }
-
-    @Override
-    public HttpResponse requete() {
-
-        return CacheQueryProxy.getInstance().getHttpResponse(url);
-
-    }
-
-    @Override
-    public void processHttpReponse(HttpResponse httpResponse) {
-        QuizQuestion quizQuestion = null;
-
-        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            try {
-                quizQuestion = new QuizQuestion(JSONParser.getParser(httpResponse).toString());
-                Debug.out(this.getClass(), quizQuestion);
-            } catch (IOException e) {
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-                Log.e(getLocalClassName(), e.getMessage());
-            } catch (JSONException e) {
-                HttpCommsProxy.getInstance().setOnlineMode(false);
-                e.printStackTrace();
-            }
-            setQuestion(quizQuestion);
-        } else {
-
-            Toast.makeText(this, ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-        }
-
-        TestCoordinator.check(TTChecks.QUESTION_SHOWN);
-
-    }
-
-    public void setText(TextView view) {
-        text = view;
     }
 
     public void toast(String message) {

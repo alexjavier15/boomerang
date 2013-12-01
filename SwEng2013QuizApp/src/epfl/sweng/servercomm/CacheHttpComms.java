@@ -3,8 +3,6 @@
  */
 package epfl.sweng.servercomm;
 
-import java.io.IOException;
-
 import org.apache.http.HttpResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,6 +78,12 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
         }
     }
 
+    public void pushQuestion(JSONObject quizQuestion) {
+
+        CacheManager.getInstance().pushFetchedQuestion(quizQuestion.toString());
+
+    }
+
     /**
      * @param reponse
      * @throws JSONException
@@ -91,11 +95,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
 
         try {
             quizQuestion = JSONParser.getParser(reponse);
-            CacheManager.getInstance().pushFetchedQuestion(quizQuestion.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
+            pushQuestion(quizQuestion);
         } catch (JSONException e) {
             e.printStackTrace();
         }

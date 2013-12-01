@@ -26,17 +26,13 @@ public final class CredentialManager {
         mUserPreferences = QuizApp.getPreferences();
     }
 
-    public boolean getOnlineStatus() {
-        return mUserPreferences.getBoolean(PreferenceKeys.ONLINE_MODE, true);
-    }
-
     public String getUserCredential() {
 
         return mUserPreferences.getString(PreferenceKeys.SESSION_ID, "");
     }
 
     public boolean removeUserCredential() {
-        return setUserCredential("");
+        return mUserPreferences.edit().remove(PreferenceKeys.SESSION_ID).commit();
     }
 
     public boolean setUserCredential(String value) {

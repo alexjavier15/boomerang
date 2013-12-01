@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,13 +24,20 @@ public class JSONParser {
 
     public static final int HTTP_ERROR = 404;
 
-    public static JSONObject getParser(HttpResponse response) throws NullPointerException, JSONException,
-            HttpResponseException, IOException {
+    public static JSONObject getParser(HttpResponse response) throws JSONException {
+        JSONObject json = null;
 
         BasicResponseHandler responseHandler = new BasicResponseHandler();
-        String jsonResponse = responseHandler.handleResponse(response);
+        String jsonResponse = null;
+        try {
+            jsonResponse = responseHandler.handleResponse(response);
+            json = new JSONObject(jsonResponse);
+        } catch (IOException e) {
+            
+            e.printStackTrace();
+        }
 
-        return new JSONObject(jsonResponse);
+        return json;
 
     }
 
@@ -75,7 +81,7 @@ public class JSONParser {
         jsonQuestion.put("answers", new JSONArray(question.getAnswers()));
         jsonQuestion.put("question", question.getQuestion());
 
-        //Debug.out(jsonQuestion);
+        // Debug.out(jsonQuestion);
 
         return jsonQuestion;
     }

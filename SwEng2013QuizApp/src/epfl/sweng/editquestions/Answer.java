@@ -23,10 +23,6 @@ public class Answer {
      * 
      */
 
-    public Answer() {
-        super();
-    }
-
     public Answer(String check, String answerText) {
         super();
         checked = check;

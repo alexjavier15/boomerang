@@ -5,8 +5,6 @@ package epfl.sweng.cache;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
@@ -43,6 +41,11 @@ public final class CacheManager {
     private CacheManager() {
         sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUESTION_CACHE_DB_NAME);
         sPostQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), POST_SYNC_DB_NAME);
+        Log.v("Cahce has beed initialized :", sQuizQuestionDB.getReadableDatabase().getPath());
+        Log.v("Cahce has beed initialized :", sPostQuestionDB.getReadableDatabase().getPath());
+        sQuizQuestionDB.close();
+        sPostQuestionDB.close();
+
     }
 
     public static CacheManager getInstance() {
@@ -50,6 +53,11 @@ public final class CacheManager {
             sCacheManager = new CacheManager();
         }
         return sCacheManager;
+    }
+
+    public static void reset() {
+        sCacheManager = new CacheManager();
+
     }
 
     public void init() {

@@ -1,4 +1,4 @@
-package epfl.sweng.test.normalbehaviour;
+package epfl.sweng.QuizQuestion;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,18 +10,24 @@ import java.util.Set;
 import junit.framework.TestCase;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
+import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
+import epfl.sweng.servercomm.QuizApp;
+import epfl.sweng.servercomm.SwengHttpClientFactory;
+import epfl.sweng.test.minimalmock.MockHttpClient;
 import epfl.sweng.tools.JSONParser;
 
 public class QuizQuestionTest extends TestCase {
 
     private QuizQuestion mQuestion = createQuestion();
+    private final static int MAX_QUESTION = 4;
 
-    public QuizQuestion createQuestion() {
+    private QuizQuestion createQuestion() {
         String question = "What is the answer to life, the universe, and everything?";
         ArrayList<String> answers = new ArrayList<String>();
         answers.add("Forty-two");
@@ -29,6 +35,26 @@ public class QuizQuestionTest extends TestCase {
         int sol = 0;
         Set<String> tags = new HashSet<String>(Arrays.asList("h2g2", "trivia"));
         return new QuizQuestion(question, answers, sol, tags, -1, "owner");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        // TODO Auto-generated method stub
+        super.setUp();
+        MockHttpClient mock = new MockHttpClient();
+        mock.pushCannedResponse("POST (?:https?://[^/]+|[^/]+)?/+sweng-quiz.appspot.com/quizquestions/ HTTP/1.1",
+                HttpStatus.SC_CREATED, "{\"question\": \"Pourquoi je suis si con?\","
+                        + " \"answers\": [\"A cause de la cigarette\", \"Je ne suis pas con\", \"De naissance\"],"
+                        + " \"solutionIndex\": 1, \"tags\": [\"stupid\", \"alex\"], \"id\": \"-1\" }",
+                "application/json");
+        SwengHttpClientFactory.setInstance(mock);
+        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
+        QuizApp.getPreferences().edit().putString(PreferenceKeys.SESSION_ID, "test");
     }
 
     public void testGettersQuestion() {
@@ -47,7 +73,7 @@ public class QuizQuestionTest extends TestCase {
         HttpResponse response = null;
 
         QuizQuestion question = createQuestion();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < MAX_QUESTION; i++) {
             try {
 
                 response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH,
