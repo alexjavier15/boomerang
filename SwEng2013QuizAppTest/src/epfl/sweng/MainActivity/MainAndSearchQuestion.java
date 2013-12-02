@@ -4,6 +4,7 @@ import org.apache.http.HttpStatus;
 
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import epfl.sweng.R;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.servercomm.QuizApp;
@@ -17,27 +18,32 @@ public class MainAndSearchQuestion extends MainActivityTemplate {
     protected void setUp() throws Exception {
         super.setUp();
         MockHttpClient mock = new MockHttpClient();
-        mock.pushCannedResponse("GET (?:https?://[^/]+|[^/]+)?/+sweng-quiz.appspot.com/login\\b", HttpStatus.SC_OK,
-                "{\"token\": \"rqtvk5d3za2x6ocak1a41dsmywogrdlv5\","
-                        + " \"message\": \"Here's your authentication token. Please validate it with Tequila"
-                        + " at https://tequila.epfl.ch/cgi-bin/tequila/login\"}", "application/json");
 
-        SwengHttpClientFactory.setInstance(getMock());
+        mock.pushCannedResponse("POST https://sweng-quiz.appspot.com/search HTTP/1.1", HttpStatus.SC_OK,
+                "{\"questions\": [{\"question\": \"What is the answer to life?\", "
+                        + "\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\", \"solutionIndex\":"
+                        + " 0, \"tags\": [h2g2, trivia], \"id\": \"1\" }]}", "application/json");
+        SwengHttpClientFactory.setInstance(mock);
         QuizApp.getPreferences().edit().putString(PreferenceKeys.SESSION_ID, "test").apply();
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
     }
 
     public void testSearchQuestionShown() {
         getActivityAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
+   
+
         clickAndWaitForButton(TTChecks.SEARCH_ACTIVITY_SHOWN, "Search");
+        enterTextAndWaitFor(TTChecks.QUERY_EDITED,getSolo().getEditText(0), "h2g2");
+        Button search = getSolo().getButton("Search");
+        clickAndWaitFor(TTChecks.QUESTION_SHOWN, search);
         getSolo().sendKey(KeyEvent.KEYCODE_BACK);
         getInstrumentation().waitForIdleSync();
         getSolo().sendKey(KeyEvent.KEYCODE_BACK);
         getInstrumentation().waitForIdleSync();
         View check = getActivity().findViewById(R.id.offline_mode);
 
-        clickAndWaitFor(TTChecks.OFFLINE_CHECKBOX_DISABLED, check);
         clickAndWaitFor(TTChecks.OFFLINE_CHECKBOX_ENABLED, check);
+        clickAndWaitFor(TTChecks.OFFLINE_CHECKBOX_DISABLED, check);
 
         getActivity().finishAffinity();
         getSolo().goBack();

@@ -1,5 +1,7 @@
 package epfl.sweng.SearchActivity;
 
+import org.apache.http.HttpStatus;
+
 import android.widget.Button;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.servercomm.QuizApp;
@@ -9,17 +11,16 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class SearchActivityTest extends SearchQuestionActivityTemplate {
 
-    private static final int GET_NUM = 200;
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         MockHttpClient mock = new MockHttpClient();
-        mock.pushCannedResponse("GET (?:https?://[^/]+|[^/]+)?/+quizquestions/random\\b", GET_NUM,
+        mock.pushCannedResponse("GET (?:https?://[^/]+|[^/]+)?/+quizquestions/random\\b", HttpStatus.SC_OK,
                 "{\"question\": \"What is the answer to life, the universe, and everything?\", "
                         + "\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\", \"solutionIndex\":"
                         + " 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }", "application/json");
-        mock.pushCannedResponse("POST https://sweng-quiz.appspot.com/search HTTP/1.1", GET_NUM, "{\"query\": \"(banana + garlic) fruit\" }", "application/json");
+        mock.pushCannedResponse("POST https://sweng-quiz.appspot.com/search HTTP/1.1", HttpStatus.SC_OK,
+                "{\"query\": \"(banana + garlic) fruit\" }", "application/json");
         SwengHttpClientFactory.setInstance(mock);
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
     }
@@ -31,7 +32,6 @@ public class SearchActivityTest extends SearchQuestionActivityTemplate {
 
         Button search = getSolo().getButton("Search");
         assertTrue("Button for submitting the query must exist", getSolo().searchButton("Search"));
-
 
         assertFalse("Search button is disabled", search.isEnabled());
         getSolo().enterText(getSolo().getEditText(0), "h2g2");

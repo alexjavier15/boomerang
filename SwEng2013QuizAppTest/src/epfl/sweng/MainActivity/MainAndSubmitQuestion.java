@@ -47,6 +47,7 @@ public class MainAndSubmitQuestion extends MainActivityTemplate {
         
 		getActivity().finishAffinity();
 		getSolo().goBack();
+		getActivity().finish();
 	}
 	
 }

@@ -29,6 +29,7 @@ public class MainAndShowQuestion extends MainActivityTemplate {
         clickAndWaitForButton(TTChecks.QUESTION_SHOWN, "Show a random question");
         getActivity().finishAffinity();
         getSolo().goBack();
+        getActivity().finish();
     }
 
 }
