@@ -64,7 +64,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
-        
+
     }
 
     /*
@@ -128,6 +128,9 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             cursorArray[1] = cursor.getString(CULUMN_JSON_INDEX);
 
         }
+        db.close();
+        cursor.close();
+
         return cursorArray;
 
     }
@@ -141,11 +144,13 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             cursor.moveToFirst();
 
             String quizQuestion = cursor.getString(CULUMN_JSON_INDEX);
+            cursor.close();
             db.close();
 
             return quizQuestion;
 
         } else {
+            cursor.close();
             db.close();
             return null;
         }
@@ -162,6 +167,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         if (cursor.getCount() != 0) {
             quizQuestion = cursor.getString(1);
         }
+        cursor.close();
         db.close();
 
         return quizQuestion;
@@ -189,6 +195,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             quList.add(id);
             queriedCursor.moveToNext();
         }
+        db.close();
         queriedCursor.close();
         return quList;
     }
