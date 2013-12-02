@@ -1,6 +1,7 @@
 package epfl.sweng.SearchActivity;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.view.View;
 import android.widget.EditText;
 
 import com.jayway.android.robotium.solo.Solo;
@@ -73,6 +74,10 @@ public class SearchQuestionActivityTemplate extends ActivityInstrumentationTestC
     @Override
     public void clickAndGetToastAndWaitFor(TTChecks expected, String button, String text) {
         mCoordinator.clickAndGetToastAndWaitFor(expected, button, text);
+    }
+    @Override
+    public void clickAndWaitFor(TTChecks expected, View view) {
+        mCoordinator.clickAndWaitFor(expected, view);
     }
 
 }

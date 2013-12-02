@@ -3,6 +3,7 @@ package epfl.sweng.MainActivity;
 import java.io.File;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.view.View;
 import android.widget.EditText;
 
 import com.jayway.android.robotium.solo.Solo;
@@ -96,6 +97,10 @@ public class MainActivityTemplate extends ActivityInstrumentationTestCase2<MainA
     }
 
     @Override
+    public void clickAndWaitFor(TTChecks expected, View view) {
+        mCoordinator.clickAndWaitFor(expected, view);
+    }
+    @Override
     public void clickAndGetToastAndWaitFor(TTChecks expected, final String button, String text) {
         mCoordinator.clickAndGetToastAndWaitFor(expected, button, text);
 
@@ -114,13 +119,13 @@ public class MainActivityTemplate extends ActivityInstrumentationTestCase2<MainA
     protected void fillCorrectQuizQuestion() {
 
         getSolo().clickOnButton(0);
-        getSolo().enterText(getSolo().getEditText(0), QUESTION_DEF);
-        getSolo().enterText(1, ANSWER2_DEF);
+        getSolo().enterText(getSolo().getEditText(0), QUESTION_DEF);       
         clickAndWaitForButton(TTChecks.QUESTION_EDITED, "+");
-        EditText et = getSolo().getEditText(2);
-        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, et, ANSWER1_DEF);
+        getSolo().enterText(1, ANSWER2_DEF);
+        enterTextAndWaitFor(TTChecks.QUESTION_EDITED, getSolo().getEditText(2), ANSWER1_DEF);
         getSolo().enterText(getSolo().getEditText(3), TAGS_DEF);
 
     }
+
 
 }

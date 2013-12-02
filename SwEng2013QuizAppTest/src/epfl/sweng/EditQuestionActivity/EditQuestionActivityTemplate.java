@@ -3,6 +3,7 @@ package epfl.sweng.EditQuestionActivity;
 import java.io.File;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.view.View;
 import android.widget.EditText;
 
 import com.jayway.android.robotium.solo.Solo;
@@ -114,6 +115,10 @@ public class EditQuestionActivityTemplate extends ActivityInstrumentationTestCas
     public void clickAndGetToastAndWaitFor(TTChecks expected, final String button, String text) {
         mCoordinator.clickAndGetToastAndWaitFor(expected, button, text);
 
+    }
+    @Override
+    public void clickAndWaitFor(TTChecks expected, View view) {
+        mCoordinator.clickAndWaitFor(expected, view);
     }
 
     protected void fillCorrectQuizQuestion() {

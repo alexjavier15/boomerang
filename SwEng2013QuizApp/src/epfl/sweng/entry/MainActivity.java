@@ -70,12 +70,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         Debug.out(this.getClass(), (new CheckProxyHelper()).getServerCommunicationClass());
         HttpCommsProxy.getInstance();
         CheckBox check = (CheckBox) findViewById(R.id.offline_mode);
-
-        if (!check.isChecked() != QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
-            update();
-
-            // onSharedPreferenceChanged(QuizApp.getPreferences(), PreferenceKeys.ONLINE_MODE);
-        }
+        check.setChecked(!QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true));
         if (authenticated && QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
             CacheManager.getInstance().init();
 

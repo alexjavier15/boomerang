@@ -2,6 +2,8 @@ package epfl.sweng.Tools;
 
 import junit.framework.TestCase;
 import android.test.ActivityInstrumentationTestCase2;
+import android.view.KeyEvent;
+import android.view.View;
 import android.widget.EditText;
 
 import com.jayway.android.robotium.solo.Solo;
@@ -35,7 +37,7 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
             public void initiate() {
                 mTest.getActivity();
                 mSolo.clickOnButton(button);
-              
+
             }
 
             @Override
@@ -142,7 +144,8 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
         TestCoordinator.run(mTest.getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
-                mSolo.goBack();
+                mSolo.sendKey(KeyEvent.KEYCODE_BACK);
+
             }
 
             @Override
@@ -152,14 +155,13 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
 
             @Override
             public void verify(TestCoordinator.TTChecks notification) {
-                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
-                        expected, notification);
+
             }
         });
     }
 
-	public void clickAndWaitForCheckBox(final TTChecks expected) {
-		TestCoordinator.run(mTest.getInstrumentation(), new TestingTransaction() {
+    public void clickAndWaitForCheckBox(final TTChecks expected) {
+        TestCoordinator.run(mTest.getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
                 mSolo.clickOnCheckBox(0);
@@ -176,6 +178,28 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
                         expected, notification);
             }
         });
-	}
+    }
+
+    @Override
+    public void clickAndWaitFor(final TTChecks expected, final View view) {
+        TestCoordinator.run(mTest.getInstrumentation(), new TestingTransaction() {
+            @Override
+            public void initiate() {
+                mSolo.clickOnView(view);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("clickAndWaitForOnffline(%s)", expected);
+            }
+
+            @Override
+            public void verify(TestCoordinator.TTChecks notification) {
+                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
+                        expected, notification);
+            }
+        });
+
+    }
 
 }
