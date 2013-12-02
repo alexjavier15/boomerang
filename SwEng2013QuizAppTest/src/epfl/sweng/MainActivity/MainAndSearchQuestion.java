@@ -4,8 +4,6 @@ import org.apache.http.HttpStatus;
 
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.EditText;
-
 import epfl.sweng.R;
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.servercomm.QuizApp;
@@ -31,14 +29,6 @@ public class MainAndSearchQuestion extends MainActivityTemplate {
 
     public void testSearchQuestionShown() {
         getActivityAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
-
-        clickAndWaitForButton(TTChecks.AUTHENTICATION_ACTIVITY_SHOWN, "Log in using Tequila");
-        EditText username = getSolo().getEditText("GASPAR Username");
-        getSolo().enterText(username, "test");
-        EditText password = getSolo().getEditText("GASPAR Password");
-        getSolo().enterText(password, "password");
-        clickAndWaitForButton(TTChecks.MAIN_ACTIVITY_SHOWN, "Log in using Tequila");
-
         clickAndWaitForButton(TTChecks.SEARCH_ACTIVITY_SHOWN, "Search");
         getSolo().sendKey(KeyEvent.KEYCODE_BACK);
         getInstrumentation().waitForIdleSync();
