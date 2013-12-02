@@ -46,6 +46,7 @@ public class PostQuestion500Failure extends MainActivityTemplate {
         View check = getActivity().findViewById(R.id.offline_mode);
 
         clickAndWaitFor(TTChecks.OFFLINE_CHECKBOX_DISABLED, check);
+        getInstrumentation().waitForIdleSync();        
         clickAndWaitFor(TTChecks.OFFLINE_CHECKBOX_ENABLED, check);
 
         assertTrue("Offline mode enabled", helper.getServerCommunicationClass() == CacheHttpComms.class);

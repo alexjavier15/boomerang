@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -122,12 +123,11 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } else {
             url = HttpComms.URL_SWENG_RANDOM_GET;
         }
-        
-        
+
         try {
-            
+
             processHttpReponse(new HttpCommsBackgroundTask(this, false).execute().get());
-        
+
         } catch (InterruptedException e) {
             toast(ERROR_MESSAGE);
             e.printStackTrace();
@@ -175,7 +175,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } catch (JSONException e) {
             HttpCommsProxy.getInstance().setOnlineMode(false);
             toast(ERROR_MESSAGE);
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         }
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             setQuestion(quizQuestion);

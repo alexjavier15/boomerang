@@ -41,12 +41,12 @@ public class MainAndSearchQuestion extends MainActivityTemplate {
         getSolo().sendKey(KeyEvent.KEYCODE_BACK);
         getInstrumentation().waitForIdleSync();
         View check = getActivity().findViewById(R.id.offline_mode);
-
         clickAndWaitFor(TTChecks.OFFLINE_CHECKBOX_ENABLED, check);
         clickAndWaitFor(TTChecks.OFFLINE_CHECKBOX_DISABLED, check);
-
+        getInstrumentation().waitForIdleSync();
         getActivity().finishAffinity();
-        getSolo().goBack();
+        
+        
     }
 
 }

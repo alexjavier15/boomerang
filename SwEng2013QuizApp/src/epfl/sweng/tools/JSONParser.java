@@ -33,7 +33,6 @@ public class JSONParser {
             jsonResponse = responseHandler.handleResponse(response);
             json = new JSONObject(jsonResponse);
         } catch (IOException e) {
-            
             e.printStackTrace();
         }
 

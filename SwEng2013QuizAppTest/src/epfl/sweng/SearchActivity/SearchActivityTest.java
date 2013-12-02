@@ -15,12 +15,10 @@ public class SearchActivityTest extends SearchQuestionActivityTemplate {
     protected void setUp() throws Exception {
         super.setUp();
         MockHttpClient mock = new MockHttpClient();
-        mock.pushCannedResponse("GET (?:https?://[^/]+|[^/]+)?/+quizquestions/random\\b", HttpStatus.SC_OK,
-                "{\"question\": \"What is the answer to life, the universe, and everything?\", "
-                        + "\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\", \"solutionIndex\":"
-                        + " 0, \"tags\": [\"h2g2\", \"trivia\"], \"id\": \"1\" }", "application/json");
         mock.pushCannedResponse("POST https://sweng-quiz.appspot.com/search HTTP/1.1", HttpStatus.SC_OK,
-                "{\"query\": \"(banana + garlic) fruit\" }", "application/json");
+                "{\"questions\": [{\"question\": \"What is the answer to life?\", "
+                        + "\"answers\": [\"Forty-two\", \"Twenty-seven\"], \"owner\": \"sweng\", \"solutionIndex\":"
+                        + " 0, \"tags\": [h2g2, trivia], \"id\": \"1\" }]}", "application/json");
         SwengHttpClientFactory.setInstance(mock);
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
     }
@@ -38,6 +36,8 @@ public class SearchActivityTest extends SearchQuestionActivityTemplate {
         assertTrue("Search button is enabled", search.isEnabled());
 
         clickAndWaitForButton(TTChecks.QUESTION_SHOWN, "Search");
+        getActivity().finishAffinity();
+        getSolo().goBack();
         getActivity().finish();
     }
 

@@ -2,8 +2,6 @@ package epfl.sweng.entry;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -31,7 +29,7 @@ import epfl.sweng.tools.Debug;
  * 
  */
 
-public class MainActivity extends Activity implements OnSharedPreferenceChangeListener {
+public class MainActivity extends Activity {
 
     private boolean authenticated = true;
 
@@ -56,10 +54,11 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     protected void onStart() {
 
         super.onStart();
-        QuizApp.getPreferences().registerOnSharedPreferenceChangeListener(this);
         String newValue = CredentialManager.getInstance().getUserCredential();
         Debug.out(this.getClass(), "CREDENTIAL MANAGER IS RETURNING : " + newValue);
         checkStatus(newValue);
+        CheckBox check = (CheckBox) findViewById(R.id.offline_mode);
+        check.setChecked(!QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true));
         TestCoordinator.check(TTChecks.MAIN_ACTIVITY_SHOWN);
 
     }
@@ -69,8 +68,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         super.onResume();
         Debug.out(this.getClass(), (new CheckProxyHelper()).getServerCommunicationClass());
         HttpCommsProxy.getInstance();
-        CheckBox check = (CheckBox) findViewById(R.id.offline_mode);
-        check.setChecked(!QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true));
         if (authenticated && QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
             CacheManager.getInstance().init();
 
@@ -134,20 +131,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         CheckBox offlineCheckBox = (CheckBox) view;
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, !offlineCheckBox.isChecked()).apply();
         update();
-    }
-
-    /**
-     * 
-     */
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
-        Debug.out(this.getClass(), "listener notify");
-        if (key.equals(PreferenceKeys.SESSION_ID)) {
-            String newValue = pref.getString(key, "");
-            Log.d("MainActivity Listener new key value session id : ", newValue);
-            checkStatus(newValue);
-        }
-
     }
 
     private void setUpPreferences() {

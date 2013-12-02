@@ -170,7 +170,9 @@ public final class CacheManager {
                             JSONParser.parseQuiztoJSON(quizQuestion));
                     boolean inSync = response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED;
                     if (inSync) {
-                        response.getEntity().consumeContent();
+                        if (response.getEntity() != null) {
+                            response.getEntity().consumeContent();
+                        }
                         sPostQuestionDB.deleteQuizQuestion(jsonString[0]);
                     }
 
