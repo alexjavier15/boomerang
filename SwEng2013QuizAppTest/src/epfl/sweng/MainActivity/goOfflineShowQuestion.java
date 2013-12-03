@@ -4,7 +4,7 @@ import android.view.View;
 import epfl.sweng.R;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
 
-public class goOfflineShowQuestion extends MainActivityTemplate {
+public class GoOfflineShowQuestion extends MainActivityTemplate {
     
 
     /* (non-Javadoc)
