@@ -39,19 +39,11 @@ public class AuthenticationActivityTemplate extends ActivityInstrumentationTestC
         QuizApp.getPreferences().edit().putString(PreferenceKeys.SESSION_ID, "").apply();
 
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.test.ActivityInstrumentationTestCase2#tearDown()
-     */
+    
     @Override
     protected void tearDown() throws Exception {
-        // TODO Auto-generated method stub
         super.tearDown();
-
         QuizApp.getPreferences().edit().clear().commit();
-
     }
 
     /**
@@ -110,7 +102,6 @@ public class AuthenticationActivityTemplate extends ActivityInstrumentationTestC
     @Override
     public void goBackAndWaitFor(TTChecks expected) {
         mCoordinator.goBackAndWaitFor(expected);
-
     }
 
     @Override

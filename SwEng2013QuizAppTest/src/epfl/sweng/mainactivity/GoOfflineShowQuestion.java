@@ -6,18 +6,12 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class GoOfflineShowQuestion extends MainActivityTemplate {
     
-
-    /* (non-Javadoc)
-     * @see epfl.sweng.MainActivity.MainActivityTemplate#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
-        // TODO Auto-generated method stub
         super.setUp();
     }
 
     public void goOfflineAndShowQuestion() {
-        
         getActivityAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
 
         View check = getActivity().findViewById(R.id.offline_mode);
@@ -26,7 +20,6 @@ public class GoOfflineShowQuestion extends MainActivityTemplate {
         clickAndWaitFor(TTChecks.QUESTION_SHOWN, showq);
         getSolo().goBack();
         getActivity().finish();
-
     }
 
 }

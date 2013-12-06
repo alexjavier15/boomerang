@@ -7,14 +7,8 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
 
 public class MainActivityLogOut extends MainActivityTemplate {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.AuthenticationActivity.AuthenticationActivityTemplate#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
-        // TODO Auto-generated method stub
         super.setUp();
         QuizApp.getPreferences().edit().putString(PreferenceKeys.SESSION_ID, "test").apply();
     }
@@ -24,7 +18,6 @@ public class MainActivityLogOut extends MainActivityTemplate {
         Button logOut = getSolo().getButton("Log out");
         assertTrue("Log out button is enabled ", logOut.isEnabled());
         clickAndWaitForButton(TTChecks.LOGGED_OUT, "Log out");
-
     }
 
 }
