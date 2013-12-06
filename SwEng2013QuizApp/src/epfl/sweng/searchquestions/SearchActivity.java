@@ -102,7 +102,6 @@ public class SearchActivity extends Activity {
                 && checkQueryCongruency(text);
     }
 
-    @SuppressWarnings("finally")
     private boolean nestedText(String text) {
         Stack<Character> stack = new Stack<Character>();
         try {
@@ -115,9 +114,8 @@ public class SearchActivity extends Activity {
             }
         } catch (EmptyStackException e) {
             e.printStackTrace();
-        } finally {
-            return stack.isEmpty();
         }
+        return stack.isEmpty();
     }
 
     private boolean checkQueryCongruency(String text) {
