@@ -17,21 +17,34 @@ public class QuizApp extends Application {
     private static QuizApp sApp;
 
     public static Context getContexStatic() {
-        return sApp.getBaseContext();
+        return QuizApp.getInstance().getBaseContext();
     }
 
     public static SharedPreferences getPreferences() {
-        return sApp.getBaseContext().getSharedPreferences(PreferenceKeys.USER_PREFERENCE, MODE_PRIVATE);
+        return  QuizApp.getInstance().getSharedPreferences(PreferenceKeys.USER_PREFERENCE, MODE_PRIVATE);
     }
 
     public static Resources getResourcesStatic() {
-        return sApp.getBaseContext().getResources();
+        return  QuizApp.getInstance().getResources();
+    }
+
+    public static QuizApp getInstance() {
+        if (sApp == null) {
+            sApp = new QuizApp();
+        }
+        return sApp;
+    }
+
+    /**
+     * 
+     */
+    public QuizApp() {
+        super();
+
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        sApp = this;
-
     }
 }
