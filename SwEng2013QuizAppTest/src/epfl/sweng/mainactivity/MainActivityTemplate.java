@@ -40,15 +40,9 @@ public class MainActivityTemplate extends ActivityInstrumentationTestCase2<MainA
         mSolo = new Solo(getInstrumentation());
         mCoordinator = new TTCoordinatorUtility(this, mSolo);
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.test.ActivityInstrumentationTestCase2#tearDown()
-     */
+    
     @Override
     protected void tearDown() throws Exception {
-        // TODO Auto-generated method stub
         super.tearDown();
         cleanUpData();
 

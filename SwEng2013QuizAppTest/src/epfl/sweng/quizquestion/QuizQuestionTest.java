@@ -79,7 +79,7 @@ public class QuizQuestionTest extends TestCase {
 
                 response = HttpComms.getInstance().postJSONObject(HttpComms.URL_SWENG_PUSH,
                         JSONParser.parseQuiztoJSON(question));
-                System.out.println(response.getStatusLine());
+                Log.v(getClass().getName(), "" + response.getStatusLine());
                 response.getEntity().consumeContent();
             } catch (ClientProtocolException e) {
                 Log.e(getClass().getName(), e.getMessage(), e);
