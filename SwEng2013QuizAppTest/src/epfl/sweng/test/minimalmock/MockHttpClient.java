@@ -100,7 +100,7 @@ class MockHttpResponse extends BasicHttpResponse {
                 }
                 this.setEntity(responseBodyEntity);
             } catch (UnsupportedEncodingException e) {
-                // Nothing, really...
+                Log.e(getClass().getName(), e.getMessage(), e);
             }
         }
     }

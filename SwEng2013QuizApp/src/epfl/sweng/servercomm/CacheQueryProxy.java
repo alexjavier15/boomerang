@@ -66,11 +66,11 @@ public final class CacheQueryProxy implements IHttpConnectionHelper {
                 }
                 postQuery(question);
             } catch (JSONException e) {
-                Log.e(this.getClass().getName(), e.getMessage());
+                Log.e(getClass().getName(), e.getMessage(), e);
             } catch (HttpResponseException e) {
-                Log.e(this.getClass().getName(), e.getMessage());
+                Log.e(getClass().getName(), e.getMessage(), e);
             } catch (IOException e) {
-                Log.e(this.getClass().getName(), e.getMessage());
+                Log.e(getClass().getName(), e.getMessage(), e);
             }
 
         }
@@ -97,7 +97,7 @@ public final class CacheQueryProxy implements IHttpConnectionHelper {
             if (hasNext) {
                 next = jsonResponse.getString("next");
                 Log.d(this.getClass().getName(), "has next message in query response saving: " + next);
-            }// if hasNext ending
+            }
 
             JSONArray questionArray = jsonResponse.getJSONArray("questions");
 
@@ -105,11 +105,11 @@ public final class CacheQueryProxy implements IHttpConnectionHelper {
                 for (int i = 0; i < questionArray.length(); i++) {
                     idList.add(CacheManager.getInstance().pushFetchedQuestion(questionArray.getString(i)));
                     qCount++;
-                }// for loop ending
+                }
                 Log.d(this.getClass().getName(), "Received: " + qCount + " questions");
                 // Shuffle the list (optional)
                 Collections.shuffle(idList);
-            }// if array not empty ending
+            }
         } else {
             JSONArray idArray = jsonResponse.getJSONArray("cacheResponse");
             if (idArray.length() > 0) {

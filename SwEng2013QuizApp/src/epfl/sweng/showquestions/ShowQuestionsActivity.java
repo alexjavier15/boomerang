@@ -167,7 +167,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } catch (JSONException e) {
             HttpCommsProxy.getInstance().setOnlineMode(false);
             toast(ERROR_MESSAGE);
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(getClass().getName(), e.getMessage(), e);
         }
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             setQuestion(quizQuestion);

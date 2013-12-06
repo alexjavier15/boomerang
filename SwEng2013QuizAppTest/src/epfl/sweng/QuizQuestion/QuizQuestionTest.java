@@ -14,6 +14,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
+import android.util.Log;
+
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
@@ -44,7 +46,6 @@ public class QuizQuestionTest extends TestCase {
      */
     @Override
     protected void setUp() throws Exception {
-        // TODO Auto-generated method stub
         super.setUp();
         MockHttpClient mock = new MockHttpClient();
         mock.pushCannedResponse("POST (?:https?://[^/]+|[^/]+)?/+sweng-quiz.appspot.com/quizquestions/ HTTP/1.1",
@@ -81,11 +82,11 @@ public class QuizQuestionTest extends TestCase {
                 System.out.println(response.getStatusLine());
                 response.getEntity().consumeContent();
             } catch (ClientProtocolException e) {
-                e.printStackTrace();
+                Log.e(getClass().getName(), e.getMessage(), e);
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(getClass().getName(), e.getMessage(), e);
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e(getClass().getName(), e.getMessage(), e);
             }
         }
         assertTrue(response != null);
@@ -104,8 +105,7 @@ public class QuizQuestionTest extends TestCase {
             test.setAnswers(strings);
             assertEquals(test.getAnswers(), strings);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Log.e(getClass().getName(), e.getMessage(), e);
         }
     }
 }

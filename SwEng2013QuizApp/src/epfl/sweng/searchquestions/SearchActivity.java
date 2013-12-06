@@ -114,7 +114,7 @@ public class SearchActivity extends Activity {
                 }
             }
         } catch (EmptyStackException e) {
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(getClass().getName(), e.getMessage(), e);
         }
         return stack.isEmpty();
     }
