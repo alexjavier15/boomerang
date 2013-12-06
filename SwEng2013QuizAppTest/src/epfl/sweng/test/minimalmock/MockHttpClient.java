@@ -30,36 +30,29 @@ import org.apache.http.protocol.HttpRequestExecutor;
 
 import android.util.Log;
 
+
 /** The SwEng HTTP Client */
 public class MockHttpClient extends DefaultHttpClient {
 
     /** Prepared response */
-    private class CannedResponse {
-        private final String contentType;
+    private static class CannedResponse {
         private final Pattern pattern;
-        private final String responseBody;
         private final int statusCode;
+        private final String responseBody;
+        private final String contentType;
 
-        public CannedResponse(Pattern pat, int statu, String response, String content) {
-            this.pattern = pat;
-            this.statusCode = statu;
-            this.responseBody = response;
-            this.contentType = content;
+        public CannedResponse(Pattern pattern, int statusCode, String responseBody, String contentType) {
+            this.pattern = pattern;
+            this.statusCode = statusCode;
+            this.responseBody = responseBody;
+            this.contentType = contentType;
         }
     }
 
     private final List<CannedResponse> responses = new ArrayList<CannedResponse>();
 
-    //@formatter:off
-    @Override
-    protected RequestDirector createClientRequestDirector(final HttpRequestExecutor requestExec,
-            final ClientConnectionManager conman, final ConnectionReuseStrategy reustrat,
-            final ConnectionKeepAliveStrategy kastrat, final HttpRoutePlanner rouplan,
-            final HttpProcessor httpProcessor, final HttpRequestRetryHandler retryHandler,
-            final RedirectHandler redirectHandler, final AuthenticationHandler targetAuthHandler,
-            final AuthenticationHandler proxyAuthHandler, final UserTokenHandler stateHandler,
-            final HttpParams params) {
-        return new MockRequestDirector(this);
+    public void pushCannedResponse(String requestRegex, int status, String responseBody, String contentType) {
+        responses.add(0, new CannedResponse(Pattern.compile(requestRegex), status, responseBody, contentType));
     }
 
     public void popCannedResponse() {
@@ -67,6 +60,23 @@ public class MockHttpClient extends DefaultHttpClient {
             throw new IllegalStateException("Canned response stack is empty!");
         }
         responses.remove(0);
+    }
+
+    @Override
+    protected RequestDirector createClientRequestDirector(
+            final HttpRequestExecutor requestExec,
+            final ClientConnectionManager conman,
+            final ConnectionReuseStrategy reustrat,
+            final ConnectionKeepAliveStrategy kastrat,
+            final HttpRoutePlanner rouplan,
+            final HttpProcessor httpProcessor,
+            final HttpRequestRetryHandler retryHandler,
+            final RedirectHandler redirectHandler,
+            final AuthenticationHandler targetAuthHandler,
+            final AuthenticationHandler proxyAuthHandler,
+            final UserTokenHandler stateHandler,
+            final HttpParams params) {
+        return new MockRequestDirector(this);
     }
 
     public HttpResponse processRequest(HttpRequest request) {
@@ -80,46 +90,23 @@ public class MockHttpClient extends DefaultHttpClient {
 
         return null;
     }
-
-    public void pushCannedResponse(String requestRegex, int status, String responseBody, String contentType) {
-        responses.add(0, new CannedResponse(Pattern.compile(requestRegex), status, responseBody, contentType));
-    }
-}
-
-/** The HTTP Response returned by a MockHttpServer */
-class MockHttpResponse extends BasicHttpResponse {
-    public MockHttpResponse(int statusCode, String responseBody, String contentType) {
-        super(new ProtocolVersion("HTTP", 1, 1), statusCode, EnglishReasonPhraseCatalog.INSTANCE.getReason(
-                statusCode, Locale.getDefault()));
-
-        if (responseBody != null) {
-            try {
-                StringEntity responseBodyEntity = new StringEntity(responseBody);
-                if (contentType != null) {
-                    responseBodyEntity.setContentType(contentType);
-                }
-                this.setEntity(responseBodyEntity);
-            } catch (UnsupportedEncodingException e) {
-                Log.e(getClass().getName(), e.getMessage(), e);
-            }
-        }
-    }
 }
 
 /**
- * A request director which does nothing else than passing the request back to the MockHttpCient.
+ * A request director which does nothing else than passing the request back to
+ * the MockHttpClient.
  */
 class MockRequestDirector implements RequestDirector {
 
     private MockHttpClient httpClient;
 
-    public MockRequestDirector(MockHttpClient client) {
-        this.httpClient = client;
-
+    public MockRequestDirector(MockHttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     @Override
-    public HttpResponse execute(HttpHost target, HttpRequest request, HttpContext context) {
+    public HttpResponse execute(HttpHost target, HttpRequest request,
+            HttpContext context) {
         Log.v("HTTP", request.getRequestLine().toString());
 
         HttpResponse response = httpClient.processRequest(request);
@@ -132,4 +119,26 @@ class MockRequestDirector implements RequestDirector {
         return response;
     }
 
+}
+
+/** The HTTP Response returned by a MockHttpServer */
+class MockHttpResponse extends BasicHttpResponse {
+    public MockHttpResponse(int statusCode, String responseBody, String contentType) {
+        super(new ProtocolVersion("HTTP", 1, 1),
+                statusCode,
+                EnglishReasonPhraseCatalog.INSTANCE.getReason(
+                        statusCode, Locale.getDefault()));
+
+        if (responseBody != null) {
+            try {
+                StringEntity responseBodyEntity = new StringEntity(responseBody);
+                if (contentType != null) {
+                    responseBodyEntity.setContentType(contentType);
+                }
+                this.setEntity(responseBodyEntity);
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException("Default HTTP charset not supported!?", e);
+            }
+        }
+    }
 }
