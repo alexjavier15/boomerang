@@ -86,11 +86,11 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
         try {
             JSONObject parser = new JSONObject(question);
             List<String> tagArray = JSONParser.jsonArrayToList(parser.getJSONArray("tags"));
-            String tags = "";
+            StringBuffer tags = new StringBuffer();
             for (String g : tagArray) {
-                tags += g + " ";
+                tags.append(g + " ");
             }
-            values.put(COLUMN_NAME_TAGS, tags);
+            values.put(COLUMN_NAME_TAGS, tags.toString());
         } catch (JSONException e) {
             Log.e(this.getClass().getName(), e.getMessage(), e);
         }
@@ -149,7 +149,6 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             return quizQuestion;
 
         } else {
-            cursor.close();
             db.close();
             return null;
         }
