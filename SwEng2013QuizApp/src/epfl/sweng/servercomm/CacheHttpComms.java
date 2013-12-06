@@ -71,8 +71,6 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
             try {
                 return CacheManager.getInstance().getQueriedQuestions(question.getString("query"));
             } catch (JSONException e) {
-
-                // TODO
                 throw new UnsupportedOperationException("Unsupported operation in offline mode");
             }
         } else {
@@ -99,7 +97,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
             quizQuestion = JSONParser.getParser(reponse);
             pushQuestion(quizQuestion);
         } catch (JSONException e) {
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(this.getClass().getName(), e.getMessage(), e);
         }
 
     }

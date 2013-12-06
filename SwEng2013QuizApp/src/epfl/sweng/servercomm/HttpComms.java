@@ -62,9 +62,9 @@ public final class HttpComms implements IHttpConnectionHelper {
                 response = SwengHttpClientFactory.getInstance().execute(request);
 
             } catch (ClientProtocolException e) {
-                Log.e(this.getClass().getName(), e.getMessage());
+                Log.e(this.getClass().getName(), e.getMessage(), e);
             } catch (IOException e) {
-                Log.e(this.getClass().getName(), e.getMessage());
+                Log.e(this.getClass().getName(), e.getMessage(), e);
             }
             return response;
         } else {
@@ -100,7 +100,7 @@ public final class HttpComms implements IHttpConnectionHelper {
         try {
             response = execute(request);
         } catch (NetworkErrorException e) {
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(this.getClass().getName(), e.getMessage(), e);
         }
         return response;
 
@@ -125,7 +125,7 @@ public final class HttpComms implements IHttpConnectionHelper {
         try {
             response = execute(post);
         } catch (NetworkErrorException e) {
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(this.getClass().getName(), e.getMessage(), e);
         }
         return response;
     }
@@ -139,7 +139,6 @@ public final class HttpComms implements IHttpConnectionHelper {
      *            The question that we want to post on the server.
      * @return boolean true if the server has received the Question
      */
-    // TODO do so no code is repeated
     @Override
     public HttpResponse postJSONObject(String url, JSONObject question) {
 
@@ -151,11 +150,11 @@ public final class HttpComms implements IHttpConnectionHelper {
             response = execute(post);
 
         } catch (UnsupportedEncodingException e) {
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(this.getClass().getName(), e.getMessage(), e);
         } catch (JSONException e) {
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(this.getClass().getName(), e.getMessage(), e);
         } catch (NetworkErrorException e) {
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(this.getClass().getName(), e.getMessage(), e);
         }
 
         return response;

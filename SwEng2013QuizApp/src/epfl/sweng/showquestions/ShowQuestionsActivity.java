@@ -29,7 +29,6 @@ import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.servercomm.HttpcommunicationsAdapter;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
-import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -77,7 +76,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         tags = (TextView) findViewById(R.id.show_tags);
 
         text = (TextView) findViewById(R.id.show_question);
-        Debug.out(this.getClass(), text);
 
         answerListener = new OnItemClickListener() {
 
@@ -130,16 +128,11 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
 
         } catch (InterruptedException e) {
             toast(ERROR_MESSAGE);
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(this.getClass().getName(), e.getMessage(), e);
         } catch (ExecutionException e) {
             toast(ERROR_MESSAGE);
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(this.getClass().getName(), e.getMessage(), e);
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     /**
@@ -171,7 +164,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
                 jsonString = jsonObj.toString();
             }
             quizQuestion = new QuizQuestion(jsonString);
-            Debug.out(this.getClass(), quizQuestion);
         } catch (JSONException e) {
             HttpCommsProxy.getInstance().setOnlineMode(false);
             toast(ERROR_MESSAGE);
@@ -225,6 +217,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         } catch (NullPointerException e) {
             text.append("No question can be obtained !");
             toast(getErrorMessage());
+            Log.e(getClass().getName(), e.getMessage(), e);
         }
     }
 

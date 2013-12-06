@@ -24,7 +24,6 @@ import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.HttpComms;
 import epfl.sweng.servercomm.HttpCommsProxy;
 import epfl.sweng.servercomm.QuizApp;
-import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -61,7 +60,7 @@ public final class CacheManager {
     }
 
     public void init() {
-        Debug.out(this.getClass(), "onChange in chache manager called");
+        Log.v(this.getClass().getName(), "onChange in chache manager called");
         if (QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
             syncPostCachedQuestions();
         }
@@ -102,7 +101,7 @@ public final class CacheManager {
     private void syncPostCachedQuestions() {
         long num = DatabaseUtils.queryNumEntries(sPostQuestionDB.getReadableDatabase(),
                 QuizQuestionDBHelper.TABLE_NAME);
-        Debug.out(this.getClass(), "row count =" + num);
+        Log.v(this.getClass().getName(), "row count =" + num);
         (new BackgroundServiceTask()).execute();
 
     }
@@ -120,7 +119,7 @@ public final class CacheManager {
             try {
                 response.setEntity(new StringEntity(question));
             } catch (UnsupportedEncodingException e) {
-                Log.e(this.getClass().getName(), e.getMessage());
+                Log.e(this.getClass().getName(), e.getMessage(), e);
             }
         }
         return response;
@@ -135,7 +134,7 @@ public final class CacheManager {
             JSONObject questionObj = (new JSONObject()).put("cacheResponse", array);
             answer = questionObj.toString(HttpComms.STRING_ENTITY);
         } catch (JSONException e) {
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(this.getClass().getName(), e.getMessage(), e);
         }
 
         response = wrapQuizQuestion(answer);
@@ -155,7 +154,7 @@ public final class CacheManager {
          */
         @Override
         protected Void doInBackground(Void... params) {
-            Debug.out(this.getClass(), "Attempting to sync file");
+            Log.v(this.getClass().getName(), "Attempting to sync file");
             HttpResponse response = null;
 
             String[] jsonString = new String[2];
@@ -178,18 +177,17 @@ public final class CacheManager {
 
                 } catch (JSONException e) {
 
-                    Debug.out(this.getClass(), "No more post-questions to sync");
-                    // e.printStackTrace();
+                    Log.e(this.getClass().getName(), e.getMessage(), e);
                     if (jsonString[0] != null) {
                         sPostQuestionDB.deleteQuizQuestion(jsonString[0]);
 
                     }
 
                 } catch (ClientProtocolException e) {
-                    Log.e(this.getClass().getName(), e.getMessage());
+                    Log.e(this.getClass().getName(), e.getMessage(), e);
 
                 } catch (IOException e) {
-                    Log.e(this.getClass().getName(), e.getMessage());
+                    Log.e(this.getClass().getName(), e.getMessage(), e);
                 }
 
             } while (HttpCommsProxy.getInstance().isConnected() && jsonString[0] != null);

@@ -10,10 +10,11 @@ import junit.framework.TestCase;
 
 import org.json.JSONException;
 
+import android.util.Log;
+
 import epfl.sweng.cache.QuizQuestionDBHelper;
 import epfl.sweng.quizquestions.QuizQuestion;
 import epfl.sweng.servercomm.QuizApp;
-import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 
@@ -28,7 +29,6 @@ public class DatabaseHelper extends TestCase {
 	}
 	
 	public void testMethodsInDBHelper() {
-		Debug.out(this.getClass(), "Database name: " + database.getDatabaseName());
 		assertTrue("Good name", database.getDatabaseName().equals("testDB"));
 		
 		QuizQuestion question = createQuestion();
@@ -36,10 +36,8 @@ public class DatabaseHelper extends TestCase {
 		try {
 			jsonQuestion = JSONParser.parseQuiztoJSON(question).toString();
 		} catch (JSONException e) {
-			e.printStackTrace();
+			Log.e(getClass().getName(), e.getMessage(), e);
 		}
-		
-		Debug.out(this.getClass(), "JSON: " + jsonQuestion);
 		
 		database.addQuizQuestion(jsonQuestion);
 		

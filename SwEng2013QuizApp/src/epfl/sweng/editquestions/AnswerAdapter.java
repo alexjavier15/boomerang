@@ -7,6 +7,7 @@ import java.util.Set;
 import android.app.Activity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,7 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import epfl.sweng.R;
-import epfl.sweng.tools.Debug;
 
 /**
  * 
@@ -37,7 +37,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
     public void add(Answer object) {
         super.add(object);
         mEmptyAnswers.add(object);
-        Debug.out(this.getClass(), "empty ans : " + mEmptyAnswers.size());
+        Log.v(this.getClass().getName(), "empty ans : " + mEmptyAnswers.size());
     }
 
     /**

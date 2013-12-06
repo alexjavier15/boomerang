@@ -22,7 +22,6 @@ import epfl.sweng.servercomm.QuizApp;
 import epfl.sweng.showquestions.ShowQuestionsActivity;
 import epfl.sweng.testing.TestCoordinator;
 import epfl.sweng.testing.TestCoordinator.TTChecks;
-import epfl.sweng.tools.Debug;
 
 /**
  * @author AlbanMarguet, CanGuzelhan
@@ -55,7 +54,7 @@ public class MainActivity extends Activity {
 
         super.onStart();
         String newValue = CredentialManager.getInstance().getUserCredential();
-        Debug.out(this.getClass(), "CREDENTIAL MANAGER IS RETURNING : " + newValue);
+        Log.v(this.getClass().getName(), "CREDENTIAL MANAGER IS RETURNING : " + newValue);
         checkStatus(newValue);
         CheckBox check = (CheckBox) findViewById(R.id.offline_mode);
         check.setChecked(!QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true));
@@ -66,7 +65,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        Debug.out(this.getClass(), (new CheckProxyHelper()).getServerCommunicationClass());
+        Log.v(this.getClass().getName(), (new CheckProxyHelper()).getServerCommunicationClass().getName());
         HttpCommsProxy.getInstance();
         if (authenticated && QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true)) {
             CacheManager.getInstance().init();

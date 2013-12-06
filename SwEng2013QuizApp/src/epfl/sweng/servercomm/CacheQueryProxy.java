@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 import android.util.Log;
 import epfl.sweng.cache.CacheManager;
-import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 public final class CacheQueryProxy implements IHttpConnectionHelper {
@@ -45,7 +44,7 @@ public final class CacheQueryProxy implements IHttpConnectionHelper {
             try {
                 joll = (new JSONObject()).put("query", query);
             } catch (JSONException e) {
-                Log.e(this.getClass().getName(), e.getMessage() + " trying to create Jsonquery failed");
+                Log.e(this.getClass().getName(), e.getMessage() + " trying to create Jsonquery failed", e);
             }
             return postJSONObject(urlString, joll);
         }
@@ -108,7 +107,7 @@ public final class CacheQueryProxy implements IHttpConnectionHelper {
                     qCount++;
                 }// for loop ending
                 Log.d(this.getClass().getName(), "Received: " + qCount + " questions");
-                // Shuffle the list (optional) TODO
+                // Shuffle the list (optional)
                 Collections.shuffle(idList);
             }// if array not empty ending
         } else {
@@ -121,10 +120,10 @@ public final class CacheQueryProxy implements IHttpConnectionHelper {
             }
 
         }
-    }// postQuery() ending
+    }
 
     public void update(String queryText) {
-        Debug.out(this.getClass(), "Updating new query created");
+        Log.v(this.getClass().getName(), "Updating new query created");
         hasNext = false;
         next = null;
         qCount = 0;

@@ -18,7 +18,6 @@ import org.json.JSONObject;
 import android.util.Log;
 
 import epfl.sweng.authentication.PreferenceKeys;
-import epfl.sweng.tools.Debug;
 
 /**
  * @author Alex
@@ -84,7 +83,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
             if (urlString.equals(HttpComms.URL_SWENG_RANDOM_GET) && isOnlineMode()
                     && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                Debug.out(this.getClass(), " pushing question");
+                Log.v(this.getClass().getName(), " pushing question");
                 String entity;
                 try {
                     entity = EntityUtils.toString(response.getEntity());
@@ -92,11 +91,11 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
                     sCacheHttpComms.pushQuestion(response);
                     response.setEntity(new StringEntity(entity));
                 } catch (ParseException e) {
-                    Log.e(this.getClass().getName(), e.getMessage());
+                    Log.e(this.getClass().getName(), e.getMessage(), e);
                 } catch (IOException e) {
-                    Log.e(this.getClass().getName(), e.getMessage());
+                    Log.e(this.getClass().getName(), e.getMessage(), e);
                 } catch (NullPointerException e) {
-                    Log.e(this.getClass().getName(), e.getMessage());
+                    Log.e(this.getClass().getName(), e.getMessage(), e);
                 }
 
             } else if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
@@ -158,7 +157,7 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
     }
 
     private boolean isOnlineMode() {
-        Debug.out(this.getClass(),
+        Log.v(this.getClass().getName(),
                 "client status : " + QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true));
         return QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true);
     }

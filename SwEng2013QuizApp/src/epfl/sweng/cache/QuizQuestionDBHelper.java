@@ -20,7 +20,6 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
-import epfl.sweng.tools.Debug;
 import epfl.sweng.tools.JSONParser;
 
 /**
@@ -93,7 +92,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             }
             values.put(COLUMN_NAME_TAGS, tags);
         } catch (JSONException e) {
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(this.getClass().getName(), e.getMessage(), e);
         }
 
         // Inserting Row
@@ -105,14 +104,14 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
     public void deleteQuizQuestion(String index) {
 
-        Debug.out(getClass(), "gAttempt to delete " + index);
+        Log.v(getClass().getName(), "gAttempt to delete " + index);
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Debug.out(getClass(), DatabaseUtils.queryNumEntries(db, TABLE_NAME));
+        Log.v(getClass().getName(), "" + DatabaseUtils.queryNumEntries(db, TABLE_NAME));
 
         db.delete(TABLE_NAME, _ID + "= ?", new String[] {index});
 
-        Debug.out(getClass(), DatabaseUtils.queryNumEntries(db, TABLE_NAME));
+        Log.v(getClass().getName(), "" + DatabaseUtils.queryNumEntries(db, TABLE_NAME));
         db.close();
 
     }
