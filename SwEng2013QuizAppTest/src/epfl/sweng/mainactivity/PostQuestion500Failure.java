@@ -16,25 +16,17 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
 public class PostQuestion500Failure extends MainActivityTemplate {
     ICheckProxyHelper helper;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.MainActivity.MainActivityTemplate#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
-        // TODO Auto-generated method stub
         super.setUp();
         pushCannedResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR);
         SwengHttpClientFactory.setInstance(getMock());
         QuizApp.getPreferences().edit().putString(PreferenceKeys.SESSION_ID, "test").apply();
         QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, true).apply();
         helper = new CheckProxyHelper();
-
     }
 
     public void testBackMainOfflineEnable() {
-
         getActivityAndWaitFor(TTChecks.MAIN_ACTIVITY_SHOWN);
         assertEquals(true, getSolo().getButton("Submit a quiz question").isEnabled());
         clickAndWaitForButton(TTChecks.EDIT_QUESTIONS_SHOWN, "Submit a quiz question");
@@ -54,7 +46,6 @@ public class PostQuestion500Failure extends MainActivityTemplate {
         getActivity().finishAffinity();
         getSolo().goBack();
         getActivity().finish();
-
     }
 
 }

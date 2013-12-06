@@ -9,16 +9,9 @@ import epfl.sweng.testing.TestCoordinator.TTChecks;
 public class ShowQuestionCheckAnswers extends ShowQuestionActivityTemplate {
     private final static String QUESTION = "new  question";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.ShowQuestionActivity.ShowQuestionActivityTemplate#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
-        // TODO Auto-generated method stub
         super.setUp();
-
     }
 
     public void testCorrectAnswerNextIsEnable() {
@@ -29,7 +22,6 @@ public class ShowQuestionCheckAnswers extends ShowQuestionActivityTemplate {
         assertTrue("Next Button is Enable", next.isEnabled());
         popCannedResponse();
         getActivity().finish();
-
     }
 
     public void testCheckCorrectAnswerClickNext() {
@@ -53,7 +45,6 @@ public class ShowQuestionCheckAnswers extends ShowQuestionActivityTemplate {
         assertFalse("Next Button is Enable", next.isEnabled());
         popCannedResponse();
         getActivity().finish();
-
     }
 
     public void testCheckBadAnswerAndCorrectAnswer() {
