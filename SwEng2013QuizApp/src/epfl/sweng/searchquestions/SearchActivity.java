@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -113,7 +114,7 @@ public class SearchActivity extends Activity {
                 }
             }
         } catch (EmptyStackException e) {
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         }
         return stack.isEmpty();
     }

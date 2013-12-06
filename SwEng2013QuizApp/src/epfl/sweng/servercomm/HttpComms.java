@@ -17,6 +17,7 @@ import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import epfl.sweng.authentication.CredentialManager;
 
 /**
@@ -61,9 +62,9 @@ public final class HttpComms implements IHttpConnectionHelper {
                 response = SwengHttpClientFactory.getInstance().execute(request);
 
             } catch (ClientProtocolException e) {
-                e.printStackTrace();
+                Log.e(this.getClass().getName(), e.getMessage());
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(this.getClass().getName(), e.getMessage());
             }
             return response;
         } else {
@@ -99,8 +100,7 @@ public final class HttpComms implements IHttpConnectionHelper {
         try {
             response = execute(request);
         } catch (NetworkErrorException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         }
         return response;
 
@@ -125,8 +125,7 @@ public final class HttpComms implements IHttpConnectionHelper {
         try {
             response = execute(post);
         } catch (NetworkErrorException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         }
         return response;
     }
@@ -152,12 +151,11 @@ public final class HttpComms implements IHttpConnectionHelper {
             response = execute(post);
 
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         } catch (NetworkErrorException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         }
 
         return response;

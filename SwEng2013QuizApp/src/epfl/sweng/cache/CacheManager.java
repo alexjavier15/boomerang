@@ -186,10 +186,10 @@ public final class CacheManager {
                     }
 
                 } catch (ClientProtocolException e) {
-                    e.printStackTrace();
+                    Log.e(this.getClass().getName(), e.getMessage());
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(this.getClass().getName(), e.getMessage());
                 }
 
             } while (HttpCommsProxy.getInstance().isConnected() && jsonString[0] != null);

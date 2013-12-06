@@ -130,10 +130,10 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
 
         } catch (InterruptedException e) {
             toast(ERROR_MESSAGE);
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         } catch (ExecutionException e) {
             toast(ERROR_MESSAGE);
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         }
     }
 

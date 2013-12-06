@@ -10,6 +10,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import epfl.sweng.authentication.CredentialManager;
 import epfl.sweng.quizquestions.QuizQuestion;
 
@@ -23,6 +25,7 @@ import epfl.sweng.quizquestions.QuizQuestion;
 public class JSONParser {
 
     public static final int HTTP_ERROR = 404;
+    private static final String TAG = "JSONParser";
 
     public static JSONObject getParser(HttpResponse response) throws JSONException {
         JSONObject json = null;
@@ -33,7 +36,7 @@ public class JSONParser {
             jsonResponse = responseHandler.handleResponse(response);
             json = new JSONObject(jsonResponse);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.v(TAG, e.getMessage());
         }
 
         return json;

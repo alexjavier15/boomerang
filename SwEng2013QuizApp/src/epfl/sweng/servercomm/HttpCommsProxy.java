@@ -15,6 +15,8 @@ import org.apache.http.message.BasicStatusLine;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import epfl.sweng.authentication.PreferenceKeys;
 import epfl.sweng.tools.Debug;
 
@@ -90,11 +92,11 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
                     sCacheHttpComms.pushQuestion(response);
                     response.setEntity(new StringEntity(entity));
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    Log.e(this.getClass().getName(), e.getMessage());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(this.getClass().getName(), e.getMessage());
                 } catch (NullPointerException e) {
-                    e.printStackTrace();
+                    Log.e(this.getClass().getName(), e.getMessage());
                 }
 
             } else if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {

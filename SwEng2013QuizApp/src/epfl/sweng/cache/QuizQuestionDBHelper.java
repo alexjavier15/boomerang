@@ -93,7 +93,7 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
             }
             values.put(COLUMN_NAME_TAGS, tags);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         }
 
         // Inserting Row

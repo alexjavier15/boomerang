@@ -7,6 +7,8 @@ import org.apache.http.HttpResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import epfl.sweng.cache.CacheManager;
 import epfl.sweng.tools.JSONParser;
 
@@ -97,7 +99,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
             quizQuestion = JSONParser.getParser(reponse);
             pushQuestion(quizQuestion);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
         }
 
     }

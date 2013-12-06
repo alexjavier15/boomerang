@@ -99,21 +99,17 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
             mStatusMsg = e.getMessage();
             mMyToast.setText(mStatusMsg);
             Log.e(getLocalClassName(), e.getMessage());
-            e.printStackTrace();
         } catch (JSONException e) {
             mResult = null;
             mStatusMsg = INTERNAL_ERROR_MSG;
             mMyToast.setText(INTERNAL_ERROR_MSG);
             Log.e(getLocalClassName(), e.getMessage());
-            e.printStackTrace();
-
         } catch (IOException e) {
             mResult = null;
             mStatusMsg = INTERNAL_ERROR_MSG;
             mMyToast.setText(INTERNAL_ERROR_MSG);
             Log.e(getLocalClassName(), e.getMessage());
         }
-
         return mResult;
     }
 
@@ -130,7 +126,7 @@ public class AuthenticationActivity extends Activity implements Httpcommunicatio
             } catch (JSONException e) {
                 mStatusMsg = UNEXPECTED_ERROR_MSG;
                 mMyToast.setText(UNEXPECTED_ERROR_MSG);
-                e.printStackTrace();
+                Log.e(getLocalClassName(), e.getMessage());
                 failedAuthenReset();
             }
 
