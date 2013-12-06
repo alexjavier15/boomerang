@@ -14,23 +14,24 @@ import epfl.sweng.authentication.PreferenceKeys;
  * 
  */
 public class QuizApp extends Application {
-    private static Context sContext;
+    private static QuizApp sApp;
 
     public static Context getContexStatic() {
-        return sContext;
+        return sApp.getBaseContext();
     }
 
     public static SharedPreferences getPreferences() {
-        return getContexStatic().getSharedPreferences(PreferenceKeys.USER_PREFERENCE, MODE_PRIVATE);
+        return sApp.getBaseContext().getSharedPreferences(PreferenceKeys.USER_PREFERENCE, MODE_PRIVATE);
     }
 
     public static Resources getResourcesStatic() {
-        return sContext.getResources();
+        return sApp.getBaseContext().getResources();
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        sContext = getApplicationContext();
+        sApp = this;
+
     }
 }
