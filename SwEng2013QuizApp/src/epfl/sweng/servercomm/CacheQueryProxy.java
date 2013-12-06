@@ -79,7 +79,7 @@ public final class CacheQueryProxy implements IHttpConnectionHelper {
         try {
             id = idList.poll().longValue();
         } catch (NullPointerException e) {
-            Log.i(this.getClass().getName(), "empty response query no questions received");
+        	Log.e(getClass().getName(), e.getMessage(), e);
         }
         response = CacheManager.getInstance().getQuestion(id);
         questionIndex++;

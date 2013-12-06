@@ -201,37 +201,35 @@ public class QuizQuestionDBHelper extends SQLiteOpenHelper implements BaseColumn
 
     private String translateQuery(String queryS) {
         Log.d("Query before trans was: ", queryS);
-        String translatedQuery = "";
+        StringBuffer translatedQuery = new StringBuffer();
         // saves a list of either words or logical operators
         Pattern pattern1 = Pattern.compile("([a-zA-Z0-9]+|[\\(\\)\\+\\*])");
-        Matcher matcher1 = pattern1.matcher(queryS);
-
+        Matcher matcher1 = pattern1.matcher(queryS);        
+        
         boolean lastWasWord = false;
         while (matcher1.find()) {
             if (matcher1.group(1).equals("(")) {
-                translatedQuery += "( ";
+                translatedQuery.append("( ");
                 lastWasWord = false;
             } else if (matcher1.group(1).equals(")")) {
-                translatedQuery += ")";
+                translatedQuery.append(")");
                 lastWasWord = true;
             } else if (matcher1.group(1).equals("+")) {
-                translatedQuery += " OR ";
+                translatedQuery.append(" OR ");
                 lastWasWord = false;
             } else if (matcher1.group(1).equals("*")) {
-                translatedQuery += " AND ";
+                translatedQuery.append(" AND ");
                 lastWasWord = false;
             } else {
                 if (lastWasWord) {
-                    translatedQuery += " AND ";
+                    translatedQuery.append(" AND ");
                 }
-                translatedQuery += COLUMN_NAME_TAGS + " LIKE '%" + matcher1.group(1) + "%'";
+                translatedQuery.append(COLUMN_NAME_TAGS + " LIKE '%" + matcher1.group(1) + "%'");
                 lastWasWord = true;
             }
 
         }
-        Log.d("query after trans is : ", translatedQuery);
-
-        return translatedQuery;
+        return translatedQuery.toString();
     }
 
 }

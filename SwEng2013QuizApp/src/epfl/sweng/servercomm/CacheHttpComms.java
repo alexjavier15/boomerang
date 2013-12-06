@@ -71,6 +71,7 @@ public final class CacheHttpComms implements IHttpConnectionHelper {
             try {
                 return CacheManager.getInstance().getQueriedQuestions(question.getString("query"));
             } catch (JSONException e) {
+            	Log.e(getClass().getName(), e.getMessage(), e);
                 throw new UnsupportedOperationException("Unsupported operation in offline mode");
             }
         } else {

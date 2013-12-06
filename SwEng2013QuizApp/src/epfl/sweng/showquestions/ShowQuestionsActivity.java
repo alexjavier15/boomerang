@@ -186,17 +186,17 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
      */
     private String displayTags(Set<String> set) {
         if (set.size() > 0) {
-            String tagsInString = "";
+            StringBuffer tagsInString = new StringBuffer();
             int counter = 0;
             for (String s : set) {
                 counter++;
                 if (counter == set.size()) {
-                    tagsInString += s;
+                    tagsInString.append(s);
                 } else {
-                    tagsInString += s + ", ";
+                    tagsInString.append(s + ", ");
                 }
             }
-            return tagsInString;
+            return tagsInString.toString();
         } else {
             return EMPTY_TAGS_MSG;
         }
