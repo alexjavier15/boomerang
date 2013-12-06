@@ -50,10 +50,10 @@ public class DatabaseHelper extends TestCase {
 		
 		
 		List<Long> list = database.getQueriedQuestions("h2g2");
-		assertFalse(0 == list.size());
+		assertFalse(!list.isEmpty());
 		
 		list = database.getQueriedQuestions("blabla");
-		assertTrue(0 == list.size());
+		assertTrue(list.isEmpty());
 		
 		database.deleteQuizQuestion("0");
 	}

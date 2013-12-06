@@ -155,7 +155,8 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
 
             @Override
             public void verify(TestCoordinator.TTChecks notification) {
-
+                assertEquals(String.format("Expected notification %s, but received %s", expected, notification),
+                        expected, notification);
             }
         });
     }
