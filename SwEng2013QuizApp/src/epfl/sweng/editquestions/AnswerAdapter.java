@@ -35,7 +35,7 @@ public class AnswerAdapter extends ArrayAdapter<Answer> {
 
     @Override
     public void add(Answer object) {
-        super.add(object);
+           super.add(object);
         mEmptyAnswers.add(object);
         Log.v(this.getClass().getName(), "empty ans : " + mEmptyAnswers.size());
     }
