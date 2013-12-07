@@ -23,6 +23,11 @@ public class QuizApp extends Application {
     public static SharedPreferences getPreferences() {
         return getContexStatic().getSharedPreferences(PreferenceKeys.USER_PREFERENCE, MODE_PRIVATE);
     }
+    
+    private static void setContext(Context context){
+        QuizApp.sContext = context;
+        
+    }
 
     public static Resources getResourcesStatic() {
         return sContext.getResources();
@@ -31,6 +36,6 @@ public class QuizApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        QuizApp.sContext = getApplicationContext();
+        QuizApp.setContext(this.getBaseContext());
     }
 }
