@@ -24,7 +24,7 @@ public class QuizApp extends Application {
         return getContexStatic().getSharedPreferences(PreferenceKeys.USER_PREFERENCE, MODE_PRIVATE);
     }
     
-    private static void setContext(Context context){
+    private static void setContext(Context context) {
         QuizApp.sContext = context;
         
     }
