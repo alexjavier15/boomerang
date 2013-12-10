@@ -25,149 +25,156 @@ import epfl.sweng.authentication.PreferenceKeys;
  */
 
 public final class HttpCommsProxy implements IHttpConnectionHelper {
-    private static HttpCommsProxy proxy = null;
-    private static CacheHttpComms sCacheHttpComms = null;
-    private static IHttpConnectionHelper sRealHttpComms = null;
+	private static HttpCommsProxy proxy = null;
+	private static CacheHttpComms sCacheHttpComms = null;
+	private static IHttpConnectionHelper sRealHttpComms = null;
 
-    public static HttpCommsProxy getInstance() {
+	public static HttpCommsProxy getInstance() {
+		if (proxy == null) {
+			proxy = new HttpCommsProxy();
+		}
+		return proxy;
+	}
 
-        if (proxy == null) {
-            return new HttpCommsProxy();
+	private HttpCommsProxy() {
 
-        } else {
-            return proxy;
-        }
+		if (sRealHttpComms == null) {
+			sRealHttpComms = HttpComms.getInstance();
+		}
 
-    }
+		if (sCacheHttpComms == null) {
+			sCacheHttpComms = CacheHttpComms.getInstance();
+		}
 
-    private HttpCommsProxy() {
+	}
 
-        if (sRealHttpComms == null) {
-            sRealHttpComms = HttpComms.getInstance();
-        }
+	/**
+	 * @return
+	 */
+	private IHttpConnectionHelper getServerCommsInstance() {
 
-        if (sCacheHttpComms == null) {
-            sCacheHttpComms = CacheHttpComms.getInstance();
-        }
+		if (isOnlineMode()) {
+			return sRealHttpComms;
 
-    }
+		} else {
+			return sCacheHttpComms;
+		}
+	}
 
-    /**
-     * @return
-     */
-    private IHttpConnectionHelper getServerCommsInstance() {
+	public Class<?> getServerCommsClass() {
 
-        if (isOnlineMode()) {
-            return sRealHttpComms;
+		return getServerCommsInstance().getClass();
+	}
 
-        } else {
-            return sCacheHttpComms;
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * epfl.sweng.servercomm.IHttpConnection#getHttpResponse(java.lang.String )
+	 */
+	@Override
+	public HttpResponse getHttpResponse(String urlString) {
 
-    public Class<?> getServerCommsClass() {
+		HttpResponse response = getServerCommsInstance().getHttpResponse(
+				urlString);
+		if (response != null) {
 
-        return getServerCommsInstance().getClass();
-    }
+			if (urlString.equals(HttpComms.URL_SWENG_RANDOM_GET)
+					&& isOnlineMode()
+					&& response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+				Log.v(this.getClass().getName(), " pushing question");
+				String entity;
+				try {
+					entity = EntityUtils.toString(response.getEntity());
+					response.setEntity(new StringEntity(entity));
+					sCacheHttpComms.pushQuestion(response);
+					response.setEntity(new StringEntity(entity));
+				} catch (ParseException e) {
+					Log.e(this.getClass().getName(), e.getMessage(), e);
+				} catch (IOException e) {
+					Log.e(this.getClass().getName(), e.getMessage(), e);
+				} catch (NullPointerException e) {
+					Log.e(this.getClass().getName(), e.getMessage(), e);
+				}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.servercomm.IHttpConnection#getHttpResponse(java.lang.String )
-     */
-    @Override
-    public HttpResponse getHttpResponse(String urlString) {
+			} else if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+				setOnlineMode(false);
 
-        HttpResponse response = getServerCommsInstance().getHttpResponse(urlString);
-        if (response != null) {
+			}
 
-            if (urlString.equals(HttpComms.URL_SWENG_RANDOM_GET) && isOnlineMode()
-                    && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                Log.v(this.getClass().getName(), " pushing question");
-                String entity;
-                try {
-                    entity = EntityUtils.toString(response.getEntity());
-                    response.setEntity(new StringEntity(entity));
-                    sCacheHttpComms.pushQuestion(response);
-                    response.setEntity(new StringEntity(entity));
-                } catch (ParseException e) {
-                    Log.e(this.getClass().getName(), e.getMessage(), e);
-                } catch (IOException e) {
-                    Log.e(this.getClass().getName(), e.getMessage(), e);
-                } catch (NullPointerException e) {
-                    Log.e(this.getClass().getName(), e.getMessage(), e);
-                }
+		} else {
+			DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
+			response = httpResFactory.newHttpResponse(new BasicStatusLine(
+					(new HttpPost()).getProtocolVersion(),
+					HttpStatus.SC_BAD_REQUEST, null), null);
+			setOnlineMode(false);
 
-            } else if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-                setOnlineMode(false);
+		}
 
-            }
+		return response;
+	}
 
-        } else {
-            DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
-            response = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_BAD_REQUEST, null), null);
-            setOnlineMode(false);
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * epfl.sweng.servercomm.IHttpConnection#postJSONObject(java.lang.String ,
+	 * org.json.JSONObject)
+	 */
+	@Override
+	public HttpResponse postJSONObject(String url, JSONObject question) {
+		HttpResponse response = null;
+		if (question != null) {
+			response = getServerCommsInstance().postJSONObject(url, question);
 
-        }
+			if (url.equals(HttpComms.URL_SWENG_PUSH)) {
+				sCacheHttpComms.pushQuestion(question);
+			}
 
-        return response;
-    }
+		}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.servercomm.IHttpConnection#postJSONObject(java.lang.String , org.json.JSONObject)
-     */
-    @Override
-    public HttpResponse postJSONObject(String url, JSONObject question) {
-        HttpResponse response = null;
-        if (question != null) {
-            response = getServerCommsInstance().postJSONObject(url, question);
+		if (response != null) {
+			if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+				sCacheHttpComms.postJSONObject(url, question);
+				setOnlineMode(false);
+			}
+		} else {
+			DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
+			response = httpResFactory.newHttpResponse(new BasicStatusLine(
+					(new HttpPost()).getProtocolVersion(),
+					HttpStatus.SC_BAD_REQUEST, null), null);
+			setOnlineMode(false);
+		}
 
-            if (url.equals(HttpComms.URL_SWENG_PUSH)) {
-                sCacheHttpComms.pushQuestion(question);
-            }
+		return response;
+	}
 
-        }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
+	 */
+	@Override
+	public boolean isConnected() {
+		return getServerCommsInstance().isConnected();
+	}
 
-        if (response != null) {
-            if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-                sCacheHttpComms.postJSONObject(url, question);
-                setOnlineMode(false);
-            }
-        } else {
-            DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
-            response = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
-                    HttpStatus.SC_BAD_REQUEST, null), null);
-            setOnlineMode(false);
-        }
+	private boolean isOnlineMode() {
+		Log.v(this.getClass().getName(),
+				"client status : "
+						+ QuizApp.getPreferences().getBoolean(
+								PreferenceKeys.ONLINE_MODE, true));
+		return QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE,
+				true);
+	}
 
-        return response;
-    }
+	/**
+	 * @param b
+	 */
+	public void setOnlineMode(boolean isOnline) {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see epfl.sweng.servercomm.IHttpConnection#isConnected()
-     */
-    @Override
-    public boolean isConnected() {
-        return getServerCommsInstance().isConnected();
-    }
+		QuizApp.getPreferences().edit()
+				.putBoolean(PreferenceKeys.ONLINE_MODE, isOnline).apply();
 
-    private boolean isOnlineMode() {
-        Log.v(this.getClass().getName(),
-                "client status : " + QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true));
-        return QuizApp.getPreferences().getBoolean(PreferenceKeys.ONLINE_MODE, true);
-    }
-
-    /**
-     * @param b
-     */
-    public void setOnlineMode(boolean isOnline) {
-
-        QuizApp.getPreferences().edit().putBoolean(PreferenceKeys.ONLINE_MODE, isOnline).apply();
-
-    }
+	}
 }

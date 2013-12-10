@@ -145,7 +145,7 @@ public final class CacheManager {
         return wrapQuizQuestion(sQuizQuestionDB.getQuestionbyID(id));
     }
 
-    private class BackgroundServiceTask extends AsyncTask<Void, Void, Void> {
+    private static class BackgroundServiceTask extends AsyncTask<Void, Void, Void> {
 
         /*
          * (non-Javadoc)
