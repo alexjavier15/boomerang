@@ -25,12 +25,12 @@ public class QuizQuestion implements QuestionProvider, Serializable {
     private static final long serialVersionUID = 1L;
     private List<String> answers = new ArrayList<String>();
     private int id;
-    private final int maxAnswerLength = 500;
-    private final int maxAnswersSize = 10;
-    private final int maxQuestionLength = 500;
-    private final int maxTagLength = 20;
+    private final static int maxAnswerLength = 500;
+    private final static int maxAnswersSize = 10;
+    private final static int maxQuestionLength = 500;
+    private final static int maxTagLength = 20;
 
-    private final int maxTagsSize = 20;
+    private final static int maxTagsSize = 20;
     private String owner = "";
     private String question = "";
     private int solutionIndex = -1;
