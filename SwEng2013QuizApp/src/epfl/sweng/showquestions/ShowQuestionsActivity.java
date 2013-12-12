@@ -83,7 +83,7 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             public void onItemClick(AdapterView<?> listAdapter, View view, int selectedAnswer, long arg3) {
 
                 ListView list = (ListView) listAdapter;
-                TextView textListener = (TextView) list.getChildAt(selectedAnswer);
+                String textListener = (String) list.getItemAtPosition(selectedAnswer);
 
                 if (lastChoice != -1) {
                     TextView lastChild = (TextView) list.getChildAt(lastChoice);
@@ -106,8 +106,9 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
 
                 TestCoordinator.check(TTChecks.ANSWER_SELECTED);
 
-                String newText = textListener.getText().toString() + question;
-                textListener.setText(newText);
+                String newText = textListener + question;
+                TextView answer = (TextView) view;
+                answer.setText(newText);
                 lastChoice = selectedAnswer;
 
             }
