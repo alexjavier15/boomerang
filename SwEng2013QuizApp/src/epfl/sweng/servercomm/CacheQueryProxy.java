@@ -108,7 +108,7 @@ public final class CacheQueryProxy implements IHttpConnectionHelper {
                 }
                 Log.d(this.getClass().getName(), "Received: " + qCount + " questions");
                 // Shuffle the list (optional)
-                Collections.shuffle(idList);
+                //Collections.shuffle(idList);
             }
         } else {
             JSONArray idArray = jsonResponse.getJSONArray("cacheResponse");
