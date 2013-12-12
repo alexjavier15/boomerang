@@ -25,12 +25,11 @@ public class QuizQuestion implements QuestionProvider, Serializable {
     private static final long serialVersionUID = 1L;
     private List<String> answers = new ArrayList<String>();
     private int id;
-    private final static int maxAnswerLength = 500;
-    private final static int maxAnswersSize = 10;
-    private final static int maxQuestionLength = 500;
-    private final static int maxTagLength = 20;
-
-    private final static int maxTagsSize = 20;
+    private final static int MAX_ANSWER_LENGTH = 500;
+    private final static int MAX_ANSWERS = 10;
+    private final static int MAX_QUESTION_LENGTH = 500;
+    private final static int MAX_TAG_LENGTH = 20;
+    private final static int MAX_TAGS = 20;
     private String owner = "";
     private String question = "";
     private int solutionIndex = -1;
@@ -81,25 +80,25 @@ public class QuizQuestion implements QuestionProvider, Serializable {
 
     public int auditErrors() {
         int numberOfErrors = 0;
-        if (question.length() <= 0 || question.length() > maxQuestionLength || question.trim().length() <= 0) {
+        if (question.length() <= 0 || question.length() > MAX_QUESTION_LENGTH || question.trim().length() <= 0) {
             numberOfErrors++;
         }
         for (String a : answers) {
-            if (a.length() <= 0 || a.length() > maxAnswerLength || a.trim().length() <= 0) {
+            if (a.length() <= 0 || a.length() > MAX_ANSWER_LENGTH || a.trim().length() <= 0) {
                 numberOfErrors++;
             }
         }
-        if (answers.size() < 2 || answers.size() > maxAnswersSize) {
+        if (answers.size() < 2 || answers.size() > MAX_ANSWERS) {
             numberOfErrors++;
         }
         if (solutionIndex < 0 || solutionIndex > answers.size() - 1) {
             numberOfErrors++;
         }
-        if (tags.size() < 1 || tags.size() > maxTagsSize) {
+        if (tags.size() < 1 || tags.size() > MAX_TAGS) {
             numberOfErrors++;
         }
         for (String t : tags) {
-            if (t.length() <= 0 || t.length() > maxTagLength || t.trim().length() <= 0) {
+            if (t.length() <= 0 || t.length() > MAX_TAG_LENGTH || t.trim().length() <= 0) {
                 numberOfErrors++;
             }
         }
