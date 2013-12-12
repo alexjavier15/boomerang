@@ -1,7 +1,7 @@
 package epfl.sweng.servercomm;
 
 import java.io.IOException;
-import java.util.Collections;
+//import java.util.Collections;
 import java.util.LinkedList;
 
 import org.apache.http.HttpResponse;
