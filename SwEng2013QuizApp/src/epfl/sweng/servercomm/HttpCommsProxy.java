@@ -135,7 +135,9 @@ public final class HttpCommsProxy implements IHttpConnectionHelper {
 
 		if (response != null) {
 			if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-				sCacheHttpComms.postJSONObject(url, question);
+			    if (url.equals(HttpComms.URL_SWENG_PUSH)) {
+			        sCacheHttpComms.postJSONObject(url, question);
+	            }			    
 				setOnlineMode(false);
 			}
 		} else {

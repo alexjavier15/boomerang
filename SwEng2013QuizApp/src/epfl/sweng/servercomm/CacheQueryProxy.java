@@ -16,6 +16,9 @@ import epfl.sweng.tools.JSONParser;
 
 public final class CacheQueryProxy implements IHttpConnectionHelper {
 
+    public static final String ERROR_QUERY = "No questions match your query";
+    public static final String ERROR_QUERY2 = "No more questions match your query"; 
+    public static final String ERROR_MESSAGE = "There was an error retrieving the question";
     private static CacheQueryProxy sCacheQuery = null;
     private boolean hasNext = false;
     private String query = null;
@@ -79,7 +82,7 @@ public final class CacheQueryProxy implements IHttpConnectionHelper {
         try {
             id = idList.poll().longValue();
         } catch (NullPointerException e) {
-        	Log.e(getClass().getName(), e.getMessage(), e);
+        	Log.i(getClass().getName(), "No more questions cached.");
         }
         response = CacheManager.getInstance().getQuestion(id);
         questionIndex++;
@@ -129,6 +132,18 @@ public final class CacheQueryProxy implements IHttpConnectionHelper {
         qCount = 0;
         query = queryText;
         idList = new LinkedList<Long>();
+    }
+
+    public String getErrorMessage() {
+        if (query != null) {
+            if (questionIndex > 1) {
+                return ERROR_QUERY2;                
+            } else {
+                return ERROR_QUERY;
+            }
+        } else {
+            return ERROR_MESSAGE;
+        }
     }
 
 }

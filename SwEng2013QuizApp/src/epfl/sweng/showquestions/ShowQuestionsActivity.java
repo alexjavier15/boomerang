@@ -39,7 +39,6 @@ import epfl.sweng.tools.JSONParser;
 
 public class ShowQuestionsActivity extends Activity implements HttpcommunicationsAdapter {
 
-    public static final String ERROR_QUERY = "No questions match your query";
     public static final String EMPTY_TAGS_MSG = "No tags for this question";
     public static final String ERROR_MESSAGE = "There was an error retrieving the question";
 
@@ -53,7 +52,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
 
     private int lastChoice = -1;
     private String url = null;
-    private boolean isQuery = false;
 
     /**
      * Inflate the menu; this adds items to the action bar if it is present.
@@ -117,7 +115,6 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         answerChoices.setOnItemClickListener(answerListener);
 
         if (getIntent().hasExtra("query_mode")) {
-            isQuery = true;
             url = HttpComms.URL_SWENG_QUERY_POST;
         } else {
             url = HttpComms.URL_SWENG_RANDOM_GET;
@@ -159,19 +156,22 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
         QuizQuestion quizQuestion = null;
         JSONObject jsonObj = null;
         String jsonString = null;
-        try {
-            jsonObj = JSONParser.getParser(httpResponse);
-            if (jsonObj != null) {
-                jsonString = jsonObj.toString();
-            }
-            quizQuestion = new QuizQuestion(jsonString);
-        } catch (JSONException e) {
-            HttpCommsProxy.getInstance().setOnlineMode(false);
-            toast(ERROR_MESSAGE);
-            Log.e(getClass().getName(), e.getMessage(), e);
-        }
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            try {
+                jsonObj = JSONParser.getParser(httpResponse);
+                if (jsonObj != null) {
+                    jsonString = jsonObj.toString();
+                }
+                quizQuestion = new QuizQuestion(jsonString);
+            } catch (JSONException e) {
+                HttpCommsProxy.getInstance().setOnlineMode(false);
+                toast(ERROR_MESSAGE);
+                Log.e(getClass().getName(), e.getMessage(), e);
+            }
+
             setQuestion(quizQuestion);
+        } else {
+            toast(CacheQueryProxy.getInstance().getErrorMessage());
         }
 
         TestCoordinator.check(TTChecks.QUESTION_SHOWN);
@@ -217,21 +217,13 @@ public class ShowQuestionsActivity extends Activity implements Httpcommunication
             answerChoices.setOnItemClickListener(answerListener);
         } catch (NullPointerException e) {
             text.append("No question can be obtained !");
-            toast(getErrorMessage());
+            toast(CacheQueryProxy.getInstance().getErrorMessage());
             Log.e(getClass().getName(), e.getMessage(), e);
         }
     }
 
     public void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-    }
-
-    public String getErrorMessage() {
-        if (isQuery) {
-            return ERROR_QUERY;
-        } else {
-            return ERROR_MESSAGE;
-        }
     }
 
 }

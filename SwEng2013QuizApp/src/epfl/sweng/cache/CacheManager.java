@@ -36,6 +36,7 @@ public final class CacheManager {
     private static CacheManager sCacheManager = null;
     private static QuizQuestionDBHelper sPostQuestionDB;
     private static QuizQuestionDBHelper sQuizQuestionDB;
+    private static final int MAX_LENGTH = 7;
 
     private CacheManager() {
         sQuizQuestionDB = new QuizQuestionDBHelper(QuizApp.getContexStatic(), QUESTION_CACHE_DB_NAME);
@@ -110,7 +111,7 @@ public final class CacheManager {
         HttpResponse response = null;
         DefaultHttpResponseFactory httpResFactory = new DefaultHttpResponseFactory();
 
-        if (question == null) {
+        if (question == null  || question.length() < MAX_LENGTH) {
             response = httpResFactory.newHttpResponse(new BasicStatusLine((new HttpPost()).getProtocolVersion(),
                     HttpStatus.SC_BAD_REQUEST, null), null);
         } else {
