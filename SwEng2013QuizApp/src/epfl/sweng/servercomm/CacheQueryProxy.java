@@ -79,11 +79,11 @@ public final class CacheQueryProxy implements IHttpConnectionHelper {
         }
         long id = -1;
 
-        try {
-            id = idList.poll().longValue();
-        } catch (NullPointerException e) {
-        	Log.i(getClass().getName(), "No more questions cached.");
+        Long che = idList.poll();
+        if (che != null) {
+            id = che.longValue();
         }
+        
         response = CacheManager.getInstance().getQuestion(id);
         questionIndex++;
 
