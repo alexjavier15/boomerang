@@ -123,7 +123,7 @@ public class TTCoordinatorUtility extends TestCase implements ITTCordinatorHelpe
         TestCoordinator.run(mTest.getInstrumentation(), new TestingTransaction() {
             @Override
             public void initiate() {
-                mSolo.clickOnText(answer);
+                mSolo.clickLongOnView(mSolo.getText(answer));
             }
 
             @Override

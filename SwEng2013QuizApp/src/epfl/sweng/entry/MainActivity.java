@@ -114,10 +114,11 @@ public class MainActivity extends Activity {
             // this means you are logging out!
             CredentialManager.getInstance().removeUserCredential();
             TestCoordinator.check(TTChecks.LOGGED_OUT);
-
+            setAthenticated(false);
         } else {
             Intent loginActivityIntent = new Intent(this, AuthenticationActivity.class);
             startActivity(loginActivityIntent);
+            
         }
     }
 

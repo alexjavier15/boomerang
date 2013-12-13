@@ -85,6 +85,7 @@ public class ShowQuestionActivityTemplate extends ActivityInstrumentationTestCas
 
     protected void chooseCorrectAnswer() {
         getActivityAndWaitFor(TTChecks.QUESTION_SHOWN);
+        getInstrumentation().waitForIdleSync();
         clickAndWaitForAnswer(TTChecks.ANSWER_SELECTED, CORRECT_ANS);
 
     }
